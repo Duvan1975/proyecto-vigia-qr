@@ -1,12 +1,12 @@
 package proyectoVigiaQr.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import proyectoVigiaQr.usuario.DatosRegistroUsuario;
+import proyectoVigiaQr.usuario.Usuario;
 import proyectoVigiaQr.usuario.UsuarioService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -22,5 +22,9 @@ public class UsuarioController {
     public void registrarUsuario(@RequestBody @Valid DatosRegistroUsuario datos) {
         System.out.println(datos);
         usuarioService.registrarUsuario(datos);
+    }
+    @GetMapping
+    public List<Usuario> listadoUsuarios() {
+        return usuarioService.listadoUsuarios();
     }
 }
