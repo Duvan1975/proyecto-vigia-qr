@@ -10,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,6 +48,7 @@ public class Usuario {
         this.username = datos.username();
         this.password = datos.password();
         this.rol = datos.rol();
+        this.estado = datos.estado();
     }
     public Usuario() {
 
@@ -123,4 +125,5 @@ public class Usuario {
     public void setEstado(boolean estado) {
         this.estado = estado;
     }
+
 }
