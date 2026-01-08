@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function Tabla() {
+export function TablaUsuarios() {
 
     const [usuarios, setUsuarios] = useState([]);
 

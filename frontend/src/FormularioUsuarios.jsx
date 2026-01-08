@@ -1,10 +1,10 @@
 import { CuadrosTexto } from "./CuadrosTexto";
 import { AgregarTabla } from "./AgregarTabla";
 
-export function Formulario() {
+export function FormularioUsuarios() {
     return (
         <div>
-            <h1 className='alineartexto'>Formulario de Registro de Usuarios</h1>
+            <h2 className='alineartexto'>Formulario Registro de Usuarios</h2>
             <div className='row'>
                 <CuadrosTexto
                     tamanoinput="col-md-3"

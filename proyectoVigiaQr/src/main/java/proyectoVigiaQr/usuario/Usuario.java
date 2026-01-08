@@ -48,7 +48,6 @@ public class Usuario {
         this.username = datos.username();
         this.password = datos.password();
         this.rol = datos.rol();
-        this.estado = datos.estado();
     }
     public Usuario() {
 
