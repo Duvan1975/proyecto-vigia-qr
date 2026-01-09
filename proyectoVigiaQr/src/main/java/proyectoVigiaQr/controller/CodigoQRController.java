@@ -5,7 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import proyectoVigiaQr.codigosQR.CodigoQRService;
+import proyectoVigiaQr.codigosQR.DatosListadoCodigoQR;
 import proyectoVigiaQr.codigosQR.DatosRegistroCodigoQR;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/codigos-qr")
@@ -25,6 +28,12 @@ public class CodigoQRController {
         codigoQRService.registrarCodigoQR(datos);
         return ResponseEntity.status(HttpStatus.CREATED).build();
 
+    }
+    @GetMapping("/puesto/{idPuesto}")
+    public ResponseEntity<List<DatosListadoCodigoQR>> listarPorPuesto(
+            @PathVariable Long idPuesto
+    ) {
+        return ResponseEntity.ok(codigoQRService.listarPorPuesto(idPuesto));
     }
 
 }

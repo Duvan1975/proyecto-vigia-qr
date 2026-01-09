@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import proyectoVigiaQr.puestosTrabajo.PuestosTrabajo;
 import proyectoVigiaQr.puestosTrabajo.PuestosTrabajoRepository;
 
+import java.util.List;
+
 @Service
 public class CodigoQRService {
 
@@ -44,5 +46,12 @@ public class CodigoQRService {
         );
 
         return codigoQRRepository.save(codigoQR);
+    }
+    public List<DatosListadoCodigoQR> listarPorPuesto(Long idPuestosTrabajo) {
+
+        return codigoQRRepository.findByPuestosTrabajoId(idPuestosTrabajo)
+                .stream()
+                .map(DatosListadoCodigoQR::new)
+                .toList();
     }
 }
