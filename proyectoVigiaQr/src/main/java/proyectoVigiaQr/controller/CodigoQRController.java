@@ -35,5 +35,16 @@ public class CodigoQRController {
     ) {
         return ResponseEntity.ok(codigoQRService.listarPorPuesto(idPuesto));
     }
+    @GetMapping("/{id}/descargar")
+    public ResponseEntity<byte[]> descargarCodigoQr(@PathVariable Long id) {
+
+        byte[] imagenQr = codigoQRService.generarImagenQr(id);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=codigo_qr_" + id + ".png")
+                .header("Content-Type", "image/png")
+                .body(imagenQr);
+    }
+
 
 }

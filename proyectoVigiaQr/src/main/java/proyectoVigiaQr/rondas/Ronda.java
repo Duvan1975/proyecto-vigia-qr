@@ -1,0 +1,112 @@
+package proyectoVigiaQr.rondas;
+
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import proyectoVigiaQr.codigosQR.CodigoQR;
+import proyectoVigiaQr.puestosTrabajo.PuestosTrabajo;
+import proyectoVigiaQr.usuario.Usuario;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+@Entity(name = "Ronda")
+@Table(name = "rondas")
+@EqualsAndHashCode(of = "id")
+public class Ronda {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private LocalDate fecha;
+
+    @Column(nullable = false)
+    private LocalTime hora;
+
+    @Column(length = 255)
+    private String observaciones;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", nullable = false )
+    private Usuario usuario;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_codigo_qr", nullable = false)
+    private CodigoQR codigoQR;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_puesto_trabajo", nullable = false)
+    private PuestosTrabajo puestoTrabajo;
+
+    public Ronda(Usuario usuario,
+                 CodigoQR codigoQR,
+                 PuestosTrabajo puestoTrabajo,
+                 String observaciones) {
+        this.fecha = LocalDate.now();
+        this.hora = LocalTime.now();
+        this.usuario = usuario;
+        this.codigoQR = codigoQR;
+        this.puestoTrabajo = puestoTrabajo;
+        this.observaciones = observaciones;
+    }
+    public Ronda() {
+
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    public LocalTime getHora() {
+        return hora;
+    }
+
+    public void setHora(LocalTime hora) {
+        this.hora = hora;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public CodigoQR getCodigoQR() {
+        return codigoQR;
+    }
+
+    public void setCodigoQR(CodigoQR codigoQR) {
+        this.codigoQR = codigoQR;
+    }
+
+    public PuestosTrabajo getPuestoTrabajo() {
+        return puestoTrabajo;
+    }
+
+    public void setPuestoTrabajo(PuestosTrabajo puestoTrabajo) {
+        this.puestoTrabajo = puestoTrabajo;
+    }
+}
