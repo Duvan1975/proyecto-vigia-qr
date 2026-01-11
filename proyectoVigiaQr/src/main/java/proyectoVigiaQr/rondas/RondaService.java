@@ -1,5 +1,10 @@
 package proyectoVigiaQr.rondas;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import proyectoVigiaQr.codigosQR.CodigoQR;
 import proyectoVigiaQr.codigosQR.CodigoQRRepository;
@@ -84,5 +89,28 @@ public class RondaService {
                 .stream()
                 .map(DatosListadoRonda::new)
                 .toList();
+    }
+
+    public Page<DatosListadoRonda> listarConFiltros(
+            Long idPuesto,
+            Long idUsuario,
+            LocalDate fecha,
+            int page,
+            int size
+    ) {
+
+        Specification<Ronda> spec = Specification
+                .where(RondaSpecification.porPuesto(idPuesto))
+                .and(RondaSpecification.porUsuario(idUsuario))
+                .and(RondaSpecification.porFecha(fecha));
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("fecha").descending().and(Sort.by("hora").descending())
+        );
+
+        return rondaRepository.findAll(spec, pageable)
+                .map(DatosListadoRonda::new);
     }
 }

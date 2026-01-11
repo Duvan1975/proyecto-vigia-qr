@@ -46,5 +46,4 @@ public class CodigoQRController {
                 .body(imagenQr);
     }
 
-
 }

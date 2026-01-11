@@ -1,6 +1,7 @@
 package proyectoVigiaQr.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +56,27 @@ public class RondaController {
     ) {
         return ResponseEntity.ok(
                 rondaService.listarPorFecha(LocalDate.parse(fecha))
+        );
+    }
+
+    @GetMapping("/filtrar")
+    public ResponseEntity<Page<DatosListadoRonda>> filtrarRondas(
+            @RequestParam(required = false) Long idPuesto,
+            @RequestParam(required = false) Long idUsuario,
+            @RequestParam(required = false) String fecha,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        LocalDate fechaFiltro = fecha != null ? LocalDate.parse(fecha) : null;
+
+        return ResponseEntity.ok(
+                rondaService.listarConFiltros(
+                        idPuesto,
+                        idUsuario,
+                        fechaFiltro,
+                        page,
+                        size
+                )
         );
     }
 }
