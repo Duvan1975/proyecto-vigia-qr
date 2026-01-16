@@ -5,11 +5,10 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import proyectoVigiaQr.usuario.DatosActualizarUsuario;
-import proyectoVigiaQr.usuario.DatosListadoUsuario;
-import proyectoVigiaQr.usuario.DatosRegistroUsuario;
-import proyectoVigiaQr.usuario.UsuarioService;
+import org.springframework.web.util.UriComponentsBuilder;
+import proyectoVigiaQr.usuario.*;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -23,21 +22,28 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public void registrarUsuario(@RequestBody @Valid DatosRegistroUsuario datos) {
-        System.out.println(datos);
-        usuarioService.registrarUsuario(datos);
+    public ResponseEntity<DatosRespuestaUsuario> registrarUsuario(
+            @RequestBody @Valid DatosRegistroUsuario datos,
+            UriComponentsBuilder uriComponentsBuilder) {
+        return usuarioService.registrarUsuario(datos, uriComponentsBuilder);
     }
     @GetMapping
     public Page<DatosListadoUsuario> listadoUsuarios(
             @PageableDefault(size = 20, sort = "apellidos")Pageable paginacion) {
         return usuarioService.listarUsuarios(paginacion);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<DatosRespuestaUsuario> obtenerDatosUsuario(@PathVariable Long id) {
+        return usuarioService.obtenerDatosUsuario(id);
+    }
     @PutMapping
-    public void actualizarUsuario(@RequestBody @Valid DatosActualizarUsuario datos) {
+    public ResponseEntity actualizarUsuario(
+            @RequestBody @Valid DatosActualizarUsuario datos) {
         usuarioService.actualizarUsuario(datos);
+        return usuarioService.actualizarUsuario(datos);
     }
     @DeleteMapping("/{id}")
-    public void eliminarUsuario(@PathVariable Long id) {
-        usuarioService.eliminarUsuario(id);
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
+        return usuarioService.eliminarUsuario(id);
     }
 }

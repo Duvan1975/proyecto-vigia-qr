@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class PuestosTrabajoService {
@@ -13,8 +15,25 @@ public class PuestosTrabajoService {
     @Autowired
     private PuestosTrabajoRepository puestosTrabajoRepository;
 
-    public PuestosTrabajo registrarPuestoTrabajo(DatosRegistroPuestos datos) {
-        return puestosTrabajoRepository.save(new PuestosTrabajo(datos));
+    public ResponseEntity<DatosRespuestaPuestoTrabajo> registrarPuestoTrabajo(
+            DatosRegistroPuestos datos, UriComponentsBuilder uriComponentsBuilder) {
+
+        PuestosTrabajo puestosTrabajo = new PuestosTrabajo(datos); //Creamos el objeto
+        puestosTrabajoRepository.save(puestosTrabajo); //Lo guardamos
+
+        //Construímos la Uri del recurso creado
+        var uri = uriComponentsBuilder.path("puestosTrabajos/{id}").buildAndExpand(puestosTrabajo.getId()).toUri();
+
+        //Creamos la respuesta
+        DatosRespuestaPuestoTrabajo datosRespuestaPuestoTrabajo = new DatosRespuestaPuestoTrabajo(
+                puestosTrabajo.getId(),
+                puestosTrabajo.getNombrePuesto(),
+                puestosTrabajo.getDescripcion(),
+                puestosTrabajo.getDireccion(),
+                puestosTrabajo.isEstado()
+        );
+        return ResponseEntity.created(uri).body(datosRespuestaPuestoTrabajo);
+
     }
     public Page<DatosListadoPuestos> listarPuestosTrabajo(Pageable paginacion) {
         return puestosTrabajoRepository.findAll(paginacion).map(DatosListadoPuestos::new);

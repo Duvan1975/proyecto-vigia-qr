@@ -82,5 +82,6 @@ public class PuestosTrabajo {
     }
 
     public void actualizarDatos(DatosActualizarPuesto datos) {
+
     }
 }

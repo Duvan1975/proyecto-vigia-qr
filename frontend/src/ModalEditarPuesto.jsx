@@ -5,7 +5,8 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
         id: "",
         nombrePuesto: "",
         descripcion: "",
-        direccion: ""
+        direccion: "", 
+        estado: ""
     });
     useEffect(() => {
         if (puestoTrabajo) {

@@ -125,4 +125,7 @@ public class Usuario {
         this.estado = estado;
     }
 
+    public void actualizarDatos(DatosActualizarUsuario datos) {
+
+    }
 }
