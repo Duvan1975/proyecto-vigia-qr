@@ -1,16 +1,14 @@
 package proyectoVigiaQr.puestosTrabajo;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import proyectoVigiaQr.codigosQR.CodigoQR;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "PuestoTrabajo")
 @Table(name = "puestos_trabajo")
-@Getter
-@Setter
-@AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 
 public class PuestosTrabajo {
@@ -29,6 +27,9 @@ public class PuestosTrabajo {
 
     @Column(nullable = false)
     private boolean estado = true;
+
+    @OneToMany(mappedBy = "puestosTrabajo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CodigoQR> codigoQRS = new ArrayList<>();
 
     public PuestosTrabajo() {
 
@@ -78,5 +79,8 @@ public class PuestosTrabajo {
 
     public void setEstado(boolean estado) {
         this.estado = estado;
+    }
+
+    public void actualizarDatos(DatosActualizarPuesto datos) {
     }
 }

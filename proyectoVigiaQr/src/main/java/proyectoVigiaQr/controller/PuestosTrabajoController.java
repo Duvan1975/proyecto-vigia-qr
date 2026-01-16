@@ -34,12 +34,13 @@ public class PuestosTrabajoController {
         return puestosTrabajoService.listarPuestosTrabajo(paginacion);
     }
     @PutMapping
-    public void actualizarPuestoTrabajo(
+    public ResponseEntity actualizarPuestoTrabajo(
             @RequestBody @Valid DatosActualizarPuesto datos) {
             puestosTrabajoService.actualizarPuestoTrabajo(datos);
+            return puestosTrabajoService.actualizarPuestoTrabajo(datos);
     }
     @DeleteMapping("/{id}")
-    public void eliminarPuestoTrabajo(@PathVariable Long id) {
-        puestosTrabajoService.eliminarPuestoTrabajo(id);
+    public ResponseEntity<?> eliminarPuestoTrabajo(@PathVariable Long id) {
+        return puestosTrabajoService.eliminarPuestoTrabajo(id);
     }
 }
