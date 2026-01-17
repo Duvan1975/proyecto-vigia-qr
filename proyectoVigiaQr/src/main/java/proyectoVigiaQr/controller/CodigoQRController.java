@@ -4,9 +4,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import proyectoVigiaQr.codigosQR.CodigoQRService;
-import proyectoVigiaQr.codigosQR.DatosListadoCodigoQR;
-import proyectoVigiaQr.codigosQR.DatosRegistroCodigoQR;
+import proyectoVigiaQr.domain.codigosQR.CodigoQRService;
+import proyectoVigiaQr.domain.codigosQR.DatosListadoCodigoQR;
+import proyectoVigiaQr.domain.codigosQR.DatosRegistroCodigoQR;
 
 import java.util.List;
 

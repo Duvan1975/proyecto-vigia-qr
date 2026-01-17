@@ -7,7 +7,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import proyectoVigiaQr.puestosTrabajo.*;
+import proyectoVigiaQr.domain.puestosTrabajo.*;
 
 @RestController
 @RequestMapping("/puestosTrabajos")

@@ -5,9 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import proyectoVigiaQr.rondas.DatosListadoRonda;
-import proyectoVigiaQr.rondas.DatosRegistroRonda;
-import proyectoVigiaQr.rondas.RondaService;
+import proyectoVigiaQr.domain.rondas.DatosListadoRonda;
+import proyectoVigiaQr.domain.rondas.DatosRegistroRonda;
+import proyectoVigiaQr.domain.rondas.RondaService;
 
 import java.time.LocalDate;
 import java.util.List;
