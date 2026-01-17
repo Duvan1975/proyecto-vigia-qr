@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { ModalEditarPuesto } from "./ModalEditarPuesto";
+import Swal from "sweetalert2";
 
 export function TablaPuestos() {
 
     const [puestosTrabajos, setPuestosTrabajos] = useState([]);
     const [puestoSeleccionado, setPuestoSeleccionado] = useState(null);
     const [mostrarModal, setMostrarModal] = useState(false);
+
+    //Estados de búsqueda
+    const [idBuscar, setIdBuscar] = useState("");
+    const [resultadoBusqueda, setResultadoBusqueda] = useState(null);
 
     useEffect(() => {
         cargarPuestos();
@@ -32,11 +37,21 @@ export function TablaPuestos() {
             });
 
             if (response.ok) {
-                setPuestosTrabajos(
-                    puestosTrabajos.map(p =>
+
+                // Actualizar lista principal
+                setPuestosTrabajos(prev =>
+                    prev.map(p =>
                         p.id === id ? { ...p, estado: !p.estado } : p
                     )
                 );
+
+                // 🔥 Actualizar resultado de búsqueda si es el mismo puesto
+                setResultadoBusqueda(prev =>
+                    prev && prev.id === id
+                        ? { ...prev, estado: !prev.estado }
+                        : prev
+                );
+
             } else {
                 console.error("Error al cambiar estado");
             }
@@ -45,9 +60,52 @@ export function TablaPuestos() {
         }
     };
 
+    const buscarPuestoPorId = () => {
+        if (!idBuscar) {
+            alert("Por favor ingrese un id válido");
+            return;
+        }
+
+        fetch(`http://localhost:8080/puestosTrabajos/${idBuscar}`)
+            .then((res) => {
+                if (!res.ok) throw new Error("Puesto no encontrado");
+                return res.json();
+            })
+            .then((data) => {
+                setResultadoBusqueda(data);
+            })
+            .catch((error) => {
+                console.error("Error en la búsqueda", error);
+                alert("No se encontró el puesto con ese ID");
+                setResultadoBusqueda(null);
+            })
+    }
 
     return (
         <>
+            <div className="mb-4">
+                <h5>Buscar Puesto por ID</h5>
+                <input
+                    type="number"
+                    value={idBuscar}
+                    onChange={(e) => setIdBuscar(e.target.value)}
+                    placeholder="Ingrese el ID"
+                    className="form-control mb-2"
+                />
+                <button onClick={buscarPuestoPorId} className="btn btn-info">Buscar</button>
+                {resultadoBusqueda && (
+                    <button
+                        onClick={() => {
+                            setResultadoBusqueda(null);
+                            setIdBuscar("");
+                        }}
+                        className="btn btn-secondary"
+                    >
+                        Limpiar Búsqueda
+                    </button>
+                )}
+            </div>
+
             <table className="table table-striped table-hover" id="tabla">
                 <thead>
                     <tr>
@@ -59,23 +117,45 @@ export function TablaPuestos() {
                     </tr>
                 </thead>
                 <tbody>
-                    {puestosTrabajos.map((pues) => (
-                        <tr key={pues.id}>
-                            <td>{pues.nombrePuesto}</td>
-                            <td>{pues.descripcion}</td>
-                            <td>{pues.direccion}</td>
+                    {resultadoBusqueda ? (
+                        <tr style={{ backgroundColor: "red" }}>
+                            <td>{resultadoBusqueda.nombrePuesto}</td>
+                            <td>{resultadoBusqueda.descripcion}</td>
+                            <td>{resultadoBusqueda.direccion}</td>
                             <td>
                                 <button
-                                    className={`btn btn-sm ${pues.estado ? "btn-success" : "btn-secondary"}`}
-                                    onClick={() => cambiarEstadoPuesto(pues.id)}
+                                    className={`btn btn-sm ${resultadoBusqueda.estado ? "btn-success" : "btn-secondary"}`}
+                                    onClick={() => {
+                                        Swal.fire({
+                                            title: '¿Estás seguro?',
+                                            text: `¿Deseas ${resultadoBusqueda.estado ? "desactivar" : "activar"} este puesto?`,
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#3085d6',
+                                            cancelButtonColor: '#d33',
+                                            confirmButtonText: 'Sí, cambiar estado',
+                                            cancelButtonText: 'Cancelar'
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                // Si el usuario confirma, ejecutar la función original
+                                                cambiarEstadoPuesto(resultadoBusqueda.id);
+
+                                                // Opcional: Mostrar mensaje de éxito
+                                                Swal.fire(
+                                                    '¡Estado cambiado!',
+                                                    `El puesto ha sido ${resultadoBusqueda.estado ? "desactivado" : "activado"} correctamente.`,
+                                                    'success'
+                                                );
+                                            }
+                                        });
+                                    }}
                                 >
-                                    {pues.estado ? "Activo" : "Inactivo"}
+                                    {resultadoBusqueda.estado ? "Activo" : "Inactivo"}
                                 </button>
                             </td>
-
                             <td>
                                 <button onClick={() => {
-                                    setPuestoSeleccionado(pues);
+                                    setPuestoSeleccionado(resultadoBusqueda);
                                     setMostrarModal(true);
                                 }}
                                     className="btn btn-sm btn-primary me-2"
@@ -83,15 +163,70 @@ export function TablaPuestos() {
                                 </button>
                             </td>
                         </tr>
-                    ))}
+                    ) : (
+                        puestosTrabajos.map((pues) => (
+                            <tr key={pues.id}>
+                                <td>{pues.nombrePuesto}</td>
+                                <td>{pues.descripcion}</td>
+                                <td>{pues.direccion}</td>
+                                <td>
+                                    <button
+                                        className={`btn btn-sm ${pues.estado ? "btn-success" : "btn-secondary"}`}
+                                        onClick={() => {
+                                            Swal.fire({
+                                                title: 'Confirmar cambio de estado',
+                                                text: `¿Estás seguro de ${pues.estado ? "desactivar" : "activar"} este puesto?`,
+                                                icon: 'question',
+                                                showCancelButton: true,
+                                                confirmButtonColor: '#3085d6',
+                                                cancelButtonColor: '#d33',
+                                                confirmButtonText: 'Sí, cambiar',
+                                                cancelButtonText: 'Cancelar',
+                                                reverseButtons: true
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    cambiarEstadoPuesto(pues.id);
+                                                }
+                                            });
+                                        }}
+                                    >
+                                        {pues.estado ? "Activo" : "Inactivo"}
+                                    </button>
+                                </td>
+                                <td>
+                                    <button onClick={() => {
+                                        setPuestoSeleccionado(pues);
+                                        setMostrarModal(true);
+                                    }}
+                                        className="btn btn-sm btn-primary me-2"
+                                    >Editar
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    )}
                 </tbody>
             </table>
+
             <ModalEditarPuesto
                 puestoTrabajo={puestoSeleccionado}
-                visible={mostrarModal} //Controla si el modal debe mostrarse (true) o no (false).
-                onClose={() => setMostrarModal(false)} //Función que se ejecuta cuando el usuario cierra el modal.
+                visible={mostrarModal}
+                onClose={() => setMostrarModal(false)}
                 onActualizado={(puestoActualizado) => {
-                    setPuestosTrabajos(puestosTrabajos.map(e => e.id === puestoActualizado.id ? puestoActualizado : e));
+
+                    // Actualiza la tabla principal
+                    setPuestosTrabajos(prev =>
+                        prev.map(p =>
+                            p.id === puestoActualizado.id ? puestoActualizado : p
+                        )
+                    );
+
+                    // 🔥 Actualiza el resultado buscado si coincide
+                    setResultadoBusqueda(prev =>
+                        prev && prev.id === puestoActualizado.id
+                            ? puestoActualizado
+                            : prev
+                    );
                 }}
             />
         </>

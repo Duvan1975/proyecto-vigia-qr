@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado }) {
     const [formulario, setFormulario] = useState({
@@ -37,7 +38,6 @@ export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado })
                 return response.json();
             })
             .then((data) => {
-                alert(`Puesto ${formulario.nombres} actualizado con éxito`);
                 onActualizado(data); // actualiza la tabla
                 onClose(); // cierra el modal
             })
@@ -101,8 +101,48 @@ export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado })
                         placeholder="Seleccione"
                     />
                     <div className="mt-3">
-                        <button onClick={actualizarUsuario} className="btn btn-warning me-2">Actualizar</button>
-                        <button onClick={onClose} className="btn btn-secondary">Cancelar</button>
+                        <button
+                            onClick={() => {
+                                Swal.fire({
+                                    title: '¿Actualizar usuario?',
+                                    text: '¿Estás seguro de que deseas guardar los cambios?',
+                                    icon: 'question',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Sí, actualizar',
+                                    cancelButtonText: 'Cancelar'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        actualizarUsuario();
+                                    }
+                                });
+                            }}
+                            className="btn btn-warning me-2"
+                        >
+                            Actualizar
+                        </button>
+                        <button
+                            onClick={() => {
+                                Swal.fire({
+                                    title: '¿Cancelar cambios?',
+                                    text: 'Los cambios no guardados se perderán',
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Sí, cancelar',
+                                    cancelButtonText: 'No, continuar'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        onClose();
+                                    }
+                                });
+                            }}
+                            className="btn btn-secondary"
+                        >
+                            Cancelar
+                        </button>
                     </div>
                 </div>
             </div>
