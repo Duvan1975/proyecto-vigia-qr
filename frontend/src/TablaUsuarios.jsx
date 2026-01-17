@@ -25,23 +25,26 @@ export function TablaUsuarios() {
             .catch((error) => console.error("Error al cargar usuarios:", error));
     }, []);
 
-    const eliminarUsuario = async (id) => {
-        console.log("Id a eliminar:", id); //Prueba en consola
+    const cambiarEstadoUsuario = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8080/usuarios/${id}`, {
-                method: 'DELETE'
+            const response = await fetch(`http://localhost:8080/usuarios/${id}/estado`, {
+                method: "PATCH",
             });
+
             if (response.ok) {
-                //Eliminar del estado para actualizar la tabla
-                setUsuarios(usuarios.filter(usuarios => usuarios.id !== id));
-            }
-            else {
-                console.error("Error al eliminar el usuario")
+                setUsuarios(
+                    usuarios.map(u =>
+                        u.id === id ? { ...u, estado: !u.estado } : u
+                    )
+                );
+            } else {
+                console.error("Error al cambiar estado");
             }
         } catch (error) {
-            console.error("Error en la petición DELETE", error);
+            console.error("Error en la petición PATCH", error);
         }
     };
+
 
     return (
         <>
@@ -68,7 +71,15 @@ export function TablaUsuarios() {
                             <td>{usu.numeroDocumento}</td>
                             <td>{usu.username}</td>
                             <td>{usu.rol}</td>
-                            <td>{usu.estado}</td>
+                            <td>
+                                <button
+                                    className={`btn btn-sm ${usu.estado ? "btn-success" : "btn-secondary"}`}
+                                    onClick={() => cambiarEstadoUsuario(usu.id)}
+                                >
+                                    {usu.estado ? "Activo" : "Inactivo"}
+                                </button>
+                            </td>
+
                             <td>
                                 <button onClick={() => {
                                     setUsuarioSeleccionado(usu);
@@ -77,16 +88,12 @@ export function TablaUsuarios() {
                                     className="btn btn-sm btn-primary me-2"
                                 >Editar
                                 </button>
-                                <button onClick={() => eliminarUsuario(usu.id)}
-                                    className="btn btn-danger"
-                                >Eliminar
-                                </button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-            
+
             <ModalEditarUsuario
                 usuario={usuarioSeleccionado}
                 visible={mostrarModal} //Controla si el modal debe mostrarse (true) o no (false).

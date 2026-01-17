@@ -25,23 +25,26 @@ export function TablaPuestos() {
             .catch((error) => console.error("Error al cargar puestos de trabajo:", error));
     }, []);
 
-    const eliminarPuesto = async (id) => {
-        console.log("Id a eliminar:", id); //Prueba en consola
+    const cambiarEstadoPuesto = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8080/puestosTrabajos/${id}`, {
-                method: 'DELETE'
+            const response = await fetch(`http://localhost:8080/puestosTrabajos/${id}/estado`, {
+                method: "PATCH",
             });
+
             if (response.ok) {
-                //Eliminar del estado para actualizar la tabla
-                setPuestosTrabajos(puestosTrabajos.filter(puestosTrabajos => puestosTrabajos.id !== id));
-            }
-            else {
-                console.error("Error al eliminar puesto de trabajo")
+                setPuestosTrabajos(
+                    puestosTrabajos.map(p =>
+                        p.id === id ? { ...p, estado: !p.estado } : p
+                    )
+                );
+            } else {
+                console.error("Error al cambiar estado");
             }
         } catch (error) {
-            console.error("Error en la petición DELETE", error);
+            console.error("Error en la petición PATCH", error);
         }
     };
+
 
     return (
         <>
@@ -61,7 +64,15 @@ export function TablaPuestos() {
                             <td>{pues.nombrePuesto}</td>
                             <td>{pues.descripcion}</td>
                             <td>{pues.direccion}</td>
-                            <td>{pues.estado}</td>
+                            <td>
+                                <button
+                                    className={`btn btn-sm ${pues.estado ? "btn-success" : "btn-secondary"}`}
+                                    onClick={() => cambiarEstadoPuesto(pues.id)}
+                                >
+                                    {pues.estado ? "Activo" : "Inactivo"}
+                                </button>
+                            </td>
+
                             <td>
                                 <button onClick={() => {
                                     setPuestoSeleccionado(pues);
@@ -70,14 +81,9 @@ export function TablaPuestos() {
                                     className="btn btn-sm btn-primary me-2"
                                 >Editar
                                 </button>
-                                <button onClick={() => eliminarPuesto(pues.id)}
-                                    className="btn btn-danger"
-                                >Eliminar
-                                </button>
                             </td>
                         </tr>
                     ))}
-
                 </tbody>
             </table>
             <ModalEditarPuesto

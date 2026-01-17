@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -32,14 +31,18 @@ public class PuestosTrabajoController {
             @PageableDefault(size = 20, sort = "nombrePuesto")Pageable paginacion) {
         return puestosTrabajoService.listarPuestosTrabajo(paginacion);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<DatosRespuestaPuestoTrabajo> obtenerDatosPuesto(@PathVariable Long id) {
+        return puestosTrabajoService.obtenerDatosPuesto(id);
+    }
     @PutMapping
     public ResponseEntity actualizarPuestoTrabajo(
             @RequestBody @Valid DatosActualizarPuesto datos) {
             puestosTrabajoService.actualizarPuestoTrabajo(datos);
             return puestosTrabajoService.actualizarPuestoTrabajo(datos);
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarPuestoTrabajo(@PathVariable Long id) {
-        return puestosTrabajoService.eliminarPuestoTrabajo(id);
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<?> cambiarEstado(@PathVariable Long id) {
+        return puestosTrabajoService.cambiarEstadoPuesto(id);
     }
 }

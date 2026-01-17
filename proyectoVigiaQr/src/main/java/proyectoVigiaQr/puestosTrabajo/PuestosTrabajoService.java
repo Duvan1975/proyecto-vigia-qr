@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
@@ -38,6 +37,17 @@ public class PuestosTrabajoService {
     public Page<DatosListadoPuestos> listarPuestosTrabajo(Pageable paginacion) {
         return puestosTrabajoRepository.findAll(paginacion).map(DatosListadoPuestos::new);
     }
+    public ResponseEntity<DatosRespuestaPuestoTrabajo> obtenerDatosPuesto(Long id) {
+        PuestosTrabajo puestosTrabajo = puestosTrabajoRepository.getReferenceById(id);
+        var datosPuesto = new DatosRespuestaPuestoTrabajo(
+                puestosTrabajo.getId(),
+                puestosTrabajo.getNombrePuesto(),
+                puestosTrabajo.getDescripcion(),
+                puestosTrabajo.getDireccion(),
+                puestosTrabajo.isEstado()
+        );
+        return ResponseEntity.ok(datosPuesto);
+    }
     @Transactional
     public ResponseEntity actualizarPuestoTrabajo(DatosActualizarPuesto datos) {
         PuestosTrabajo puestosTrabajo = puestosTrabajoRepository.getReferenceById(datos.id());
@@ -58,10 +68,9 @@ public class PuestosTrabajoService {
 
     }
     @Transactional
-    public ResponseEntity eliminarPuestoTrabajo(Long id) {
+    public ResponseEntity cambiarEstadoPuesto(Long id) {
         PuestosTrabajo puestosTrabajo = puestosTrabajoRepository.getReferenceById(id);
-        puestosTrabajo.setEstado(false);
-
+        puestosTrabajo.setEstado(!puestosTrabajo.isEstado());
         return ResponseEntity.noContent().build();
     }
 

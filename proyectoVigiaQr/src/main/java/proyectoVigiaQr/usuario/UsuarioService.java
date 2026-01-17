@@ -83,10 +83,9 @@ public class UsuarioService {
         ));
     }
     @Transactional
-    public ResponseEntity eliminarUsuario(Long id) {
+    public ResponseEntity cambiarEstadoUsuario(Long id) {
         Usuario usuario = usuarioRepository.getReferenceById(id);
-        usuario.setEstado(false);
-
+        usuario.setEstado(!usuario.isEstado());
         return ResponseEntity.noContent().build();
     }
 }

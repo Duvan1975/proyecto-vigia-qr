@@ -1,6 +1,5 @@
 package proyectoVigiaQr.controller;
 
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,8 +41,8 @@ public class UsuarioController {
         usuarioService.actualizarUsuario(datos);
         return usuarioService.actualizarUsuario(datos);
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
-        return usuarioService.eliminarUsuario(id);
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity cambiarEstado(@PathVariable Long id) {
+        return usuarioService.cambiarEstadoUsuario(id);
     }
 }
