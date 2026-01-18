@@ -38,6 +38,7 @@ public class UsuarioService {
         );
         return ResponseEntity.created(uri).body(datosRespuestaUsuario);
     }
+
     public Page<DatosListadoUsuario> listarUsuarios(Pageable paginacion) {
         return usuarioRepository.findAll(paginacion).map(DatosListadoUsuario::new);
     }
@@ -58,8 +59,30 @@ public class UsuarioService {
     }
 
     @Transactional
-    public ResponseEntity actualizarUsuario(DatosActualizarUsuario datos) {
+    public ResponseEntity<DatosRespuestaUsuario> actualizarUsuario(DatosActualizarUsuario datos) {
         Usuario usuario = usuarioRepository.getReferenceById(datos.id());
+
+        // Validar si el número de documento ya existe para otro usuario
+        if (datos.numeroDocumento() != null && !datos.numeroDocumento().equals(usuario.getNumeroDocumento())) {
+            // Verificar si el nuevo número de documento ya existe en otro usuario (excluyendo el actual)
+            boolean existeDocumentoEnOtroUsuario = usuarioRepository.existsByNumeroDocumentoAndIdNot(
+                    datos.numeroDocumento(),
+                    datos.id()
+            );
+
+            if (existeDocumentoEnOtroUsuario) {
+                throw new RuntimeException("Número de documento ya está en uso por otro usuario");
+            }
+
+            if (datos.nombres() != null && !datos.nombres().isBlank()) {
+                usuario.setNombres(datos.nombres().trim());
+            }
+
+            if (datos.apellidos() != null && !datos.apellidos().isBlank()) {
+                usuario.setApellidos(datos.apellidos().trim());
+            }
+        }
+
         usuario.actualizarDatos(datos);
 
         if (datos.nombres() != null) usuario.setNombres(datos.nombres());

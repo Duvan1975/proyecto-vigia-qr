@@ -1,3 +1,5 @@
+import Swal from "sweetalert2";
+
 export function AgregarTabla() {
 
     const datos = {
@@ -18,33 +20,39 @@ export function AgregarTabla() {
         },
         body: JSON.stringify(datos),
     })
-        .then((response) => {
+
+        .then(async (response) => {
             if (!response.ok) {
-                // eslint-disable-next-line
-                throw new ("Error al registrar");
+                const errores = await response.json();
+
+                let mensaje;
+
+                if (Array.isArray(errores)) {
+                    // Caso: errores de validación (nombre, apellido, etc.)
+                    mensaje = errores.map(err => `<strong>${err.campo}</strong>: ${err.error}`).join('<br>');
+                } else if (errores.error) {
+                    // Caso: error general como "Correo duplicado"
+                    mensaje = errores.error;
+                } else {
+                    mensaje = 'Ocurrió un error desconocido';
+                }
+
+                throw new Error(mensaje);
             }
             return response.text();
         })
         .then((data) => {
-            alert("Registro Exitoso");
-            agregarFila(datos);
+            Swal.fire({
+                icon: 'success',
+                title: 'Registro exitoso',
+                text: 'La persona ha sido registrada correctamente.',
+            });
         })
         .catch((error) => {
-            console.error("Error", error);
-            alert("Se presento un problema al registrar el usuario");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en el formulario',
+                html: error.message, // Puede ser lista o mensaje general
+            });
         });
-
-    function agregarFila(datos) {
-        const tabla = document.getElementById('tabla').getElementsByTagName('tbody')[0];
-        const fila = tabla.insertRow(0);
-
-        fila.insertCell(0).innerText = datos.nombres;
-        fila.insertCell(1).innerText = datos.apellidos;
-        fila.insertCell(2).innerText = datos.tipoDocumento;
-        fila.insertCell(3).innerText = datos.numeroDocumento;
-        fila.insertCell(4).innerText = datos.username;
-        fila.insertCell(5).innerText = datos.password;
-        fila.insertCell(6).innerText = datos.rol;
-    }
-
 };

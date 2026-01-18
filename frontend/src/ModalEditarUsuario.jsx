@@ -33,17 +33,40 @@ export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado })
             },
             body: JSON.stringify(formulario)
         })
-            .then((response) => {
-                if (!response.ok) throw new Error("Error al actualizar");
+            .then(async (response) => {
+                if (!response.ok) {
+                    const errores = await response.json();
+
+                    let mensaje;
+
+                    if (Array.isArray(errores)) {
+                        mensaje = errores.map(err => `<strong>${err.campo}</strong>: ${err.error}`).join("<br>");
+                    } else if (errores.error) {
+                        mensaje = errores.error;
+                    } else {
+                        mensaje = "Ocurrió un error desconocido";
+                    }
+
+                    throw new Error(mensaje);
+                }
+
                 return response.json();
             })
             .then((data) => {
-                onActualizado(data); // actualiza la tabla
-                onClose(); // cierra el modal
+                onActualizado(data);
+                onClose();
+                Swal.fire({
+                    icon: "success",
+                    title: "Actualización exitosa",
+                    text: "La persona fue actualizada correctamente."
+                });
             })
             .catch((error) => {
-                console.error("Error en la actualización:", error);
-                alert("Hubo un error al actualizar el usuario");
+                Swal.fire({
+                    icon: "error",
+                    title: "Error en la actualización",
+                    html: error.message
+                });
             });
     };
 
@@ -133,10 +156,10 @@ export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado })
                                     cancelButtonColor: '#d33',
                                     confirmButtonText: 'Sí, cancelar',
                                     cancelButtonText: 'No, continuar'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
+                                }).then((usuario) => {
+                                    if (usuario) setFormulario(usuario);
                                         onClose();
-                                    }
+                                    
                                 });
                             }}
                             className="btn btn-secondary"

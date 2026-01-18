@@ -1,3 +1,5 @@
+import Swal from "sweetalert2";
+
 export function AgregarPuesto() {
 
     const datos = {
@@ -13,29 +15,28 @@ export function AgregarPuesto() {
         },
         body: JSON.stringify(datos),
     })
-        .then((response) => {
+        .then(async (response) => {
             if (!response.ok) {
                 // eslint-disable-next-line
-                throw new ("Error al registrar");
+                const errores = await response.json(); // Esto ahora sí funciona
+                const mensajes = errores.map(err => `<strong>${err.campo}</strong>: ${err.error}`).join('<br>');
+                throw new Error(mensajes); // Disparamos los errores
             }
-            return response.text();
+            return response.json();
         })
         .then((data) => {
-            alert("Registro Exitoso");
-            agregarFila(datos);
+            Swal.fire({
+                icon: 'success',
+                title: 'Registro exitoso',
+                text: 'El usuario ha sido registrado correctamente.',
+            });
         })
         .catch((error) => {
-            console.error("Error", error);
-            alert("Se presento un problema al registrar el puesto de trabajo");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en el formulario',
+                html: error.message, // mostramos todos los errores formateados
+            });
         });
 
-    function agregarFila(datos) {
-        const tablaPuesto = document.getElementById('tablaPuesto').getElementsByTagName('tbody')[0];
-        const fila = tablaPuesto.insertRow(0);
-
-        fila.insertCell(0).innerText = datos.nombrePuesto;
-        fila.insertCell(1).innerText = datos.descripcion;
-        fila.insertCell(2).innerText = datos.direccion;
-    }
-    
 }

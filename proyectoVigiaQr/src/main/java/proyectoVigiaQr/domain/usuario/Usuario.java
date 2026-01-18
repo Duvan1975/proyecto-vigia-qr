@@ -41,8 +41,8 @@ public class Usuario {
     private boolean estado = true;
 
     public Usuario(DatosRegistroUsuario datos) {
-        this.nombres = datos.nombres();
-        this.apellidos = datos.apellidos();
+        this.nombres = datos.nombres().trim();
+        this.apellidos = datos.apellidos().trim();
         this.tipoDocumento = datos.tipoDocumento();
         this.numeroDocumento = datos.numeroDocumento();
         this.username = datos.username();

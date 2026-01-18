@@ -139,13 +139,6 @@ export function TablaPuestos() {
                                             if (result.isConfirmed) {
                                                 // Si el usuario confirma, ejecutar la función original
                                                 cambiarEstadoPuesto(resultadoBusqueda.id);
-
-                                                // Opcional: Mostrar mensaje de éxito
-                                                Swal.fire(
-                                                    '¡Estado cambiado!',
-                                                    `El puesto ha sido ${resultadoBusqueda.estado ? "desactivado" : "activado"} correctamente.`,
-                                                    'success'
-                                                );
                                             }
                                         });
                                     }}

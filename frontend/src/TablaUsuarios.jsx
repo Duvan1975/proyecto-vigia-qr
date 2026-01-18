@@ -139,13 +139,6 @@ export function TablaUsuarios() {
                                             if (result.isConfirmed) {
                                                 // Si el usuario confirma, ejecutar la función original
                                                 cambiarEstadoUsuario(resultadoBusqueda.id);
-
-                                                // Opcional: Mostrar mensaje de éxito
-                                                Swal.fire(
-                                                    '¡Estado cambiado!',
-                                                    `El usuario ha sido ${resultadoBusqueda.estado ? "desactivado" : "activado"} correctamente.`,
-                                                    'success'
-                                                );
                                             }
                                         });
                                     }}

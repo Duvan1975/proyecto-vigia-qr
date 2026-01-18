@@ -36,9 +36,9 @@ public class UsuarioController {
         return usuarioService.obtenerDatosUsuario(id);
     }
     @PutMapping
-    public ResponseEntity actualizarUsuario(
+    public ResponseEntity<DatosRespuestaUsuario> actualizarUsuario(
             @RequestBody @Valid DatosActualizarUsuario datos) {
-        usuarioService.actualizarUsuario(datos);
+        // Solo llamar una vez al servicio
         return usuarioService.actualizarUsuario(datos);
     }
     @PatchMapping("/{id}/estado")

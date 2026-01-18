@@ -25,10 +25,9 @@ export function FormularioUsuarios() {
                 <CuadrosTexto
                     tamanoinput="col-md-3"
                     titulolabel="Tipo Documento:"
-                    tipoinput="text"
                     nombreinput="tipoDocumento"
                     idinput="tipoDocumento"
-                    placeholderinput="Seleccione el tipo de documento"
+                    opciones={["CC", "CE", "PASAPORTE"]}
                 />
             </div>
             <div className='row'>
@@ -59,10 +58,9 @@ export function FormularioUsuarios() {
                 <CuadrosTexto
                     tamanoinput="col-md-3"
                     titulolabel="Rol:"
-                    tipoinput="text"
                     nombreinput="rol"
                     idinput="rol"
-                    placeholderinput="Seleccione el rol"
+                    opciones={["ADMINISTRATIVO", "OPERATIVO"]}
                 />
             </div>
             <br></br>
