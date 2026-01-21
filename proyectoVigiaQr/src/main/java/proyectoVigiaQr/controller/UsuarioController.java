@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import proyectoVigiaQr.domain.usuario.*;
 
+import java.text.Normalizer;
+import java.util.List;
+import java.util.regex.Pattern;
+
 @RestController
 @RequestMapping("/usuarios")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -16,8 +20,12 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    private final UsuarioRepository usuarioRepository;
+
+    public UsuarioController(UsuarioService usuarioService, UsuarioRepository usuarioRepository) {
+
         this.usuarioService = usuarioService;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @PostMapping
@@ -44,5 +52,29 @@ public class UsuarioController {
     @PatchMapping("/{id}/estado")
     public ResponseEntity cambiarEstado(@PathVariable Long id) {
         return usuarioService.cambiarEstadoUsuario(id);
+
+    }
+    /*@GetMapping("/buscarPorNombre")
+    public ResponseEntity<List<DatosRespuestaUsuario>> buscarPorNombre(
+            @RequestParam String nombres) {
+        List<Usuario> usuarios = usuarioRepository.findByNombresContainingIgnoreCase(nombres);
+        List<DatosRespuestaUsuario> resultado = usuarios.stream()
+                .map(u -> new DatosRespuestaUsuario(
+                    u.getId(),
+                        u.getNombres(),
+                        u.getApellidos(),
+                        u.getTipoDocumento(),
+                        u.getNumeroDocumento(),
+                        u.getUsername(),
+                        u.getRol(),
+                        u.isEstado()
+                )).toList();
+        return ResponseEntity.ok(resultado);
+    }*/
+
+    @GetMapping("buscarPorNombreCompleto")
+    public ResponseEntity<List<DatosRespuestaUsuario>> buscarPorNombreCompleto(
+            @RequestParam String filtro) {
+        return usuarioService.buscarUsuarioNombreCompleto(filtro);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
@@ -15,4 +16,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM Usuario u WHERE u.numeroDocumento = :numeroDocumento AND u.id != :id")
     boolean existsByNumeroDocumentoAndIdNot(@Param("numeroDocumento") String numeroDocumento, @Param("id") Long id);
+
+    /*List<Usuario> findByNombresContainingIgnoreCase(String nombres);*/
+
+    @Query("SELECT u FROM Usuario u WHERE " +
+            "LOWER(CONCAT(u.nombres, ' ', u.apellidos)) LIKE %:filtro% OR " +
+            "LOWER(u.nombres) LIKE %:filtro% OR " +
+            "LOWER(u.apellidos) LIKE %:filtro%")
+    List<Usuario> buscarUsuarioNombreCompleto(@Param("filtro") String filtro);
+
 }

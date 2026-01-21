@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import proyectoVigiaQr.domain.puestosTrabajo.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/puestosTrabajos")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -16,8 +18,14 @@ public class PuestosTrabajoController {
 
     private final PuestosTrabajoService puestosTrabajoService;
 
-    public PuestosTrabajoController(PuestosTrabajoService puestosTrabajoService) {
-        this.puestosTrabajoService = puestosTrabajoService;}
+    private final PuestosTrabajoRepository puestosTrabajoRepository;
+
+    public PuestosTrabajoController(PuestosTrabajoService puestosTrabajoService,
+                                    PuestosTrabajoRepository puestosTrabajoRepository) {
+
+        this.puestosTrabajoService = puestosTrabajoService;
+        this.puestosTrabajoRepository = puestosTrabajoRepository;
+    }
 
     @PostMapping
     public ResponseEntity<DatosRespuestaPuestoTrabajo> registrarPuestoTrabajo(
@@ -44,5 +52,19 @@ public class PuestosTrabajoController {
     @PatchMapping("/{id}/estado")
     public ResponseEntity<?> cambiarEstado(@PathVariable Long id) {
         return puestosTrabajoService.cambiarEstadoPuesto(id);
+    }
+    @GetMapping("/buscarPorNombrePuesto")
+    public ResponseEntity<List<DatosRespuestaPuestoTrabajo>> buscarPorNombrePuesto(
+            @RequestParam String nombrePuesto) {
+        List<PuestosTrabajo> puestosTrabajos = puestosTrabajoRepository.findByNombrePuestoContainingIgnoreCase(nombrePuesto);
+        List<DatosRespuestaPuestoTrabajo> resultado = puestosTrabajos.stream()
+                .map(p -> new DatosRespuestaPuestoTrabajo(
+                        p.getId(),
+                        p.getNombrePuesto(),
+                        p.getDescripcion(),
+                        p.getDireccion(),
+                        p.isEstado()
+                )).toList();
+        return ResponseEntity.ok(resultado);
     }
 }

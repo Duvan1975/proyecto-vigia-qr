@@ -156,9 +156,11 @@ export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado })
                                     cancelButtonColor: '#d33',
                                     confirmButtonText: 'Sí, cancelar',
                                     cancelButtonText: 'No, continuar'
-                                }).then((usuario) => {
-                                    if (usuario) setFormulario(usuario);
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        setFormulario(usuario);
                                         onClose();
+                                    }
                                     
                                 });
                             }}

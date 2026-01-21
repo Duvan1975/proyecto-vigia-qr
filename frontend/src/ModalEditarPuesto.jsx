@@ -106,6 +106,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                                     cancelButtonText: 'No, continuar'
                                 }).then((result) => {
                                     if (result.isConfirmed) {
+                                        setFormulario(puestoTrabajo);
                                         onClose();
                                     }
                                 });

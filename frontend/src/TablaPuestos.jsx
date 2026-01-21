@@ -9,7 +9,7 @@ export function TablaPuestos() {
     const [mostrarModal, setMostrarModal] = useState(false);
 
     //Estados de búsqueda
-    const [idBuscar, setIdBuscar] = useState("");
+    const [nombreBuscar, setNombreBuscar] = useState("");
     const [resultadoBusqueda, setResultadoBusqueda] = useState(null);
 
     useEffect(() => {
@@ -60,23 +60,44 @@ export function TablaPuestos() {
         }
     };
 
-    const buscarPuestoPorId = () => {
-        if (!idBuscar) {
-            alert("Por favor ingrese un id válido");
+    const buscarPuestoPorNombre = () => {
+        if (!nombreBuscar || nombreBuscar.trim() === "") {
+            Swal.fire({
+                icon: "warning",
+                title: "Nombre requerido",
+                text: "Por favor ingrese un nombre válido.",
+            });
             return;
         }
 
-        fetch(`http://localhost:8080/puestosTrabajos/${idBuscar}`)
+        fetch(`http://localhost:8080/puestosTrabajos/buscarPorNombrePuesto?nombrePuesto=${nombreBuscar}`)
             .then((res) => {
                 if (!res.ok) throw new Error("Puesto no encontrado");
                 return res.json();
             })
             .then((data) => {
-                setResultadoBusqueda(data);
+                if (data.length === 0) {
+                    resultadoBusqueda(null);
+                } else {
+                    setResultadoBusqueda(data[0]); // Tratamos data como un array y tomamos la primera persona
+                }
+                // Mensaje de éxito muestra nombre y direccion del puesto
+                Swal.fire({
+                    icon: "success",
+                    title: "Puesto Encontrado",
+                    text: `Nombre: ${data[0].nombrePuesto} ${data[0].direccion}`,
+                    timer: 3000,
+                    showConfirmButton: false,
+                });
             })
             .catch((error) => {
                 console.error("Error en la búsqueda", error);
-                alert("No se encontró el puesto con ese ID");
+                // Mensaje de error
+                Swal.fire({
+                    icon: "error",
+                    title: "No encontrado",
+                    text: "No se encontró el puesto con ese nombre.",
+                });
                 setResultadoBusqueda(null);
             })
     }
@@ -84,20 +105,20 @@ export function TablaPuestos() {
     return (
         <>
             <div className="mb-4">
-                <h5>Buscar Puesto por ID</h5>
+                <h5>Buscar Puesto por Nombre</h5>
                 <input
-                    type="number"
-                    value={idBuscar}
-                    onChange={(e) => setIdBuscar(e.target.value)}
-                    placeholder="Ingrese el ID"
+                    type="text"
+                    value={nombreBuscar}
+                    onChange={(e) => setNombreBuscar(e.target.value)}
+                    placeholder="Ingrese el nombre"
                     className="form-control mb-2"
                 />
-                <button onClick={buscarPuestoPorId} className="btn btn-info">Buscar</button>
+                <button onClick={buscarPuestoPorNombre} className="btn btn-info">Buscar</button>
                 {resultadoBusqueda && (
                     <button
                         onClick={() => {
                             setResultadoBusqueda(null);
-                            setIdBuscar("");
+                            setNombreBuscar("");
                         }}
                         className="btn btn-secondary"
                     >

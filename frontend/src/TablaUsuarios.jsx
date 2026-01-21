@@ -8,8 +8,8 @@ export function TablaUsuarios() {
     const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
     const [mostrarModal, setMostrarModal] = useState(false);
 
-    //Estados de búsqueda
-    const [idBuscar, setIdBuscar] = useState("");
+    //Estados de búsqueda por nombre de usuario
+    const [nombreBuscar, setNombreBuscar] = useState("");
     const [resultadoBusqueda, setResultadoBusqueda] = useState(null);
 
     useEffect(() => {
@@ -60,23 +60,44 @@ export function TablaUsuarios() {
         }
     };
 
-    const buscarUsuarioPorId = () => {
-        if (!idBuscar) {
-            alert("Por favor ingrese un id válido");
+    const buscarUsuarioPorNombre = () => {
+        if (!nombreBuscar || nombreBuscar.trim() === "") {
+            Swal.fire({
+                icon: "warning",
+                title: "Nombre requerido",
+                text: "Por favor ingrese un nombre válido.",
+            });
             return;
         }
 
-        fetch(`http://localhost:8080/usuarios/${idBuscar}`)
+        fetch(`http://localhost:8080/usuarios/buscarPorNombreCompleto?filtro=${nombreBuscar}`)
             .then((res) => {
                 if (!res.ok) throw new Error("Usuario no encontrado");
                 return res.json();
             })
             .then((data) => {
-                setResultadoBusqueda(data);
+                if (data.length === 0) {
+                    resultadoBusqueda(null);
+                } else {
+                    setResultadoBusqueda(data[0]); // Tratamos data como un array y tomamos la primera persona
+                }
+                // Mensaje de éxito muestra nombre y apellido del usuario encontrado
+                Swal.fire({
+                    icon: "success",
+                    title: "Usuario Encontrado",
+                    text: `Nombre: ${data[0].nombres} ${data[0].apellidos}`,
+                    timer: 3000,
+                    showConfirmButton: false,
+                });
             })
             .catch((error) => {
                 console.error("Error en la búsqueda", error);
-                alert("No se encontró el usuario con ese ID");
+                // Mensaje de error
+                Swal.fire({
+                    icon: "error",
+                    title: "No encontrado",
+                    text: "No se encontró el empleado con ese NOMBRE.",
+                });
                 setResultadoBusqueda(null);
             })
     }
@@ -84,20 +105,24 @@ export function TablaUsuarios() {
     return (
         <>
             <div className="mb-4">
-                <h5>Buscar Usuario por ID</h5>
+                <h5>Buscar Usuario por Nombre</h5>
                 <input
-                    type="number"
-                    value={idBuscar}
-                    onChange={(e) => setIdBuscar(e.target.value)}
-                    placeholder="Ingrese el ID"
+                    type="text"
+                    value={nombreBuscar}
+                    onChange={(e) => setNombreBuscar(e.target.value)}
+                    placeholder="Ingrese el Nombre"
                     className="form-control mb-2"
                 />
-                <button onClick={buscarUsuarioPorId} className="btn btn-info">Buscar</button>
+                <button onClick={buscarUsuarioPorNombre}
+                    className="btn btn-info"
+                >
+                    Buscar
+                </button>
                 {resultadoBusqueda && (
                     <button
                         onClick={() => {
                             setResultadoBusqueda(null);
-                            setIdBuscar("");
+                            setNombreBuscar("");
                         }}
                         className="btn btn-secondary"
                     >

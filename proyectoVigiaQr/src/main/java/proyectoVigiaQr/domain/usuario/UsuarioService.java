@@ -8,6 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.text.Normalizer;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+
 @Service
 public class UsuarioService {
 
@@ -110,5 +115,37 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.getReferenceById(id);
         usuario.setEstado(!usuario.isEstado());
         return ResponseEntity.noContent().build();
+    }
+
+    // Método para quitar acentos
+    private String quitarTildes(String texto) {
+        String textoNormalizado = Normalizer.normalize(texto, Normalizer.Form.NFD);
+        Pattern patron = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return patron.matcher(textoNormalizado).replaceAll("");
+    }
+
+    public ResponseEntity<List<DatosRespuestaUsuario>> buscarUsuarioNombreCompleto(String filtro) {
+        String filtroLimpio = quitarTildes(filtro.toLowerCase());
+
+        var usuarios = usuarioRepository.buscarUsuarioNombreCompleto(filtroLimpio);
+        var palabras = filtroLimpio.split("\\s+");
+
+        var usuariosFiltrados = usuarios.stream()
+                .filter(usuario -> {
+                    String nombreCompleto = quitarTildes((usuario.getNombres() + " " + usuario.getApellidos()).toLowerCase());
+                    return Arrays.stream(palabras).allMatch(nombreCompleto::contains);
+                })
+                .map(usuario -> new DatosRespuestaUsuario(
+                        usuario.getId(),
+                        usuario.getNombres(),
+                        usuario.getApellidos(),
+                        usuario.getTipoDocumento(),
+                        usuario.getNumeroDocumento(),
+                        usuario.getUsername(),
+                        usuario.getRol(),
+                        usuario.isEstado()
+                ))
+                .toList();
+        return ResponseEntity.ok(usuariosFiltrados);
     }
 }
