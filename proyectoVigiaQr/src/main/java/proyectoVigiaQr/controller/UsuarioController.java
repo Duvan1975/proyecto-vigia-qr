@@ -77,4 +77,13 @@ public class UsuarioController {
             @RequestParam String filtro) {
         return usuarioService.buscarUsuarioNombreCompleto(filtro);
     }
+
+    @GetMapping("/buscarPorDocumento")
+    public ResponseEntity<List<DatosRespuestaUsuario>> buscarPorDocumento(
+            @RequestParam String numeroDocumento) {
+
+       return usuarioService.buscarPorNumeroDocumento(numeroDocumento);
+
+    }
+
 }

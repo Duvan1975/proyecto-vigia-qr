@@ -12,17 +12,18 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     boolean existsBynumeroDocumento(@NotBlank @Pattern(regexp = "\\d{7,15}",message = "Debe contener solo números entre 7 y 15 digitos") String s);
 
-    Optional<Usuario> findBynumeroDocumento(String numeroDocumento);
+    Optional<Usuario> findByNumeroDocumento(String numeroDocumento);
 
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM Usuario u WHERE u.numeroDocumento = :numeroDocumento AND u.id != :id")
     boolean existsByNumeroDocumentoAndIdNot(@Param("numeroDocumento") String numeroDocumento, @Param("id") Long id);
 
-    /*List<Usuario> findByNombresContainingIgnoreCase(String nombres);*/
+    //List<Usuario> findByNombresContainingIgnoreCase(String nombres);
 
-    @Query("SELECT u FROM Usuario u WHERE " +
-            "LOWER(CONCAT(u.nombres, ' ', u.apellidos)) LIKE %:filtro% OR " +
-            "LOWER(u.nombres) LIKE %:filtro% OR " +
-            "LOWER(u.apellidos) LIKE %:filtro%")
+    @Query("""
+    SELECT u FROM Usuario u
+    WHERE LOWER(u.nombres) LIKE %:filtro%
+       OR LOWER(u.apellidos) LIKE %:filtro%
+    """)
     List<Usuario> buscarUsuarioNombreCompleto(@Param("filtro") String filtro);
 
 }

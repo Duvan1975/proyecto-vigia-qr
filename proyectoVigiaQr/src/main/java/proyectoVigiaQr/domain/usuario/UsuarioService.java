@@ -4,12 +4,14 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.text.Normalizer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -87,7 +89,6 @@ public class UsuarioService {
                 usuario.setApellidos(datos.apellidos().trim());
             }
         }
-
         usuario.actualizarDatos(datos);
 
         if (datos.nombres() != null) usuario.setNombres(datos.nombres());
@@ -127,8 +128,10 @@ public class UsuarioService {
     public ResponseEntity<List<DatosRespuestaUsuario>> buscarUsuarioNombreCompleto(String filtro) {
         String filtroLimpio = quitarTildes(filtro.toLowerCase());
 
-        var usuarios = usuarioRepository.buscarUsuarioNombreCompleto(filtroLimpio);
         var palabras = filtroLimpio.split("\\s+");
+
+        // Usamos solo la primera palabra para prefiltrar en BD
+        var usuarios = usuarioRepository.buscarUsuarioNombreCompleto(palabras[0]);
 
         var usuariosFiltrados = usuarios.stream()
                 .filter(usuario -> {
@@ -148,4 +151,27 @@ public class UsuarioService {
                 .toList();
         return ResponseEntity.ok(usuariosFiltrados);
     }
+
+    public ResponseEntity<List<DatosRespuestaUsuario>> buscarPorNumeroDocumento(String numeroDocumento) {
+        var usuarios = usuarioRepository.findByNumeroDocumento(numeroDocumento);
+
+        if (usuarios.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Collections.emptyList());
+        }
+        var resultado = usuarios.stream()
+                .map(usuario -> new DatosRespuestaUsuario(
+                        usuario.getId(),
+                        usuario.getNombres(),
+                        usuario.getApellidos(),
+                        usuario.getTipoDocumento(),
+                        usuario.getNumeroDocumento(),
+                        usuario.getUsername(),
+                        usuario.getRol(),
+                        usuario.isEstado()
+                )).toList();
+        return ResponseEntity.ok(resultado);
+    }
+
 }
