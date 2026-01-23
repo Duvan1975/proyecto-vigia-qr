@@ -5,6 +5,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import proyectoVigiaQr.domain.puestosTrabajo.PuestosTrabajo;
 import proyectoVigiaQr.domain.puestosTrabajo.PuestosTrabajoRepository;
@@ -26,34 +27,43 @@ public class CodigoQRService {
         this.puestosTrabajoRepository = puestosTrabajoRepository;
     }
 
-    public CodigoQR registrarCodigoQR(DatosRegistroCodigoQR datos) {
+    @Transactional
+    public void registrarCodigosQR(
+            Long idPuestosTrabajo,
+            List<DatosRegistroCodigoQR> listaDatos
+    ) {
 
-        PuestosTrabajo puesto = puestosTrabajoRepository.findById(datos.idPuestosTrabajo())
+        PuestosTrabajo puesto = puestosTrabajoRepository.findById(idPuestosTrabajo)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "El puesto de trabajo no existe"
                 ));
 
-        boolean existeQrActivo = codigoQRRepository
-                .existsByUbicacionAndPuestosTrabajoIdAndEstadoTrue(
-                        datos.ubicacion(),
-                        puesto.getId()
+        List<CodigoQR> codigosQR = listaDatos.stream().map(datos -> {
+
+            boolean existeQrActivo = codigoQRRepository
+                    .existsByUbicacionAndPuestosTrabajoIdAndEstadoTrue(
+                            datos.ubicacion(),
+                            puesto.getId()
+                    );
+
+            if (existeQrActivo) {
+                throw new IllegalStateException(
+                        "Ya existe un código QR activo para la ubicación: "
+                                + datos.ubicacion()
                 );
+            }
 
-        if (existeQrActivo) {
-            throw new IllegalStateException(
-                    "Ya existe un código QR activo para esta ubicación en el puesto"
+            return new CodigoQR(
+                    datos.descripcion(),
+                    datos.ubicacion(),
+                    puesto
             );
-        }
 
-        // 3️⃣ Crear y guardar QR
-        CodigoQR codigoQR = new CodigoQR(
-                datos.descripcion(),
-                datos.ubicacion(),
-                puesto
-        );
+        }).toList();
 
-        return codigoQRRepository.save(codigoQR);
+        codigoQRRepository.saveAll(codigosQR);
     }
+
     public List<DatosListadoCodigoQR> listarPorPuesto(Long idPuestosTrabajo) {
 
         return codigoQRRepository.findByPuestosTrabajoId(idPuestosTrabajo)

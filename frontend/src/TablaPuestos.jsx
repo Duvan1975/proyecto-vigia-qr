@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ModalEditarPuesto } from "./ModalEditarPuesto";
+import Paginacion from "./Paginacion";
 import Swal from "sweetalert2";
 
 export function TablaPuestos() {
@@ -12,14 +13,27 @@ export function TablaPuestos() {
     const [nombreBuscar, setNombreBuscar] = useState("");
     const [resultadoBusqueda, setResultadoBusqueda] = useState(null);
 
-    useEffect(() => {
-        cargarPuestos();
-    }, []);
+    //Estados para controlar la paginación
+    const [paginaActual, setPaginaActual] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(3);
+    const [totalElementos, setTotalElementos] = useState(0);
+    const [tamanoPagina, setTamanoPagina] = useState(0);
 
-    const cargarPuestos = () => {
-        fetch("http://localhost:8080/puestosTrabajos")
+    useEffect(() => {
+        cargarPuestos(paginaActual);
+        // eslint-disable-next-line
+    }, [paginaActual]);
+
+    const cargarPuestos = (pagina = 0) => {
+        fetch(`http://localhost:8080/puestosTrabajos?page=${pagina}`)
             .then((response) => response.json())
-            .then((data) => setPuestosTrabajos(data.content))
+            .then((data) => {
+                setPuestosTrabajos(data.content);
+                setTotalPaginas(data.totalPages); //Muestra el total de las páginas
+                setPaginaActual(data.number); //Muestra el número actual de la página
+                setTotalElementos(data.totalElements); //Trae el número de elementos de la todas las páginas
+                setTamanoPagina(data.size); //Muestra la cantidad de elementos por página
+            })
             .catch((error) => console.error("Error al cargar puestos de trabajo:", error));
     };
 
@@ -106,27 +120,53 @@ export function TablaPuestos() {
         <>
             <div className="mb-4">
                 <h5>Buscar Puesto por Nombre</h5>
-                <input
-                    type="text"
-                    value={nombreBuscar}
-                    onChange={(e) => setNombreBuscar(e.target.value)}
-                    placeholder="Ingrese el nombre"
-                    className="form-control mb-2"
-                />
-                <button onClick={buscarPuestoPorNombre} className="btn btn-info">Buscar</button>
-                {resultadoBusqueda && (
+                <div className="row">
+                    <div className="col-md-4">
+                        <input
+                            type="text"
+                            value={nombreBuscar}
+                            onChange={(e) => setNombreBuscar(e.target.value)}
+                            placeholder="Ingrese el nombre"
+                            className="form-control mb-2"
+                        />
+                    </div>
+
+                </div>
+
+                <button onClick={buscarPuestoPorNombre} 
+                className="btn btn-info"
+                >
+                    Buscar
+                </button>
+
                     <button
                         onClick={() => {
                             setResultadoBusqueda(null);
                             setNombreBuscar("");
+                            cargarPuestos();
                         }}
                         className="btn btn-secondary"
                     >
                         Limpiar Búsqueda
                     </button>
-                )}
+      
             </div>
 
+            {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
+                <Paginacion
+                    paginaActual={paginaActual}
+                    totalPaginas={totalPaginas}
+                    onChange={(nuevaPagina) => setPaginaActual(nuevaPagina)}
+                />
+            )}
+            {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
+                <div className="mt-2 text-center">
+                    <small>
+                        Mostrando página {paginaActual + 1} de {totalPaginas} —{" "}
+                        {tamanoPagina} por página, total de registros: {totalElementos}
+                    </small>
+                </div>
+            )}
             <table className="table table-striped table-hover" id="tabla">
                 <thead>
                     <tr>

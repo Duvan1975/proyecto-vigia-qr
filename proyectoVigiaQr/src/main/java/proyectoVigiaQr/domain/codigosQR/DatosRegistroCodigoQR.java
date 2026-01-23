@@ -9,7 +9,7 @@ public record DatosRegistroCodigoQR(
         @NotBlank(message = "La ubicación es obligatoria")
         String ubicacion,
 
-        @NotNull(message = "El puesto de trabajo es obligatorio")
+        //@NotNull(message = "El puesto de trabajo es obligatorio")
         Long idPuestosTrabajo
 ) {
 }

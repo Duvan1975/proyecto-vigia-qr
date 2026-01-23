@@ -1,11 +1,11 @@
+import { idPuestoCreado } from "./AgregarPuesto";
+
 export function generarCodigoQR() {
 
     const datos = {
         descripcion: document.getElementById("descripcionQr").value,
         ubicacion: document.getElementById("ubicacionQr").value,
-        idPuestosTrabajo: Number(
-            document.getElementById("idPuestoTrabajo").value
-        )
+        idPuestosTrabajo: idPuestoCreado
     };
 
     fetch("http://localhost:8080/codigos-qr", {
@@ -36,13 +36,13 @@ export function generarCodigoQR() {
             alert("Error al generar el código QR");
         });
 
-        function descargarQR() {
-    const idQr = prompt("Ingrese el ID del código QR a descargar");
+    function descargarQR() {
+        const idQr = prompt("Ingrese el ID del código QR a descargar");
 
-    window.open(
-        `http://localhost:8080/codigos-qr/${idQr}/descargar`,
-        "_blank"
-    );
-}
+        window.open(
+            `http://localhost:8080/codigos-qr/${idQr}/descargar`,
+            "_blank"
+        );
+    }
 
 }

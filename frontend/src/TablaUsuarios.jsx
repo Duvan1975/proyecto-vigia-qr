@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ModalEditarUsuario } from "./ModalEditarUsuario";
+import Paginacion from "./Paginacion";
 import Swal from "sweetalert2";
 
 export function TablaUsuarios() {
@@ -18,9 +19,16 @@ export function TablaUsuarios() {
     //Estado para controlar el tipo de búsqueda
     const [tipoBusqueda, setTipoBusqueda] = useState("nombre");
 
+    //Estados para controlar la paginación
+    const [paginaActual, setPaginaActual] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(3);
+    const [totalElementos, setTotalElementos] = useState(0);
+    const [tamanoPagina, setTamanoPagina] = useState(0);
+
     useEffect(() => {
-        cargarUsuarios();
-    }, []);
+        cargarUsuarios(paginaActual);
+        // eslint-disable-next-line
+    }, [paginaActual]);
 
     //Función para manejar el tipo de búsqueda
     const manejarBusqueda = () => {
@@ -31,19 +39,25 @@ export function TablaUsuarios() {
         }
     };
 
-    const cargarUsuarios = () => {
-        fetch("http://localhost:8080/usuarios")
+    const cargarUsuarios = (pagina = 0) => {
+        fetch(`http://localhost:8080/usuarios?page=${pagina}`)
             .then((response) => response.json())
-            .then((data) => setUsuarios(data.content))
+            .then((data) => {
+                setUsuarios(data.content);
+                setTotalPaginas(data.totalPages); //Muestra el total de las páginas
+                setPaginaActual(data.number); //Muestra el número actual de la página
+                setTotalElementos(data.totalElements); //Trae el número de elementos de la todas las páginas
+                setTamanoPagina(data.size); //Muestra la cantidad de elementos por página
+            })
             .catch((error) => console.error("Error al cargar usuario:", error));
     };
 
-    useEffect(() => {
+    /*useEffect(() => {
         fetch("http://localhost:8080/usuarios")
             .then((response) => response.json())
             .then((data) => setUsuarios(data.content))
             .catch((error) => console.error("Error al cargar usuarios:", error));
-    }, []);
+    }, []);*/
 
     const cambiarEstadoUsuario = async (id) => {
         try {
@@ -200,6 +214,7 @@ export function TablaUsuarios() {
                         onClick={() => {
                             setResultadoBusqueda([]);
                             setDocumentoBuscar("");
+                            setNombreBuscar("");
                             cargarUsuarios();
                         }}
                         className="btn btn-secondary"
@@ -208,6 +223,22 @@ export function TablaUsuarios() {
                     </button>
                 )}
             </div>
+
+            {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
+                <Paginacion
+                    paginaActual={paginaActual}
+                    totalPaginas={totalPaginas}
+                    onChange={(nuevaPagina) => setPaginaActual(nuevaPagina)}
+                />
+            )}
+            {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
+                <div className="mt-2 text-center">
+                    <small>
+                        Mostrando página {paginaActual + 1} de {totalPaginas} —{" "}
+                        {tamanoPagina} por página, total de registros: {totalElementos}
+                    </small>
+                </div>
+            )}
 
             <table className="table table-striped table-hover" id="tabla">
                 <thead>

@@ -15,28 +15,27 @@ export function AgregarPuesto() {
         },
         body: JSON.stringify(datos),
     })
-        .then(async (response) => {
+        .then(response => {
             if (!response.ok) {
-                // eslint-disable-next-line
-                const errores = await response.json(); // Esto ahora sí funciona
-                const mensajes = errores.map(err => `<strong>${err.campo}</strong>: ${err.error}`).join('<br>');
-                throw new Error(mensajes); // Disparamos los errores
+                throw new Error("Error al registrar");
             }
             return response.json();
         })
-        .then((data) => {
+        .then(data => {
             Swal.fire({
                 icon: 'success',
                 title: 'Registro exitoso',
-                text: 'El usuario ha sido registrado correctamente.',
+                text: 'El puesto ha sido registrado correctamente.',
             });
+
         })
-        .catch((error) => {
+        .catch(error => {
             Swal.fire({
                 icon: 'error',
                 title: 'Error en el formulario',
                 html: error.message, // mostramos todos los errores formateados
             });
         });
-
 }
+
+

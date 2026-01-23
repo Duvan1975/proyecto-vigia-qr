@@ -4,9 +4,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import proyectoVigiaQr.domain.codigosQR.CodigoQRService;
-import proyectoVigiaQr.domain.codigosQR.DatosListadoCodigoQR;
-import proyectoVigiaQr.domain.codigosQR.DatosRegistroCodigoQR;
+import org.springframework.web.util.UriComponentsBuilder;
+import proyectoVigiaQr.domain.codigosQR.*;
 
 import java.util.List;
 
@@ -21,14 +20,20 @@ public class CodigoQRController {
         this.codigoQRService = codigoQRService;
     }
 
-    @PostMapping
-    public ResponseEntity<Void> registrarCodigoQR(
-            @RequestBody @Valid DatosRegistroCodigoQR datos
+    @PostMapping("/puesto/{idPuestosTrabajo}")
+    public ResponseEntity<?> registrarCodigosQR(
+            @PathVariable Long idPuestosTrabajo,
+            @RequestBody @Valid List<DatosRegistroCodigoQR> listaDatos
     ) {
-        codigoQRService.registrarCodigoQR(datos);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
 
+        codigoQRService.registrarCodigosQR(idPuestosTrabajo, listaDatos);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("Códigos QR registrados correctamente");
     }
+
+
     @GetMapping("/puesto/{idPuesto}")
     public ResponseEntity<List<DatosListadoCodigoQR>> listarPorPuesto(
             @PathVariable Long idPuesto
