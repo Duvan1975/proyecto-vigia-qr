@@ -1,58 +1,54 @@
 import Swal from "sweetalert2";
 
-export function AgregarTabla() {
+export async function AgregarTabla(usuario, limpiarFormulario) {
 
-    const datos = {
-
-        nombres: document.getElementById('nombres').value,
-        apellidos: document.getElementById('apellidos').value,
-        tipoDocumento: document.getElementById('tipoDocumento').value,
-        numeroDocumento: document.getElementById('numeroDocumento').value,
-        username: document.getElementById('username').value,
-        password: document.getElementById('password').value,
-        rol: document.getElementById('rol').value
-    };
-
-    fetch("http://localhost:8080/usuarios", {
-        method: "POST",
-        headers: {
-            "Content-type": "application/json",
-        },
-        body: JSON.stringify(datos),
-    })
-
-        .then(async (response) => {
-            if (!response.ok) {
-                const errores = await response.json();
-
-                let mensaje;
-
-                if (Array.isArray(errores)) {
-                    // Caso: errores de validación (nombre, apellido, etc.)
-                    mensaje = errores.map(err => `<strong>${err.campo}</strong>: ${err.error}`).join('<br>');
-                } else if (errores.error) {
-                    // Caso: error general como "Correo duplicado"
-                    mensaje = errores.error;
-                } else {
-                    mensaje = 'Ocurrió un error desconocido';
-                }
-
-                throw new Error(mensaje);
-            }
-            return response.text();
-        })
-        .then((data) => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Registro exitoso',
-                text: 'La persona ha sido registrada correctamente.',
-            });
-        })
-        .catch((error) => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error en el formulario',
-                html: error.message, // Puede ser lista o mensaje general
-            });
+    try {
+        const responseUsuario = await fetch("http://localhost:8080/usuarios", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json",
+            },
+            body: JSON.stringify(
+                usuario),
         });
+
+        if (!responseUsuario.ok) {
+            const errores = await responseUsuario.json();
+            let mensaje = "Error en el registro del usuario";
+
+            if (Array.isArray(errores)) {
+                // Caso: errores de validación múltiples
+                mensaje = errores.map(err => `<strong>${err.campo}</strong>: ${err.error}`).join('<br>');
+            } else if (errores.campo && errores.error) {
+                // Caso: error individual con campo (por ejemplo enum mal enviado)
+                mensaje = `<strong>${errores.campo}</strong>: ${errores.error}`;
+            } else if (errores.error) {
+                // Caso: error general sin campo
+                mensaje = errores.error;
+            } else {
+                mensaje = 'Ocurrió un error desconocido';
+            }
+            throw new Error(mensaje);
+        }
+
+        //const usuarioData = await responseUsuario.json();
+        //const usuarioId = usuarioData.id || usuarioData.Id;
+
+        Swal.fire({
+            icon: "success",
+            title: "Registro exitoso",
+            text: "Usuario registrado correctamente.",
+        }).then(() => {
+            if (typeof limpiarFormulario === "function") {
+                limpiarFormulario();
+            }
+        })
+
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Error en el formulario",
+            html: error.message,
+        });
+    }
 };
