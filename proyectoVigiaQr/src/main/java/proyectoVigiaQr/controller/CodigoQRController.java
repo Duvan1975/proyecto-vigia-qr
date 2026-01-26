@@ -1,6 +1,10 @@
 package proyectoVigiaQr.controller;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import proyectoVigiaQr.domain.codigosQR.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/codigos-qr")
@@ -21,18 +26,18 @@ public class CodigoQRController {
     }
 
     @PostMapping("/puesto/{idPuestosTrabajo}")
-    public ResponseEntity<?> registrarCodigosQR(
+    public ResponseEntity<List<DatosRespuestaCodigoQR>> registrarCodigosQR(
             @PathVariable Long idPuestosTrabajo,
             @RequestBody @Valid List<DatosRegistroCodigoQR> listaDatos
     ) {
 
-        codigoQRService.registrarCodigosQR(idPuestosTrabajo, listaDatos);
+        List<DatosRespuestaCodigoQR> respuesta =
+                codigoQRService.registrarCodigosQR(idPuestosTrabajo, listaDatos);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body("Códigos QR registrados correctamente");
+                .body(respuesta);
     }
-
 
     @GetMapping("/puesto/{idPuesto}")
     public ResponseEntity<List<DatosListadoCodigoQR>> listarPorPuesto(
@@ -40,6 +45,7 @@ public class CodigoQRController {
     ) {
         return ResponseEntity.ok(codigoQRService.listarPorPuesto(idPuesto));
     }
+
     @GetMapping("/{id}/descargar")
     public ResponseEntity<byte[]> descargarCodigoQr(@PathVariable Long id) {
 
@@ -51,4 +57,17 @@ public class CodigoQRController {
                 .body(imagenQr);
     }
 
+    @GetMapping
+    public ResponseEntity<Page<DatosListadoCodigoQR>> listadoCodigosQR(
+            @PageableDefault(size = 10)Pageable paginacion) {
+        return codigoQRService.listarCodigosQR(paginacion);
+    }
+
+    @PutMapping
+    @Transactional
+    public ResponseEntity<DatosRespuestaCodigoQR> actualizarCodigoQR(
+            @RequestBody @Valid DatosActualizarCodigoQR datos) {
+        DatosRespuestaCodigoQR respuesta = codigoQRService.actualizarCodigo(datos);
+        return ResponseEntity.ok(respuesta);
+    }
 }

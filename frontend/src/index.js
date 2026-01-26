@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import { Menu } from './Menu';
 import "./styles.css"
 

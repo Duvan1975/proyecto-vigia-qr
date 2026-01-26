@@ -5,7 +5,12 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import proyectoVigiaQr.domain.puestosTrabajo.PuestosTrabajo;
 import proyectoVigiaQr.domain.puestosTrabajo.PuestosTrabajoRepository;
@@ -28,7 +33,7 @@ public class CodigoQRService {
     }
 
     @Transactional
-    public void registrarCodigosQR(
+    public List<DatosRespuestaCodigoQR> registrarCodigosQR(
             Long idPuestosTrabajo,
             List<DatosRegistroCodigoQR> listaDatos
     ) {
@@ -61,8 +66,22 @@ public class CodigoQRService {
 
         }).toList();
 
-        codigoQRRepository.saveAll(codigosQR);
+        // 🔹 Guardamos y obtenemos los objetos persistidos (con ID)
+        List<CodigoQR> guardados = codigoQRRepository.saveAll(codigosQR);
+
+        // 🔹 Convertimos a DTO de respuesta
+        return guardados.stream()
+                .map(c -> new DatosRespuestaCodigoQR(
+                        c.getId(),
+                        c.getDescripcion(),
+                        c.getUbicacion(),
+                        c.getValorQr(),
+                        c.getFechaCreacion(),
+                        c.isEstado()
+                ))
+                .toList();
     }
+
 
     public List<DatosListadoCodigoQR> listarPorPuesto(Long idPuestosTrabajo) {
 
@@ -103,4 +122,51 @@ public class CodigoQRService {
             throw new RuntimeException("Error al generar el código QR", e);
         }
     }
+
+    public ResponseEntity<Page<DatosListadoCodigoQR>> listarCodigosQR(
+            @PageableDefault(size = 10) Pageable paginacion) {
+        return ResponseEntity.ok(codigoQRRepository
+                .findAll(paginacion).map(DatosListadoCodigoQR::new));
+    }
+
+    @Transactional
+    public DatosRespuestaCodigoQR actualizarCodigo(DatosActualizarCodigoQR datos) {
+
+        CodigoQR codigoQR = codigoQRRepository.findById(datos.id())
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Código QR no encontrado con ID: " + datos.id()
+                        )
+                );
+
+        // 🔎 Validar duplicado SOLO si viene ubicación nueva
+        if (datos.ubicacion() != null) {
+
+            boolean existeDuplicado = codigoQRRepository
+                    .existsByUbicacionAndPuestosTrabajoIdAndEstadoTrueAndIdNot(
+                            datos.ubicacion(),
+                            codigoQR.getPuestosTrabajo().getId(),
+                            codigoQR.getId()
+                    );
+
+            if (existeDuplicado) {
+                throw new IllegalStateException(
+                        "Ya existe un código QR activo para la ubicación: "
+                                + datos.ubicacion()
+                );
+            }
+        }
+
+        codigoQR.actualizarDatos(datos);
+
+        return new DatosRespuestaCodigoQR(
+                codigoQR.getId(),
+                codigoQR.getDescripcion(),
+                codigoQR.getUbicacion(),
+                codigoQR.getValorQr(),
+                codigoQR.getFechaCreacion(),
+                codigoQR.isEstado()
+        );
+    }
+
 }

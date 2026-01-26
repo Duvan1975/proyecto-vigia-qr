@@ -30,7 +30,7 @@ public class CodigoQR {
     @Column(nullable = false)
     private boolean estado = true;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_puesto", nullable = false)
     private PuestosTrabajo puestosTrabajo;
 
@@ -103,5 +103,19 @@ public class CodigoQR {
 
     public void setPuestosTrabajo(PuestosTrabajo puestosTrabajo) {
         this.puestosTrabajo = puestosTrabajo;
+    }
+
+    public void actualizarDatos(DatosActualizarCodigoQR datos) {
+        if (datos.descripcion() != null) {
+            this.descripcion = datos.descripcion();
+        }
+
+        if (datos.ubicacion() != null) {
+            this.ubicacion = datos.ubicacion();
+        }
+
+        if (datos.estado() != null) {
+            this.estado = datos.estado();
+        }
     }
 }

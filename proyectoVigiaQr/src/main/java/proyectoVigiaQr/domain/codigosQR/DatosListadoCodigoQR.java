@@ -8,7 +8,9 @@ public record DatosListadoCodigoQR(
         String ubicacion,
         String valorQr,
         LocalDateTime fechaCreacion,
-        boolean estado
+        boolean estado,
+        String puesto,
+        String direccionPuesto
 ) {
     public DatosListadoCodigoQR(CodigoQR codigoQR) {
         this(
@@ -17,7 +19,9 @@ public record DatosListadoCodigoQR(
                 codigoQR.getUbicacion(),
                 codigoQR.getValorQr(),
                 codigoQR.getFechaCreacion(),
-                codigoQR.isEstado()
+                codigoQR.isEstado(),
+                codigoQR.getPuestosTrabajo().getNombrePuesto(),
+                codigoQR.getPuestosTrabajo().getDireccion()
         );
     }
 }

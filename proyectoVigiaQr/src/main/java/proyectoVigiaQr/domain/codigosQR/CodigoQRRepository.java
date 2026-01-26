@@ -13,4 +13,10 @@ public interface CodigoQRRepository extends JpaRepository<CodigoQR, Long> {
     List<CodigoQR> findByPuestosTrabajoId(Long idPuestosTrabajo);
 
     Optional<CodigoQR> findByValorQr(String valorQr);
+
+    boolean existsByUbicacionAndPuestosTrabajoIdAndEstadoTrueAndIdNot(
+            String ubicacion,
+            Long puestoId,
+            Long id
+    );
 }
