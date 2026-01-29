@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ModalEditarPuesto } from "./ModalEditarPuesto";
 import Paginacion from "./Paginacion";
 import Swal from "sweetalert2";
+import { TablaCodigoQrPorPuesto } from "./TablaCodigoQrPorPuesto";
 
 export function TablaPuestos() {
 
@@ -18,6 +19,11 @@ export function TablaPuestos() {
     const [totalPaginas, setTotalPaginas] = useState(3);
     const [totalElementos, setTotalElementos] = useState(0);
     const [tamanoPagina, setTamanoPagina] = useState(0);
+
+    //Estados para cargar y controlar el historial de contratos
+    const [codigoQrPorPuestoListar, setCodigoQrPorPuestoListar] = useState(null);
+    const [mostrarTablaCodigoQr, setMostrarTablaCodigoQr] = useState(false);
+    const [contadorActualizacion, setContadorActualizacion] = useState(0);
 
     useEffect(() => {
         cargarPuestos(paginaActual);
@@ -130,26 +136,25 @@ export function TablaPuestos() {
                             className="form-control mb-2"
                         />
                     </div>
-
                 </div>
-
-                <button onClick={buscarPuestoPorNombre} 
-                className="btn btn-info"
+                <button onClick={buscarPuestoPorNombre}
+                    className="btn btn-info"
                 >
                     Buscar
                 </button>
 
-                    <button
-                        onClick={() => {
-                            setResultadoBusqueda(null);
-                            setNombreBuscar("");
-                            cargarPuestos();
-                        }}
-                        className="btn btn-secondary"
-                    >
-                        Limpiar Búsqueda
-                    </button>
-      
+                <button
+                    onClick={() => {
+                        setResultadoBusqueda(null);
+                        setNombreBuscar("");
+                        cargarPuestos();
+                        setMostrarTablaCodigoQr(false);
+                    }}
+                    className="btn btn-secondary"
+                >
+                    Limpiar Búsqueda
+                </button>
+
             </div>
 
             {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
@@ -215,6 +220,15 @@ export function TablaPuestos() {
                                     className="btn btn-sm btn-primary me-2"
                                 >Editar
                                 </button>
+                                <button
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={() => {
+                                        setCodigoQrPorPuestoListar(resultadoBusqueda.id);
+                                        setMostrarTablaCodigoQr(true);
+                                    }}
+                                >
+                                    Ver Códigos
+                                </button>
                             </td>
                         </tr>
                     ) : (
@@ -255,13 +269,27 @@ export function TablaPuestos() {
                                         className="btn btn-sm btn-primary me-2"
                                     >Editar
                                     </button>
+
+                                    <button
+                                        className="btn btn-sm btn-outline-secondary"
+                                        onClick={() => {
+                                            setCodigoQrPorPuestoListar(pues.id);
+                                            setMostrarTablaCodigoQr(true);
+                                        }}
+                                    >
+                                        Ver Códigos
+                                    </button>
                                 </td>
                             </tr>
                         ))
                     )}
                 </tbody>
             </table>
-
+            {mostrarTablaCodigoQr && codigoQrPorPuestoListar && (
+                <TablaCodigoQrPorPuesto puestoTrabajoId={codigoQrPorPuestoListar}
+                    actualizar={contadorActualizacion}
+                    onClose={() => setMostrarTablaCodigoQr(false)} />
+            )}
             <ModalEditarPuesto
                 puestoTrabajo={puestoSeleccionado}
                 visible={mostrarModal}
@@ -281,6 +309,7 @@ export function TablaPuestos() {
                             ? puestoActualizado
                             : prev
                     );
+                    setContadorActualizacion(prev => prev + 1);
                 }}
             />
         </>

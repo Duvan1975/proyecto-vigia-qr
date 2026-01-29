@@ -212,24 +212,60 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
 
 
     const descargarCodigoQr = (idCodigoQr) => {
+        // Buscar el código QR en el estado actual
+        const codigo = codigoQr.find(c => c.id === idCodigoQr);
+
+        if (!codigo) {
+            Swal.fire("Error", "Código QR no encontrado", "error");
+            return;
+        }
+
+        // Preparar nombres para el archivo
+        const nombrePuesto = (formulario.nombrePuesto || "puesto").trim();
+        const ubicacion = (codigo.ubicacion || "ubicacion").trim();
+
+        // Función para limpiar texto para nombre de archivo
+        const limpiarTexto = (texto) => {
+            return texto
+                .normalize("NFD")  // Separar acentos
+                .replace(/[\u0300-\u036f]/g, "")  // Eliminar diacríticos
+                .replace(/[^a-zA-Z0-9\s]/g, '')  // Solo letras, números y espacios
+                .replace(/\s+/g, '_')  // Espacios a guiones bajos
+                .toLowerCase();
+        };
+
+        const nombreArchivo = `${limpiarTexto(nombrePuesto)}_${limpiarTexto(ubicacion)}`;
+
         fetch(`http://localhost:8080/codigos-qr/${idCodigoQr}/descargar`)
             .then(res => {
                 if (!res.ok) {
                     throw new Error("No se pudo descargar el código QR");
                 }
-                return res.blob(); // 👈 CLAVE
+                return res.blob();
             })
             .then(blob => {
                 const url = window.URL.createObjectURL(blob);
-
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = `codigo_qr_${idCodigoQr}.png`; // nombre del archivo
+                a.download = `${nombreArchivo}.png`;
                 document.body.appendChild(a);
                 a.click();
 
-                a.remove();
-                window.URL.revokeObjectURL(url);
+                // Esperar un momento antes de limpiar
+                setTimeout(() => {
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+
+                // Mostrar notificación de éxito
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Descargado",
+                    text: `${nombrePuesto} - ${ubicacion}`,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             })
             .catch(err => {
                 Swal.fire("Error", err.message, "error");
@@ -258,49 +294,74 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
     if (!visible) return null;
 
     return (
-        <div className="modal" style={{ display: "block", backgroundColor: "#000000aa" }}>
-            <div className="modal-dialog">
-                <div className="modal-content p-4">
-                    <h4>Editar Puesto</h4>
-                    <input type="text"
-                        name="nombrePuesto"
-                        value={formulario.nombrePuesto}
-                        onChange={handleChange}
-                        placeholder="Nombre del Puesto"
-                        className="form-control mb-2"
-                    />
-                    <input type="text"
-                        name="descripcion"
-                        value={formulario.descripcion}
-                        onChange={handleChange}
-                        className="form-control mb-2"
-                        placeholder="Descripción"
-                    />
-                    <input type="text"
+    <div className="modal" style={{ display: "block", backgroundColor: "#000000aa" }}>
+        <div className="modal-dialog modal-lg"> {/* Agregar modal-lg aquí */}
+            <div className="modal-content p-4">
+                <h4 className="modal-title mb-3">Editar Puesto</h4>
+                
+                <div className="row">
+                    <div className="col-md-6">
+                        <div className="mb-3">
+                            <label className="form-label">Nombre del Puesto</label>
+                            <input 
+                                type="text"
+                                name="nombrePuesto"
+                                value={formulario.nombrePuesto}
+                                onChange={handleChange}
+                                placeholder="Nombre del Puesto"
+                                className="form-control"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="col-md-6">
+                        <div className="mb-3">
+                            <label className="form-label">Descripción</label>
+                            <input 
+                                type="text"
+                                name="descripcion"
+                                value={formulario.descripcion}
+                                onChange={handleChange}
+                                className="form-control"
+                                placeholder="Descripción"
+                            />
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="mb-3">
+                    <label className="form-label">Dirección</label>
+                    <input 
+                        type="text"
                         name="direccion"
                         value={formulario.direccion}
                         onChange={handleChange}
                         placeholder="Dirección"
+                        className="form-control"
                     />
-                    <div className="mt-3">
-                        <div className="d-flex justify-content-between align-items-center mt-4 mb-2">
-                            <h5 className="mb-0">Códigos QR</h5>
-                            <div>
-                                <button
-                                    className="btn btn-outline-secondary me-2"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#tablaCodigosQr"
-                                    aria-expanded="false"
-                                    aria-controls="tablaCodigosQr"
-                                >
-                                    Mostrar/Ocultar Códigos QR
-                                </button>
-                            </div>
+                </div>
+                
+                <div className="mt-3">
+                    <div className="d-flex justify-content-between align-items-center mt-4 mb-2">
+                        <h5 className="mb-0">Códigos QR</h5>
+                        <div>
+                            <button
+                                className="btn btn-outline-secondary me-2"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#tablaCodigosQr"
+                                aria-expanded="false"
+                                aria-controls="tablaCodigosQr"
+                            >
+                                Mostrar/Ocultar Códigos QR
+                            </button>
                         </div>
-                        <div className="collapse" id="tablaCodigosQr">
-                            <table className="table table-bordered">
-                                <thead>
+                    </div>
+                    
+                    <div className="collapse" id="tablaCodigosQr">
+                        <div className="table-responsive"> {/* Agregar para scroll horizontal */}
+                            <table className="table table-bordered table-striped">
+                                <thead className="table-primary">
                                     <tr>
                                         <th>Descripción</th>
                                         <th>Ubicación</th>
@@ -311,11 +372,11 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                                 </thead>
                                 <tbody>
                                     {nuevosCodigosQr.map((nuevo, idx) => (
-                                        <tr key={idx}>
+                                        <tr key={`nuevo-${idx}`}>
                                             <td>
                                                 <input
                                                     type="text"
-                                                    className="form-control"
+                                                    className="form-control form-control-sm"
                                                     placeholder="Descripción"
                                                     value={nuevo.descripcion}
                                                     onChange={(e) => {
@@ -325,11 +386,10 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                                                     }}
                                                 />
                                             </td>
-
                                             <td>
                                                 <input
                                                     type="text"
-                                                    className="form-control"
+                                                    className="form-control form-control-sm"
                                                     placeholder="Ubicación"
                                                     value={nuevo.ubicacion}
                                                     onChange={(e) => {
@@ -339,39 +399,36 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                                                     }}
                                                 />
                                             </td>
-
-                                            <td>
-                                                <input
-                                                    type="checkbox"
-                                                    className="form-check-input"
-                                                    checked={!!nuevo.estado}
-                                                    onChange={(e) => {
-                                                        const copia = [...nuevosCodigosQr];
-                                                        copia[idx].estado = e.target.checked;
-                                                        setNuevosCodigosQr(copia);
-                                                    }}
-                                                />
+                                            <td className="text-center">
+                                                <div className="form-check form-switch d-flex justify-content-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        checked={!!nuevo.estado}
+                                                        onChange={(e) => {
+                                                            const copia = [...nuevosCodigosQr];
+                                                            copia[idx].estado = e.target.checked;
+                                                            setNuevosCodigosQr(copia);
+                                                        }}
+                                                    />
+                                                </div>
                                             </td>
                                             <td className="text-center">
                                                 {previewQr[nuevo.id] ? (
                                                     <img
                                                         src={previewQr[nuevo.id]}
                                                         alt="QR Preview"
+                                                        className="img-thumbnail"
                                                         style={{
                                                             width: "80px",
                                                             height: "80px",
-                                                            border: "1px solid #ccc",
-                                                            padding: "4px",
-                                                            borderRadius: "6px"
                                                         }}
                                                     />
                                                 ) : (
-                                                    <span className="text-muted">Sin preview</span>
+                                                    <span className="text-muted small">Sin preview</span>
                                                 )}
-
                                             </td>
-
-                                            <td>
+                                            <td className="text-center">
                                                 <button
                                                     className="btn btn-primary btn-sm"
                                                     onClick={registrarNuevoCodigoQr}
@@ -381,15 +438,13 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                                             </td>
                                         </tr>
                                     ))}
-
-
+                                    
                                     {codigoQr.map((c, idx) => (
-                                        <tr key={c.id || idx}>
-
+                                        <tr key={c.id || `codigo-${idx}`}>
                                             <td>
                                                 <input
                                                     type="text"
-                                                    className="form-control"
+                                                    className="form-control form-control-sm"
                                                     value={c.descripcion !== undefined && c.descripcion !== null ? c.descripcion : ""}
                                                     onChange={(e) => handleCodigoQrChange(idx, "descripcion", e.target.value)}
                                                 />
@@ -397,31 +452,30 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                                             <td>
                                                 <input
                                                     type="text"
-                                                    className="form-control"
+                                                    className="form-control form-control-sm"
                                                     value={c.ubicacion !== undefined && c.ubicacion !== null ? c.ubicacion : ""}
                                                     onChange={(e) => handleCodigoQrChange(idx, "ubicacion", e.target.value)}
                                                 />
                                             </td>
-                                            <td>
-                                                <input
-                                                    type="checkbox"
-                                                    className="form-check-input"
-                                                    checked={!!c.estado}
-                                                    onChange={(e) => handleCodigoQrChange(idx, "estado", e.target.checked)}
-                                                />
+                                            <td className="text-center">
+                                                <div className="form-check form-switch d-flex justify-content-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        checked={!!c.estado}
+                                                        onChange={(e) => handleCodigoQrChange(idx, "estado", e.target.checked)}
+                                                    />
+                                                </div>
                                             </td>
-
                                             <td className="text-center">
                                                 {previewQr[c.id] ? (
                                                     <img
                                                         src={previewQr[c.id]}
                                                         alt="QR Preview"
+                                                        className="img-thumbnail"
                                                         style={{
                                                             width: "80px",
                                                             height: "80px",
-                                                            border: "1px solid #ccc",
-                                                            padding: "4px",
-                                                            borderRadius: "6px",
                                                             cursor: "pointer"
                                                         }}
                                                         title="Clic para regenerar"
@@ -432,81 +486,86 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                                                         className="btn btn-outline-secondary btn-sm"
                                                         onClick={() => cargarPreviewQr(c.id)}
                                                     >
-                                                        Generar imagen QR
+                                                        Generar QR
                                                     </button>
                                                 )}
                                             </td>
-
-
-                                            <td>
-                                                <button
-                                                    className="btn btn-success btn-sm"
-                                                    onClick={() => actualizarCodigoQr(c)}
-                                                >
-                                                    Guardar
-                                                </button>
-                                                <button
-                                                    className="btn btn-success btn-sm ms-2"
-                                                    disabled={!c.id || !c.estado}
-                                                    onClick={() => descargarCodigoQr(c.id)}
-                                                >
-                                                    Descargar QR
-                                                </button>
-
-
+                                            <td className="text-center">
+                                                <div className="btn-group btn-group-sm" role="group">
+                                                    <button
+                                                        className="btn btn-success"
+                                                        onClick={() => actualizarCodigoQr(c)}
+                                                        title="Guardar cambios"
+                                                    >
+                                                        <i className="bi bi-save"></i>
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-outline-success"
+                                                        disabled={!c.id || !c.estado}
+                                                        onClick={() => descargarCodigoQr(c.id)}
+                                                        title="Descargar QR"
+                                                    >
+                                                        <i className="bi bi-download"></i>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
-
                                 </tbody>
                             </table>
                         </div>
-                        <button
-                            onClick={() => {
-                                Swal.fire({
-                                    title: '¿Actualizar Puesto?',
-                                    text: '¿Estás seguro de que deseas guardar los cambios?',
-                                    icon: 'question',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#3085d6',
-                                    cancelButtonColor: '#d33',
-                                    confirmButtonText: 'Sí, actualizar',
-                                    cancelButtonText: 'Cancelar'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        actualizarPuestoTrabajo();
-                                    }
-                                });
-                            }}
-                            className="btn btn-warning me-2"
-                        >
-                            Actualizar
-                        </button>
-                        <button
-                            onClick={(codigoQr) => {
-                                Swal.fire({
-                                    title: '¿Cancelar cambios?',
-                                    text: 'Los cambios no guardados se perderán',
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#3085d6',
-                                    cancelButtonColor: '#d33',
-                                    confirmButtonText: 'Sí, cancelar',
-                                    cancelButtonText: 'No, continuar'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        setFormulario(puestoTrabajo);
-                                        onClose();
-                                    }
-                                });
-                            }}
-                            className="btn btn-secondary"
-                        >
-                            Cancelar
-                        </button>
                     </div>
+                </div>
+                
+                <div className="modal-footer mt-3 pt-3 border-top">
+                    <button
+                        onClick={() => {
+                            Swal.fire({
+                                title: '¿Actualizar Puesto?',
+                                text: '¿Estás seguro de que deseas guardar los cambios?',
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Sí, actualizar',
+                                cancelButtonText: 'Cancelar'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    actualizarPuestoTrabajo();
+                                }
+                            });
+                        }}
+                        className="btn btn-warning"
+                    >
+                        <i className="bi bi-check-circle me-1"></i>
+                        Actualizar Puesto
+                    </button>
+                    <button
+                        onClick={() => {
+                            Swal.fire({
+                                title: '¿Cancelar cambios?',
+                                text: 'Los cambios no guardados se perderán',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Sí, cancelar',
+                                cancelButtonText: 'No, continuar'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    setFormulario(puestoTrabajo);
+                                    onClose();
+                                }
+                            });
+                        }}
+                        className="btn btn-secondary"
+                    >
+                        <i className="bi bi-x-circle me-1"></i>
+                        Cancelar
+                    </button>
                 </div>
             </div>
         </div>
-    )
+    </div>
+);
 };

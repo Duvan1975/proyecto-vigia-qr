@@ -168,5 +168,11 @@ public class CodigoQRService {
                 codigoQR.isEstado()
         );
     }
+    public void eliminarCodigoQr(Long id) {
+        if (!codigoQRRepository.existsById(id)) {
+            throw new EntityNotFoundException("Código QR no encontrado con el ID: " + id);
+        }
+        codigoQRRepository.deleteById(id);
+    }
 
 }

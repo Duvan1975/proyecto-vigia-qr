@@ -70,4 +70,10 @@ public class CodigoQRController {
         DatosRespuestaCodigoQR respuesta = codigoQRService.actualizarCodigo(datos);
         return ResponseEntity.ok(respuesta);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarCodigoQr(@PathVariable Long id) {
+        codigoQRService.eliminarCodigoQr(id);
+        return ResponseEntity.noContent().build(); // Devuelve 204 No Content
+    }
 }
