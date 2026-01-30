@@ -16,7 +16,7 @@ public class PuestosTrabajo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100, nullable = false, unique = true)
     private String nombrePuesto;
 
     @Column(length = 100)
@@ -28,7 +28,7 @@ public class PuestosTrabajo {
     @Column(nullable = false)
     private boolean estado = true;
 
-    @OneToMany(mappedBy = "puestosTrabajo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "puestosTrabajo", orphanRemoval = true)
     private List<CodigoQR> codigoQRS = new ArrayList<>();
 
     public PuestosTrabajo() {
@@ -83,5 +83,17 @@ public class PuestosTrabajo {
 
     public void actualizarDatos(DatosActualizarPuesto datos) {
 
+        if (datos.nombrePuesto() != null) {
+            this.nombrePuesto = datos.nombrePuesto();
+        }
+        if (datos.descripcion() != null) {
+            this.descripcion = datos.descripcion();
+        }
+        if (datos.direccion() != null) {
+            this.direccion = datos.direccion();
+        }
+        if (datos.estado() != null) {
+            this.estado = datos.estado();
+        }
     }
 }

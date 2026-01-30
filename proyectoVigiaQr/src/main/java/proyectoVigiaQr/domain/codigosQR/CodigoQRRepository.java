@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CodigoQRRepository extends JpaRepository<CodigoQR, Long> {
-    boolean existsByUbicacionAndPuestosTrabajoIdAndEstadoTrue(
+    boolean existsByUbicacionAndPuestosTrabajoId(
             String ubicacion,
             Long idPuestosTrabajo
     );
@@ -19,4 +19,6 @@ public interface CodigoQRRepository extends JpaRepository<CodigoQR, Long> {
             Long puestoId,
             Long id
     );
+
+    boolean existsByPuestosTrabajoId(Long puestosTrabajoId);
 }

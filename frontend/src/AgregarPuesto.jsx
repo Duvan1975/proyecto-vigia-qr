@@ -15,27 +15,27 @@ export function AgregarPuesto() {
         },
         body: JSON.stringify(datos),
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Error al registrar");
-            }
+        .then(async response => {
+
+            // ❌ Si hay error, leemos el mensaje del backend
+    if (!response.ok) {
+        const errorData = await response.json(); // 👈 ahora sí JSON
+        throw new Error(errorData.error);        // 👈 solo el mensaje
+    }
             return response.json();
         })
-        .then(data => {
+        .then(() => {
             Swal.fire({
                 icon: 'success',
                 title: 'Registro exitoso',
                 text: 'El puesto ha sido registrado correctamente.',
             });
-
         })
         .catch(error => {
             Swal.fire({
                 icon: 'error',
-                title: 'Error en el formulario',
-                html: error.message, // mostramos todos los errores formateados
+                title: 'No se pudo registrar',
+                text: error.message,
             });
         });
 }
-
-

@@ -46,7 +46,7 @@ public class CodigoQRService {
         List<CodigoQR> codigosQR = listaDatos.stream().map(datos -> {
 
             boolean existeQrActivo = codigoQRRepository
-                    .existsByUbicacionAndPuestosTrabajoIdAndEstadoTrue(
+                    .existsByUbicacionAndPuestosTrabajoId(
                             datos.ubicacion(),
                             puesto.getId()
                     );

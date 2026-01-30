@@ -67,4 +67,10 @@ public class PuestosTrabajoController {
                 )).toList();
         return ResponseEntity.ok(resultado);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarPuestoTrabajo(@PathVariable Long id) {
+        puestosTrabajoService.eliminarPuestoTrabajo(id);
+        return ResponseEntity.noContent().build(); // Devuelve 204 No Content
+    }
 }

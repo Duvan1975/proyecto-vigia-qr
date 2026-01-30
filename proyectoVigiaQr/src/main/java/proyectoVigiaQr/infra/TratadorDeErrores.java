@@ -1,6 +1,7 @@
 package proyectoVigiaQr.infra;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -16,9 +17,16 @@ import java.util.Map;
 @RestControllerAdvice
 public class TratadorDeErrores {
 
-    @ExceptionHandler(EntityNotFoundException.class)
+    /*@ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity tratarError404(){
         return ResponseEntity.notFound().build();
+    }*/
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<?> tratarError404(EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                Map.of("error", e.getMessage())
+        );
     }
 
     //De esta forma le indicamos al usuario cual fue el error
@@ -67,4 +75,11 @@ public class TratadorDeErrores {
     //Creamos el DTO para tratar este error
 
     private record DatosErrorGeneral(String error){}
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<?> tratarError400(IllegalStateException e) {
+        return ResponseEntity.badRequest().body(
+                Map.of("error", e.getMessage())
+        );
+    }
 }

@@ -1,12 +1,15 @@
 package proyectoVigiaQr.domain.puestosTrabajo;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
+import proyectoVigiaQr.domain.codigosQR.CodigoQRRepository;
 
 @Service
 public class PuestosTrabajoService {
@@ -14,26 +17,39 @@ public class PuestosTrabajoService {
     @Autowired
     private PuestosTrabajoRepository puestosTrabajoRepository;
 
+    @Autowired
+    private CodigoQRRepository codigoQRRepository;
+
     public ResponseEntity<DatosRespuestaPuestoTrabajo> registrarPuestoTrabajo(
-            DatosRegistroPuestos datos, UriComponentsBuilder uriComponentsBuilder) {
+            DatosRegistroPuestos datos,
+            UriComponentsBuilder uriComponentsBuilder) {
 
-        PuestosTrabajo puestosTrabajo = new PuestosTrabajo(datos); //Creamos el objeto
-        puestosTrabajoRepository.save(puestosTrabajo); //Lo guardamos
+        // 🔎 Validar duplicado
+        if (puestosTrabajoRepository.existsByNombrePuesto(datos.nombrePuesto())) {
+            throw new IllegalStateException(
+                    "Ya existe un puesto de trabajo con el nombre: " + datos.nombrePuesto()
+            );
+        }
 
-        //Construímos la Uri del recurso creado
-        var uri = uriComponentsBuilder.path("puestosTrabajos/{id}").buildAndExpand(puestosTrabajo.getId()).toUri();
+        PuestosTrabajo puestosTrabajo = new PuestosTrabajo(datos);
+        puestosTrabajoRepository.save(puestosTrabajo);
 
-        //Creamos la respuesta
-        DatosRespuestaPuestoTrabajo datosRespuestaPuestoTrabajo = new DatosRespuestaPuestoTrabajo(
+        var uri = uriComponentsBuilder
+                .path("puestosTrabajos/{id}")
+                .buildAndExpand(puestosTrabajo.getId())
+                .toUri();
+
+        DatosRespuestaPuestoTrabajo respuesta = new DatosRespuestaPuestoTrabajo(
                 puestosTrabajo.getId(),
                 puestosTrabajo.getNombrePuesto(),
                 puestosTrabajo.getDescripcion(),
                 puestosTrabajo.getDireccion(),
                 puestosTrabajo.isEstado()
         );
-        return ResponseEntity.created(uri).body(datosRespuestaPuestoTrabajo);
 
+        return ResponseEntity.created(uri).body(respuesta);
     }
+
     public Page<DatosListadoPuestos> listarPuestosTrabajo(Pageable paginacion) {
         return puestosTrabajoRepository.findAll(paginacion).map(DatosListadoPuestos::new);
     }
@@ -48,25 +64,45 @@ public class PuestosTrabajoService {
         );
         return ResponseEntity.ok(datosPuesto);
     }
+
     @Transactional
-    public ResponseEntity actualizarPuestoTrabajo(DatosActualizarPuesto datos) {
-        PuestosTrabajo puestosTrabajo = puestosTrabajoRepository.getReferenceById(datos.id());
+    public ResponseEntity<DatosRespuestaPuestoTrabajo> actualizarPuestoTrabajo(
+            DatosActualizarPuesto datos) {
+
+        PuestosTrabajo puestosTrabajo = puestosTrabajoRepository.findById(datos.id())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Puesto de trabajo no encontrado con ID: " + datos.id()
+                ));
+
+        // 🔎 Validar duplicado SOLO si cambia el nombre
+        if (datos.nombrePuesto() != null) {
+            boolean existeDuplicado = puestosTrabajoRepository
+                    .existsByNombrePuestoAndIdNot(
+                            datos.nombrePuesto(),
+                            puestosTrabajo.getId()
+                    );
+
+            if (existeDuplicado) {
+                throw new IllegalStateException(
+                        "Ya existe un puesto de trabajo con el nombre: " + datos.nombrePuesto()
+                );
+            }
+        }
+
+        // ✅ Una sola fuente de verdad
         puestosTrabajo.actualizarDatos(datos);
 
-        if (datos.nombrePuesto() != null) puestosTrabajo.setNombrePuesto(datos.nombrePuesto());
-        if (datos.descripcion() != null) puestosTrabajo.setDescripcion(datos.descripcion());
-        if (datos.direccion() != null) puestosTrabajo.setDireccion(datos.direccion());
-        if (datos.estado() != null) puestosTrabajo.setEstado(datos.estado());
-
-        return ResponseEntity.ok(new DatosRespuestaPuestoTrabajo(
-                puestosTrabajo.getId(),
-                puestosTrabajo.getNombrePuesto(),
-                puestosTrabajo.getDescripcion(),
-                puestosTrabajo.getDireccion(),
-                puestosTrabajo.isEstado()
-        ));
-
+        return ResponseEntity.ok(
+                new DatosRespuestaPuestoTrabajo(
+                        puestosTrabajo.getId(),
+                        puestosTrabajo.getNombrePuesto(),
+                        puestosTrabajo.getDescripcion(),
+                        puestosTrabajo.getDireccion(),
+                        puestosTrabajo.isEstado()
+                )
+        );
     }
+
     @Transactional
     public ResponseEntity cambiarEstadoPuesto(Long id) {
         PuestosTrabajo puestosTrabajo = puestosTrabajoRepository.getReferenceById(id);
@@ -74,4 +110,23 @@ public class PuestosTrabajoService {
         return ResponseEntity.noContent().build();
     }
 
+    public void eliminarPuestoTrabajo(Long id) {
+
+        if (!puestosTrabajoRepository.existsById(id)) {
+            throw new EntityNotFoundException(
+                    "Puesto de trabajo no encontrado con el ID: " + id
+            );
+        }
+
+        boolean tieneCodigosQr = codigoQRRepository
+                .existsByPuestosTrabajoId(id);
+
+        if (tieneCodigosQr) {
+            throw new IllegalStateException(
+                    "No se puede eliminar el puesto porque tiene códigos QR asociados"
+            );
+        }
+
+        puestosTrabajoRepository.deleteById(id);
+    }
 }
