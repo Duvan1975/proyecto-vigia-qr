@@ -20,9 +20,9 @@ export function FormularioUsuarios() {
             nombres: "",
             apellidos: "",
             tipoDocumento: "",
-            numeroDocumento: "", 
-            username: "", 
-            password: "", 
+            numeroDocumento: "",
+            username: "",
+            password: "",
             rol: ""
         });
     }
@@ -110,14 +110,22 @@ export function FormularioUsuarios() {
                 />
             </div>
             <br></br>
-            <br></br>
 
-            <button
-                onClick={() => AgregarTabla(usuario, limpiarFormulario)}
-                className='botonregistrar btn btn-success'
-            >
-                Registrar Usuario
-            </button>
+            <div className="d-flex gap-2">
+                <button
+                    onClick={() => AgregarTabla(usuario, limpiarFormulario)}
+                    className='botonregistrar btn btn-success'
+                >
+                    Registrar Usuario
+                </button>
+                <button
+                    onClick={limpiarFormulario}
+                    className="btn btn-secondary"
+                >
+                    Cancelar
+                </button>
+            </div>
+
             <br></br>
         </div>
     )

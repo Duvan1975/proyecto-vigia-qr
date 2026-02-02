@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { CuadrosTexto } from "./CuadrosTexto";
 import Swal from "sweetalert2";
 
-export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualizado }) {
+export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualizado, onEliminado }) {
     const [codigoQr, setCodigoQr] = useState([]);
     //Estado para agregar código qr modificado para que siempre sea visible
     const [nuevosCodigosQr, setNuevosCodigosQr] = useState([
@@ -340,12 +341,12 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
             .then(() => {
                 Swal.fire(
                     "Puesto eliminado",
-                    "El puesto de trabajo fue eliminado correctamente",
+                    "El puesto fue eliminado correctamente",
                     "success"
-                );
-
-                onActualizado({ eliminado: true, id: formulario.id });
-                onClose();
+                ).then(() => {
+                    onEliminado(formulario.id);
+                    onClose();
+                });
             })
             .catch((error) => {
                 Swal.fire(
@@ -366,44 +367,39 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                     <h4 className="modal-title mb-3">Editar Puesto</h4>
 
                     <div className="row">
-                        <div className="col-md-6">
-                            <div className="mb-3">
-                                <label className="form-label">Nombre del Puesto</label>
-                                <input
-                                    type="text"
-                                    name="nombrePuesto"
-                                    value={formulario.nombrePuesto}
-                                    onChange={handleChange}
-                                    placeholder="Nombre del Puesto"
-                                    className="form-control"
-                                />
-                            </div>
-                        </div>
+                        <CuadrosTexto
+                            tamanoinput="col-md-6"
+                            titulolabel="Nombre del Puesto"
+                            tipoinput="text"
+                            nombreinput="nombrePuesto"
+                            idinput="nombrePuestoEditar"
+                            placeholderinput="Nombre del Puesto"
+                            value={formulario.nombrePuesto}
+                            onChange={handleChange}
+                        />
 
-                        <div className="col-md-6">
-                            <div className="mb-3">
-                                <label className="form-label">Descripción</label>
-                                <input
-                                    type="text"
-                                    name="descripcion"
-                                    value={formulario.descripcion}
-                                    onChange={handleChange}
-                                    className="form-control"
-                                    placeholder="Descripción"
-                                />
-                            </div>
-                        </div>
+                        <CuadrosTexto
+                            tamanoinput="col-md-6"
+                            titulolabel="Descripción"
+                            tipoinput="text"
+                            nombreinput="descripcion"
+                            idinput="descripcionEditar"
+                            placeholderinput="Descripción"
+                            value={formulario.descripcion}
+                            onChange={handleChange}
+                        />
                     </div>
 
-                    <div className="mb-3">
-                        <label className="form-label">Dirección</label>
-                        <input
-                            type="text"
-                            name="direccion"
+                    <div className="row">
+                        <CuadrosTexto
+                            tamanoinput="col-md-6"
+                            titulolabel="Dirección"
+                            tipoinput="text"
+                            nombreinput="direccion"
+                            idinput="direccionEditar"
+                            placeholderinput="Direccion"
                             value={formulario.direccion}
                             onChange={handleChange}
-                            placeholder="Dirección"
-                            className="form-control"
                         />
                     </div>
 

@@ -10,7 +10,7 @@ export function CuadrosTexto({
 }) {
   return (
     <div className={tamanoinput}>
-      <label htmlFor={idinput}>{titulolabel}</label>
+      <label htmlFor={idinput}><strong>{titulolabel}</strong></label>
       <input
         type={tipoinput}
         name={nombreinput}

@@ -29,4 +29,5 @@ public record DatosActualizarUsuario(
         Rol rol,
         Boolean estado
 ) {
+
 }

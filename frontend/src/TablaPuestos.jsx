@@ -294,6 +294,10 @@ export function TablaPuestos() {
                 puestoTrabajo={puestoSeleccionado}
                 visible={mostrarModal}
                 onClose={() => setMostrarModal(false)}
+                onEliminado={(id) =>{
+                    setPuestosTrabajos(prev => 
+                        prev.filter(p => p.id !== id));
+                }}
                 onActualizado={(puestoActualizado) => {
 
                     // Actualiza la tabla principal

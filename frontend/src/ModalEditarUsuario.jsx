@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { CuadrosTexto } from "./CuadrosTexto";
+import { CuadrosSelect } from "./CuadrosSelect";
 import Swal from "sweetalert2";
 
 export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado }) {
@@ -74,55 +76,98 @@ export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado })
 
     return (
         <div className="modal" style={{ display: "block", backgroundColor: "#000000aa" }}>
-            <div className="modal-dialog">
+            <div className="modal-dialog modal-lg">
                 <div className="modal-content p-4">
-                    <h4>Editar Usuario</h4>
-                    <input type="text"
-                        name="nombres"
-                        value={formulario.nombres}
-                        onChange={handleChange}
-                        placeholder="Nombres"
-                        className="form-control mb-2"
-                    />
-                    <input type="text"
-                        name="apellidos"
-                        value={formulario.apellidos}
-                        onChange={handleChange}
-                        className="form-control mb-2"
-                        placeholder="Apellidos"
-                    />
-                    <input type="text"
-                        name="tipoDocumento"
-                        value={formulario.tipoDocumento}
-                        onChange={handleChange}
-                        placeholder="Seleccione"
-                    />
-                    <input type="number"
-                        name="numeroDocumento"
-                        value={formulario.numeroDocumento}
-                        onChange={handleChange}
-                        className="form-control mb-2"
-                    />
-                    <input type="text"
-                        name="username"
-                        value={formulario.username}
-                        onChange={handleChange}
-                        className="form-control mb-2"
-                        placeholder="Usuario"
-                    />
-                    <input type="password"
-                        name="password"
-                        value={formulario.password}
-                        onChange={handleChange}
-                        className="form-control mb-2"
-                        placeholder="Contraseña"
-                    />
-                    <input type="text"
-                        name="rol"
-                        value={formulario.rol}
-                        onChange={handleChange}
-                        placeholder="Seleccione"
-                    />
+                    <h4 className="modal-title mb-3">Editar Usuario</h4>
+                    <div className="row">
+                        <CuadrosTexto
+                            tamanoinput="col-md-6"
+                            titulolabel="Nombres"
+                            tipoinput="text"
+                            nombreinput="nombres"
+                            idinput="nombresEditar"
+                            placeholderinput="Nombre del Usuario"
+                            value={formulario.nombres}
+                            onChange={handleChange}
+                        />
+
+                        <CuadrosTexto
+                            tamanoinput="col-md-6"
+                            titulolabel="Apellidos"
+                            tipoinput="text"
+                            nombreinput="apellidos"
+                            idinput="apellidosEditar"
+                            placeholderinput="Apellidos"
+                            value={formulario.apellidos}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <div className="row">
+                        <CuadrosSelect
+                            tamanoinput="col-md-6"
+                            titulolabel="Tipo Documento:"
+                            nombreinput="tipoDocumento"
+                            idinput="tipoDocumentoEditar"
+                            value={formulario.tipoDocumento}
+                            onChange={(e) =>
+                                setFormulario({ ...formulario, tipoDocumento: e.target.value })
+                            }
+                            opciones={[
+                                { valor: "CC", texto: "CC" },
+                                { valor: "CE", texto: "CE" },
+                                { valor: "PASAPORTE", texto: "PASAPORTE" }
+                            ]}
+                        />
+                        <CuadrosTexto
+                            tamanoinput="col-md-6"
+                            titulolabel="Número de Documento"
+                            tipoinput="number"
+                            nombreinput="numeroDocumento"
+                            idinput="numeroDocumentoEditar"
+                            placeholderinput="Número de Documento"
+                            value={formulario.numeroDocumento}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <div className="row">
+                        <CuadrosTexto
+                            tamanoinput="col-md-6"
+                            titulolabel="Nombre de Usuario"
+                            tipoinput="text"
+                            nombreinput="username"
+                            idinput="usernameEditar"
+                            placeholderinput="Nombre del Usuario"
+                            value={formulario.username}
+                            onChange={handleChange}
+                        />
+                        <CuadrosTexto
+                            tamanoinput="col-md-6"
+                            titulolabel="Nueva contraseña"
+                            tipoinput="password"
+                            nombreinput="password"
+                            idinput="passwordEditar"
+                            placeholderinput="Dejar en blanco para no cambiar"
+                            value={formulario.password || ""}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <div className="row">
+                        <CuadrosSelect
+                            tamanoinput="col-md-6"
+                            titulolabel="Rol:"
+                            nombreinput="rol"
+                            idinput="rolEditar"
+                            value={formulario.rol}
+                            onChange={(e) =>
+                                setFormulario({ ...formulario, rol: e.target.value })
+                            }
+                            opciones={[
+                                { valor: "ADMINISTRATIVO", texto: "ADMINISTRATIVO" },
+                                { valor: "OPERATIVO", texto: "OPERATIVO" }
+                            ]}
+                        />
+                    </div>
+
                     <div className="mt-3">
                         <button
                             onClick={() => {
@@ -161,7 +206,7 @@ export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado })
                                         setFormulario(usuario);
                                         onClose();
                                     }
-                                    
+
                                 });
                             }}
                             className="btn btn-secondary"

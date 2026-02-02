@@ -36,14 +36,13 @@ public class TratadorDeErrores {
         return ResponseEntity.badRequest().body(errores);
     }
 
-    // Solución simple y práctica
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity tratarErrorEnum(HttpMessageNotReadableException e){
         List<Map<String, String>> errores = new ArrayList<>();
         Map<String, String> error = new HashMap<>();
 
         // Extraer el nombre del campo del enum del mensaje de error
-        String campo = "campo no identificado";
+        String campo = "Seleccione";
         if (e.getMessage() != null && e.getMessage().contains("not one of the values accepted for Enum class")) {
             // Extraer nombre del enum del mensaje
             String[] partes = e.getMessage().split("`");
@@ -54,7 +53,7 @@ public class TratadorDeErrores {
         }
 
         error.put("campo", campo.toLowerCase()); // Convertir a minúsculas para consistencia
-        error.put("error", "Por favor, seleccione una opción válida en el campo " + campo);
+        error.put("error", "Por favor, verifica y selecciona una opción válida en Tipo de Documento o Rol");
 
         errores.add(error);
         return ResponseEntity.badRequest().body(errores);
