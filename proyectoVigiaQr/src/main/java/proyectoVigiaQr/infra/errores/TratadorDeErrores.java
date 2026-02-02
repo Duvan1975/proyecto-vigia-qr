@@ -1,4 +1,4 @@
-package proyectoVigiaQr.infra;
+package proyectoVigiaQr.infra.errores;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
