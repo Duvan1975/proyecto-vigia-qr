@@ -27,22 +27,31 @@ public class SecurityFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
         throws ServletException, IOException {
-        System.out.println("EL filtro ya está siendo llamado");
         //Obtener el token del header
         var authHeader = request.getHeader("Authorization");
 
         if (authHeader != null) {
             var token = authHeader.replace("Bearer ", "");
-            var subject = tokenService.getSubject(token);
 
-            if (subject != null) {
-                //token válido
-                var usuario = usuarioRepository.findByUsername(subject);
-                var authentication = new UsernamePasswordAuthenticationToken(
-                        usuario, null, usuario.getAuthorities());//Forzamos el inicio de sesión
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }else {
-                throw new RuntimeException("El token enviado NO es válido");
+            try {
+                var subject = tokenService.getSubject(token);
+
+                if (subject != null) {
+                    // Verificar si el usuario está activo
+                    boolean estado = tokenService.getEstadoFromToken(token);
+                    if (!estado) {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Cuenta desactivada");
+                        return;
+                    }
+
+                    var usuario = usuarioRepository.findByUsername(subject);
+                    var authentication = new UsernamePasswordAuthenticationToken(
+                            usuario, null, usuario.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (RuntimeException e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido: " + e.getMessage());
+                return;
             }
         }
         filterChain.doFilter(request, response);

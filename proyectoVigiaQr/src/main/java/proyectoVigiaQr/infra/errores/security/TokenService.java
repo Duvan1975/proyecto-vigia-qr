@@ -26,6 +26,8 @@ public class TokenService {
                     .withIssuer("database")
                     .withSubject(usuario.getUsername())
                     .withClaim("id", usuario.getId())
+                    .withClaim("rol", usuario.getRol().name()) // ← AGREGAR ESTO
+                    .withClaim("estado", usuario.isEnabled())  // ← AGREGAR ESTO
                     .withExpiresAt(generarFechaExpiracion())
                     .sign(algorithm);
         } catch (
@@ -45,6 +47,32 @@ public class TokenService {
             return verifier.getSubject();//Retorna el subject correctamente
         }catch (JWTVerificationException exception){
             throw new RuntimeException("El token enviado NO es válido" + exception);
+        }
+    }
+    // Método para extraer el rol del token
+    public String getRolFromToken(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(apiSecret);
+            DecodedJWT verifier = JWT.require(algorithm)
+                    .withIssuer("database")
+                    .build()
+                    .verify(token);
+            return verifier.getClaim("rol").asString();
+        } catch (JWTVerificationException exception) {
+            throw new RuntimeException("Error al extraer rol del token", exception);
+        }
+    }
+    // Método para verificar el estado del usuario desde el token
+    public boolean getEstadoFromToken(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(apiSecret);
+            DecodedJWT verifier = JWT.require(algorithm)
+                    .withIssuer("database")
+                    .build()
+                    .verify(token);
+            return verifier.getClaim("estado").asBoolean();
+        } catch (JWTVerificationException exception) {
+            throw new RuntimeException("Error al extraer estado del token", exception);
         }
     }
     private Instant generarFechaExpiracion(){
