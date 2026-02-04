@@ -1,4 +1,5 @@
 import { idPuestoCreado } from "./AgregarPuesto";
+import { authFetch } from "./utils/authFetch";
 
 export function generarCodigoQR() {
 
@@ -8,7 +9,7 @@ export function generarCodigoQR() {
         idPuestosTrabajo: idPuestoCreado
     };
 
-    fetch("http://localhost:8080/codigos-qr", {
+    authFetch("http://localhost:8080/codigos-qr", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

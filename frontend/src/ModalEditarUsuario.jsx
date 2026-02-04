@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { CuadrosTexto } from "./CuadrosTexto";
 import { CuadrosSelect } from "./CuadrosSelect";
 import Swal from "sweetalert2";
+import { authFetch } from "./utils/authFetch";
 
 export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado }) {
     const [formulario, setFormulario] = useState({
@@ -28,7 +29,7 @@ export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado })
     };
 
     const actualizarUsuario = () => {
-        fetch("http://localhost:8080/usuarios", {
+        authFetch("http://localhost:8080/usuarios", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"

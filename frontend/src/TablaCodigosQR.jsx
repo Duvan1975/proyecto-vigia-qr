@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import Paginacion from "./Paginacion";
+import { authFetch } from "./utils/authFetch";
 
 export function TablaCodigosQR() {
     const [puestoConCodigoQR, setPuestoConCodigoQR] = useState([]);
@@ -18,7 +19,7 @@ export function TablaCodigosQR() {
     const cargarPuestoConCodigoQR = (pagina = 0) => {
         setCargando(true);
 
-        fetch(`http://localhost:8080/codigos-qr?page=${pagina}`)
+        authFetch(`http://localhost:8080/codigos-qr?page=${pagina}`)
             .then((res) => res.json())
             .then((data) => {
                 setPuestoConCodigoQR(data.content);

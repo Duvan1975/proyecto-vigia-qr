@@ -3,6 +3,7 @@ import { FormularioUsuarios } from "./FormularioUsuarios";
 import { FormularioPuestos } from "./FormularioPuestos";
 import { TablaPuestos } from "./TablaPuestos";
 import { TablaUsuarios } from "./TablaUsuarios";
+import { Login } from "./Login";
 
 export function Menu() {
     const [vista, setVista] = useState("menu");
@@ -15,6 +16,11 @@ export function Menu() {
                     className="btn btn-info me-2"
                     onClick={() => setVista("menu")}
                 >Inicio
+                </button>
+                <button
+                    className="btn btn-dark me-3"
+                    onClick={() => setVista("login")}
+                >Login
                 </button>
                 <button
                     className="btn btn-primary me-2"
@@ -35,6 +41,7 @@ export function Menu() {
                 >Listar Puestos
                 </button>
             </div>
+            {vista === "login" && <Login />}
             {vista === "formularioUsuarios" && <FormularioUsuarios />}
             {vista === "tablaUsuarios" && <TablaUsuarios />}
             {vista === "formularioPuestos" && <FormularioPuestos />}

@@ -3,6 +3,7 @@ import { ModalEditarPuesto } from "./ModalEditarPuesto";
 import Paginacion from "./Paginacion";
 import Swal from "sweetalert2";
 import { TablaCodigoQrPorPuesto } from "./TablaCodigoQrPorPuesto";
+import { authFetch } from "./utils/authFetch";
 
 export function TablaPuestos() {
 
@@ -31,7 +32,7 @@ export function TablaPuestos() {
     }, [paginaActual]);
 
     const cargarPuestos = (pagina = 0) => {
-        fetch(`http://localhost:8080/puestosTrabajos?page=${pagina}`)
+        authFetch(`http://localhost:8080/puestosTrabajos?page=${pagina}`)
             .then((response) => response.json())
             .then((data) => {
                 setPuestosTrabajos(data.content);
@@ -44,7 +45,7 @@ export function TablaPuestos() {
     };
 
     useEffect(() => {
-        fetch("http://localhost:8080/puestosTrabajos")
+        authFetch("http://localhost:8080/puestosTrabajos")
             .then((response) => response.json())
             .then((data) => setPuestosTrabajos(data.content))
             .catch((error) => console.error("Error al cargar puestos de trabajo:", error));
@@ -52,7 +53,7 @@ export function TablaPuestos() {
 
     const cambiarEstadoPuesto = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8080/puestosTrabajos/${id}/estado`, {
+            const response = await authFetch(`http://localhost:8080/puestosTrabajos/${id}/estado`, {
                 method: "PATCH",
             });
 
@@ -90,7 +91,7 @@ export function TablaPuestos() {
             return;
         }
 
-        fetch(`http://localhost:8080/puestosTrabajos/buscarPorNombrePuesto?nombrePuesto=${nombreBuscar}`)
+        authFetch(`http://localhost:8080/puestosTrabajos/buscarPorNombrePuesto?nombrePuesto=${nombreBuscar}`)
             .then((res) => {
                 if (!res.ok) throw new Error("Puesto no encontrado");
                 return res.json();

@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import { authFetch } from "./utils/authFetch";
 
 export async function AgregarPuesto(datos, limpiarFormulario) {
 
@@ -34,7 +35,7 @@ export async function AgregarPuesto(datos, limpiarFormulario) {
         });*/
 
     try {
-        const responsePuesto = await fetch("http://localhost:8080/puestosTrabajos", {
+        const responsePuesto = await authFetch("http://localhost:8080/puestosTrabajos", {
             method: "POST",
             headers: {
                 "Content-type": "application/json",

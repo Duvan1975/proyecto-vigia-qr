@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { CuadrosTexto } from "./CuadrosTexto";
 import Swal from "sweetalert2";
+import { authFetch } from "./utils/authFetch";
 
 export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualizado, onEliminado }) {
     const [codigoQr, setCodigoQr] = useState([]);
@@ -24,7 +25,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
             setFormulario(puestoTrabajo)
 
             //Obtener código QR del puesto de trabajo por el ID
-            fetch(`http://localhost:8080/codigos-qr/puesto/${puestoTrabajo.id}`)
+            authFetch(`http://localhost:8080/codigos-qr/puesto/${puestoTrabajo.id}`)
                 .then(res => res.json())
                 .then(data => {
                     const codigosPreparados = (Array.isArray(data) ? data : []).map(c => ({
@@ -65,7 +66,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
     };
 
     const actualizarPuestoTrabajo = () => {
-        fetch("http://localhost:8080/puestosTrabajos", {
+        authFetch("http://localhost:8080/puestosTrabajos", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -114,7 +115,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
 
 
     const actualizarCodigoQr = (codigoQr) => {
-        fetch("http://localhost:8080/codigos-qr", {
+        authFetch("http://localhost:8080/codigos-qr", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -161,7 +162,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
             return;
         }
 
-        fetch(`http://localhost:8080/codigos-qr/puesto/${puestoTrabajo.id}`, {
+        authFetch(`http://localhost:8080/codigos-qr/puesto/${puestoTrabajo.id}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(nuevosCodigosQr)
@@ -245,7 +246,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
 
         const nombreArchivo = `${limpiarTexto(nombrePuesto)}_${limpiarTexto(ubicacion)}`;
 
-        fetch(`http://localhost:8080/codigos-qr/${idCodigoQr}/descargar`)
+        authFetch(`http://localhost:8080/codigos-qr/${idCodigoQr}/descargar`)
             .then(res => {
                 if (!res.ok) {
                     throw new Error("No se pudo descargar el código QR");
@@ -310,7 +311,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`http://localhost:8080/codigos-qr/${id}`, {
+                authFetch(`http://localhost:8080/codigos-qr/${id}`, {
                     method: "DELETE",
                     headers: {
                     }
@@ -329,7 +330,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
     };
 
     const eliminarPuestoTrabajo = () => {
-        fetch(`http://localhost:8080/puestosTrabajos/${formulario.id}`, {
+        authFetch(`http://localhost:8080/puestosTrabajos/${formulario.id}`, {
             method: "DELETE"
         })
             .then(async (response) => {

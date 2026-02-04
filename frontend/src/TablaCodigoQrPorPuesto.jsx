@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { authFetch } from "./utils/authFetch";
 
 export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose }) {
     const [codigoQr, setCodigoQr] = useState([]);
@@ -14,7 +15,7 @@ export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose })
 
     const cargarCodigoQrPorPuesto = () => {
         setCargando(true);
-        fetch(`http://localhost:8080/codigos-qr/puesto/${puestoTrabajoId}`)
+        authFetch(`http://localhost:8080/codigos-qr/puesto/${puestoTrabajoId}`)
             .then((res) => res.json())
             .then((data) => {
                 console.log("Datos recibidos de códigos QR:", data);
@@ -24,7 +25,7 @@ export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose })
                     setPuesto(nombreCompleto);
                 } else {
                     // Si no hay códigos, podrías hacer otra petición para obtener el nombre del puesto
-                    fetch(`http://localhost:8080/puestos-trabajo/${puestoTrabajoId}`)
+                    authFetch(`http://localhost:8080/puestos-trabajo/${puestoTrabajoId}`)
                         .then((res) => res.json())
                         .then((puesto) => {
                             setPuesto(puesto.nombre || "");
@@ -68,7 +69,7 @@ export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose })
         const ubicacion = limpiarTexto(codigo.ubicacion);
         const nombreArchivo = `${nombrePuestoArchivo}_${ubicacion}`;
 
-        fetch(`http://localhost:8080/codigos-qr/${codigoId}/descargar`)
+        authFetch(`http://localhost:8080/codigos-qr/${codigoId}/descargar`)
             .then(res => {
                 if (!res.ok) {
                     throw new Error("No se pudo descargar el código QR");

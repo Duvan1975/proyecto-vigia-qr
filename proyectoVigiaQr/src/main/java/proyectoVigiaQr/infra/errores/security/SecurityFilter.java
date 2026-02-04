@@ -4,13 +4,23 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import proyectoVigiaQr.domain.usuario.UsuarioRepository;
 
 import java.io.IOException;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -19,10 +29,22 @@ public class SecurityFilter extends OncePerRequestFilter {
         throws ServletException, IOException {
         System.out.println("EL filtro ya está siendo llamado");
         //Obtener el token del header
-        var token = request.getHeader("Authorization").replace(" Bearer", "");
+        var authHeader = request.getHeader("Authorization");
 
-        System.out.println(token);
+        if (authHeader != null) {
+            var token = authHeader.replace("Bearer ", "");
+            var subject = tokenService.getSubject(token);
+
+            if (subject != null) {
+                //token válido
+                var usuario = usuarioRepository.findByUsername(subject);
+                var authentication = new UsernamePasswordAuthenticationToken(
+                        usuario, null, usuario.getAuthorities());//Forzamos el inicio de sesión
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }else {
+                throw new RuntimeException("El token enviado NO es válido");
+            }
+        }
         filterChain.doFilter(request, response);
     }
-
 }

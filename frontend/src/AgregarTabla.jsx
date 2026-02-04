@@ -1,9 +1,10 @@
 import Swal from "sweetalert2";
+import { authFetch } from "./utils/authFetch";
 
 export async function AgregarTabla(usuario, limpiarFormulario) {
 
     try {
-        const responseUsuario = await fetch("http://localhost:8080/usuarios", {
+        const responseUsuario = await authFetch("http://localhost:8080/usuarios", {
             method: "POST",
             headers: {
                 "Content-type": "application/json",

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ModalEditarUsuario } from "./ModalEditarUsuario";
 import Paginacion from "./Paginacion";
 import Swal from "sweetalert2";
+import { authFetch } from "./utils/authFetch";
 
 export function TablaUsuarios() {
 
@@ -40,7 +41,8 @@ export function TablaUsuarios() {
     };
 
     const cargarUsuarios = (pagina = 0) => {
-        fetch(`http://localhost:8080/usuarios?page=${pagina}`)
+
+        authFetch(`http://localhost:8080/usuarios?page=${pagina}`)
             .then((response) => response.json())
             .then((data) => {
                 setUsuarios(data.content);
@@ -61,7 +63,7 @@ export function TablaUsuarios() {
 
     const cambiarEstadoUsuario = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8080/usuarios/${id}/estado`, {
+            const response = await authFetch(`http://localhost:8080/usuarios/${id}/estado`, {
                 method: "PATCH",
             });
 
@@ -99,7 +101,7 @@ export function TablaUsuarios() {
             return;
         }
 
-        fetch(`http://localhost:8080/usuarios/buscarPorNombreCompleto?filtro=${nombreBuscar}`)
+        authFetch(`http://localhost:8080/usuarios/buscarPorNombreCompleto?filtro=${nombreBuscar}`)
             .then((res) => {
                 if (!res.ok) throw new Error("Usuario no encontrado");
                 return res.json();
@@ -141,7 +143,7 @@ export function TablaUsuarios() {
             return;
         }
         //Aquí mostramos el endpoint de búsqueda por número de documento
-        fetch(`http://localhost:8080/usuarios/buscarPorDocumento?numeroDocumento=${documentoBuscar}`)
+        authFetch(`http://localhost:8080/usuarios/buscarPorDocumento?numeroDocumento=${documentoBuscar}`)
             .then((res) => {
                 if (!res.ok) throw new Error("Usuario no encontrado");
                 return res.json();
