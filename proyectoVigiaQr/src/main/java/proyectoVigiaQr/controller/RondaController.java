@@ -2,6 +2,8 @@ package proyectoVigiaQr.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +34,10 @@ public class RondaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DatosListadoRonda>> listarTodas() {
-        return ResponseEntity.ok(rondaService.listarTodas());
+    public Page<DatosListadoRonda> listarTodas(
+            @PageableDefault(size = 20, sort = "fecha")Pageable paginacion
+            ) {
+        return rondaService.listarTodas(paginacion);
     }
 
     @GetMapping("/puesto/{idPuesto}")

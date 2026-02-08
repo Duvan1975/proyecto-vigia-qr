@@ -21,7 +21,7 @@ export function TablaPuestos() {
     const [totalElementos, setTotalElementos] = useState(0);
     const [tamanoPagina, setTamanoPagina] = useState(0);
 
-    //Estados para cargar y controlar el historial de contratos
+    //Estados para cargar y controlar el historial de códigos QR
     const [codigoQrPorPuestoListar, setCodigoQrPorPuestoListar] = useState(null);
     const [mostrarTablaCodigoQr, setMostrarTablaCodigoQr] = useState(false);
     const [contadorActualizacion, setContadorActualizacion] = useState(0);

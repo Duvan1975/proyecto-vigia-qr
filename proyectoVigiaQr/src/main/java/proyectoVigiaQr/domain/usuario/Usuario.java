@@ -5,7 +5,9 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import proyectoVigiaQr.domain.rondas.Ronda;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -45,6 +47,9 @@ public class Usuario implements UserDetails {
 
     @Column(nullable = false)
     private boolean estado = true;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ronda> ronda = new ArrayList<>();
 
     public Usuario (DatosRegistroUsuario datos) {
         this.nombres = datos.nombres().trim();
@@ -160,5 +165,13 @@ public class Usuario implements UserDetails {
 
     public void actualizarDatos(DatosActualizarUsuario datos) {
 
+    }
+
+    public List<Ronda> getRonda() {
+        return ronda;
+    }
+
+    public void setRonda(List<Ronda> ronda) {
+        this.ronda = ronda;
     }
 }

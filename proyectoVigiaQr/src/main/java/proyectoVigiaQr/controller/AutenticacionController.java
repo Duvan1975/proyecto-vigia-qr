@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import proyectoVigiaQr.domain.usuario.DatosAutenticacionUsuario;
 import proyectoVigiaQr.domain.usuario.Usuario;
-import proyectoVigiaQr.infra.errores.security.DatosJWTtoken;
 import proyectoVigiaQr.infra.errores.security.TokenService;
 
 import java.util.HashMap;

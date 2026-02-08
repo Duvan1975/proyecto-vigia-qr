@@ -34,6 +34,12 @@ public class UsuarioService {
             throw new RuntimeException("Número de documento duplicado");
         }
 
+        if (usuarioRepository.existsByUsername(datos.username())) {
+            throw new IllegalStateException(
+                    "Ya existe un Usuario con el nombre de usuario: " + datos.username()
+            );
+        }
+
         //Creamos un objeto desde el DTO
         Usuario usuario = new Usuario(datos);
 
@@ -104,6 +110,19 @@ public class UsuarioService {
                 usuario.setApellidos(datos.apellidos().trim());
             }
         }
+        if (datos.username() != null) {
+            boolean existeDuplicado = usuarioRepository
+                    .existsByUsernameAndIdNot(
+                            datos.username(),
+                            usuario.getId()
+                    );
+            if (existeDuplicado) {
+                throw new IllegalStateException(
+                        "Ya existe un Usuario con el nombre de usuario: " + datos.username()
+                );
+            }
+        }
+
         usuario.actualizarDatos(datos);
 
         if (datos.nombres() != null) usuario.setNombres(datos.nombres());

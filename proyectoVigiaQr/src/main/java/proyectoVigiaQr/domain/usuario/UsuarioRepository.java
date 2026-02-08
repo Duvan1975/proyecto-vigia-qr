@@ -13,7 +13,16 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     UserDetails findByUsername(String username);
 
-    boolean existsBynumeroDocumento(@NotBlank @Pattern(regexp = "\\d{7,15}",message = "Debe contener solo números entre 7 y 15 digitos") String s);
+    boolean existsBynumeroDocumento(@NotBlank @Pattern(
+            regexp = "\\d{7,15}",message = "Debe contener solo números entre 7 y 15 digitos") String s);
+
+    boolean existsByUsername(
+            String username
+    );
+
+    boolean existsByUsernameAndIdNot(
+            String username, Long id
+    );
 
     Optional<Usuario> findByNumeroDocumento(String numeroDocumento);
 

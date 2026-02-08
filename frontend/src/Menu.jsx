@@ -3,6 +3,8 @@ import { FormularioUsuarios } from "./FormularioUsuarios";
 import { FormularioPuestos } from "./FormularioPuestos";
 import { TablaPuestos } from "./TablaPuestos";
 import { TablaUsuarios } from "./TablaUsuarios";
+import { TablaRondas } from "./TablaRondas";
+import { ScannerQr } from "./ScannerQr";
 import { Login } from "./Login";
 
 export function Menu() {
@@ -78,6 +80,15 @@ export function Menu() {
                         onClick={() => setVista("tablaPuestos")}
                     >Listar Puestos
                     </button>
+                    <button className="btn btn-secondary me-2"
+                        onClick={() => setVista("tablaRondas")}
+                    >Listado de Rondas
+                    </button>
+                    <button className="btn btn-secondary me-2"
+                        onClick={() => setVista("scannerQr")}
+                    >Escanear Código
+                    </button>
+
                 </div>
             )}
             {/* Mostrar botón de login SOLO cuando NO esté logueado Y NO esté en vista login */}
@@ -93,6 +104,8 @@ export function Menu() {
             {vista === "tablaUsuarios" && <TablaUsuarios />}
             {vista === "formularioPuestos" && <FormularioPuestos />}
             {vista === "tablaPuestos" && <TablaPuestos />}
+            {vista === "tablaRondas" && <TablaRondas />}
+            {vista === "scannerQr" && <ScannerQr />}
 
             {/* Login con callback para redirección */}
             {vista === "login" && (

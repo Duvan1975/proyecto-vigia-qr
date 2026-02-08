@@ -63,11 +63,9 @@ public class RondaService {
 
         rondaRepository.save(ronda);
     }
-    public List<DatosListadoRonda> listarTodas() {
-        return rondaRepository.findAll()
-                .stream()
-                .map(DatosListadoRonda::new)
-                .toList();
+    public Page<DatosListadoRonda> listarTodas(Pageable paginacion) {
+        return rondaRepository.findAll(paginacion)
+                .map(DatosListadoRonda::new);
     }
 
     public List<DatosListadoRonda> listarPorPuesto(Long idPuestoTrabajo) {
@@ -78,6 +76,12 @@ public class RondaService {
     }
 
     public List<DatosListadoRonda> listarPorUsuario(Long idUsuario) {
+
+        var ronda = rondaRepository.findByUsuarioId(idUsuario);
+
+        if (ronda.isEmpty()) {
+            throw new RuntimeException("Usuario no encontrado o sin rondas registradas");
+        }
         return rondaRepository.findByUsuarioId(idUsuario)
                 .stream()
                 .map(DatosListadoRonda::new)
