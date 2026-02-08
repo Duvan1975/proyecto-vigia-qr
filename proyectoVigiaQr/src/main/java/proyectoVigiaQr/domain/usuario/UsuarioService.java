@@ -1,11 +1,13 @@
 package proyectoVigiaQr.domain.usuario;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -18,16 +20,29 @@ import java.util.regex.Pattern;
 @Service
 public class UsuarioService {
 
-    @Autowired UsuarioRepository usuarioRepository;
+    @Autowired
+    UsuarioRepository usuarioRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Transactional
     public ResponseEntity<DatosRespuestaUsuario> registrarUsuario(
-            DatosRegistroUsuario datos, UriComponentsBuilder uriComponentsBuilder) {
+            @Valid DatosRegistroUsuario datos, UriComponentsBuilder uriComponentsBuilder) {
 
         if (usuarioRepository.existsBynumeroDocumento(datos.numeroDocumento())) {
             throw new RuntimeException("Número de documento duplicado");
         }
-        Usuario usuario = new Usuario(datos); //Creamos el objeto
-        usuarioRepository.save(usuario); //Lo guardamos
+
+        //Creamos un objeto desde el DTO
+        Usuario usuario = new Usuario(datos);
+
+        //Encriptamos el password antes de guardar
+        String passwordEncriptada = passwordEncoder.encode(datos.password());
+        usuario.setPassword(passwordEncriptada);
+
+        //Guardamos en la DB
+        usuarioRepository.save(usuario);
 
         //Construímos la Uri del recurso creado
         var uri = uriComponentsBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri();

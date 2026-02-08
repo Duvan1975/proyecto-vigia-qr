@@ -183,7 +183,7 @@ export function TablaUsuarios() {
                 <h5>Buscar Usuario por:</h5>
                 <div className="row">
                     <div className="col-md-4">
-                        <select class="form-select"
+                        <select className="form-select"
                             aria-label="Default select example"
                             onChange={(e) => setTipoBusqueda(e.target.value)}
                             value={tipoBusqueda}>

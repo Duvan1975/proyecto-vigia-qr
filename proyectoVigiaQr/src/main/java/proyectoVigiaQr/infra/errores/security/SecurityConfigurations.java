@@ -40,8 +40,17 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
-                        .requestMatchers("/administrador/**").hasAnyAuthority("ROLE_ADMINISTRADOR")
-                        .requestMatchers("/operativo/**").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_OPERATIVO")
+
+                        .requestMatchers("/test/public").permitAll()
+
+                        //Protección por ROLES Usuarios de prueba
+                        .requestMatchers("/test/admin/**").hasAnyAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers("/test/oper/**").hasAnyAuthority("ROLE_ADMINISTRATIVO", "ROLE_OPERATIVO")
+
+                        //Protección por ROLES Usuarios REALES (endpoints)
+                        .requestMatchers("/usuarios/**").hasAnyAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers("/puestosTrabajos/**").hasAnyAuthority("ROLE_ADMINISTRATIVO", "ROLE_OPERATIVO")
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
