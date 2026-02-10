@@ -68,11 +68,26 @@ public class RondaService {
                 .map(DatosListadoRonda::new);
     }
 
-    public List<DatosListadoRonda> listarPorPuesto(Long idPuestoTrabajo) {
-        return rondaRepository.findByPuestoTrabajoId(idPuestoTrabajo)
-                .stream()
-                .map(DatosListadoRonda::new)
-                .toList();
+    public Page<DatosListadoRonda> listarPorPuesto(Long idPuestoTrabajo, Pageable paginacion) {
+
+        var ronda = rondaRepository.findByPuestoTrabajoId(idPuestoTrabajo, paginacion);
+
+        if (ronda.isEmpty()) {
+            throw new RuntimeException("Puesto no encontrado o sin rondas registradas");
+        }
+
+        return rondaRepository.findByPuestoTrabajoId(idPuestoTrabajo, paginacion)
+                .map(DatosListadoRonda::new);
+    }
+
+    public Page<DatosListadoRonda> listarPorNombrePuesto(String nombrePuesto, Pageable paginacion) {
+        Page<Ronda> rondas = rondaRepository.findByNombrePuestoContaining(nombrePuesto, paginacion);
+
+        if (rondas.isEmpty()) {
+            throw new RuntimeException("No se encontraron rondas para el puesto: " + nombrePuesto);
+        }
+
+        return rondas.map(DatosListadoRonda::new);
     }
 
     public List<DatosListadoRonda> listarPorUsuario(Long idUsuario) {
@@ -88,11 +103,9 @@ public class RondaService {
                 .toList();
     }
 
-    public List<DatosListadoRonda> listarPorFecha(LocalDate fecha) {
-        return rondaRepository.findByFecha(fecha)
-                .stream()
-                .map(DatosListadoRonda::new)
-                .toList();
+    public Page<DatosListadoRonda> listarPorFecha(LocalDate fecha, Pageable paginacion) {
+        return rondaRepository.findByFecha(fecha, paginacion)
+                .map(DatosListadoRonda::new);
     }
 
     public Page<DatosListadoRonda> listarConFiltros(

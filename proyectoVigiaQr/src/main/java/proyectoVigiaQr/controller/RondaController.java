@@ -3,6 +3,7 @@ package proyectoVigiaQr.controller;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,16 +36,43 @@ public class RondaController {
 
     @GetMapping
     public Page<DatosListadoRonda> listarTodas(
-            @PageableDefault(size = 20, sort = "fecha")Pageable paginacion
+            @PageableDefault(
+                    size = 20, sort = "fecha", direction = Sort.Direction.DESC)Pageable paginacion
             ) {
         return rondaService.listarTodas(paginacion);
     }
 
     @GetMapping("/puesto/{idPuesto}")
-    public ResponseEntity<List<DatosListadoRonda>> listarPorPuesto(
-            @PathVariable Long idPuesto
+    public ResponseEntity<Page<DatosListadoRonda>> listarPorPuesto(
+            @PathVariable Long idPuesto,
+            @PageableDefault(
+                    size = 20, sort = "fecha", direction = Sort.Direction.DESC
+            )Pageable paginacion
     ) {
-        return ResponseEntity.ok(rondaService.listarPorPuesto(idPuesto));
+        return ResponseEntity.ok(rondaService.listarPorPuesto(idPuesto, paginacion));
+    }
+
+    @GetMapping("/puesto/nombre")
+    public ResponseEntity<Page<DatosListadoRonda>> listarPorNombrePuesto(
+            @RequestParam(value = "nombre", required = false) String nombrePuesto,
+            @PageableDefault(size = 20, sort = "fecha", direction = Sort.Direction.DESC) Pageable paginacion
+    ) {
+        try {
+            Page<DatosListadoRonda> resultado;
+
+            if (nombrePuesto == null || nombrePuesto.trim().isEmpty()) {
+                // Si no se proporciona nombre, devolver todas las rondas
+                resultado = rondaService.listarTodas(paginacion);
+            } else {
+                // Buscar por nombre
+                resultado = rondaService.listarPorNombrePuesto(nombrePuesto, paginacion);
+            }
+
+            return ResponseEntity.ok(resultado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Page.empty(paginacion));
+        }
     }
 
     @GetMapping("/usuario/{idUsuario}")
@@ -55,11 +83,12 @@ public class RondaController {
     }
 
     @GetMapping("/fecha/{fecha}")
-    public ResponseEntity<List<DatosListadoRonda>> listarPorFecha(
-            @PathVariable String fecha
+    public ResponseEntity<Page<DatosListadoRonda>> listarPorFecha(
+            @PathVariable String fecha,
+            @PageableDefault(size = 20, sort = "fecha", direction = Sort.Direction.DESC) Pageable paginacion
     ) {
         return ResponseEntity.ok(
-                rondaService.listarPorFecha(LocalDate.parse(fecha))
+                rondaService.listarPorFecha(LocalDate.parse(fecha), paginacion)
         );
     }
 
