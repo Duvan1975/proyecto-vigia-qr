@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { authFetch } from "./utils/authFetch";
 import { exportarAExcel } from "./utils/exportarExcel";
+import { exportarCodigosQRaPDF } from "./utils/exportarPDF";
 
 export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose }) {
     const [codigoQr, setCodigoQr] = useState([]);
     const [cargando, setCargando] = useState(true);
 
     const [puesto, setPuesto] = useState("");
+
+    //Estado para importar PDF
+    const [exportandoPDF, setExportandoPDF] = useState(false);
 
     useEffect(() => {
         cargarCodigoQrPorPuesto();
@@ -129,6 +133,12 @@ export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose })
 
     };
 
+    const exportarAPDF = () => {
+        setExportandoPDF(true);
+        exportarCodigosQRaPDF(codigoQr, puesto, authFetch)
+            .finally(() => setExportandoPDF(false));
+    };
+
     if (cargando) return <p>Cargando Códigos qr...</p>;
 
     if (codigoQr.length === 0) {
@@ -142,12 +152,31 @@ export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose })
             </h4>
             <button className="btn btn-secondary" onClick={onClose}>Cerrar</button>
 
-                                    <button
-                            className="btn btn-success mb-3"
-                            onClick={exportarExcel}
-                        >
-                            <i className="bi bi-file-excel"></i> Exportar todos
-                        </button>
+            <button
+                className="btn btn-success mb-3"
+                onClick={exportarExcel}
+            >
+                <i className="bi bi-file-excel"></i> Exportar todos
+            </button>
+
+            <button
+                className="btn btn-danger me-2"
+                onClick={exportarAPDF}
+                disabled={exportandoPDF || codigoQr.length === 0}
+                title="Exportar a PDF con imágenes QR"
+            >
+                {exportandoPDF ? (
+                    <>
+                        <span className="spinner-border spinner-border-sm me-2"></span>
+                        Generando PDF...
+                    </>
+                ) : (
+                    <>
+                        <i className="bi bi-file-pdf me-1"></i>
+                        Exportar a PDF
+                    </>
+                )}
+            </button>
 
             <table className="table table-bordered table-hover table-striped">
                 <thead className="table-primary">
