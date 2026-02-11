@@ -16,6 +16,7 @@ export function TablaRondas() {
     // Estados de búsqueda
     const [nombreBuscar, setNombreBuscar] = useState("");
     const [fechaBuscar, setFechaBuscar] = useState("");
+    const [usuarioBuscar, setUsuarioBuscar] = useState("");
     const [resultadoBusqueda, setResultadoBusqueda] = useState([]);
     const [tipoBusqueda, setTipoBusqueda] = useState("nombreDelPuesto");
     const [enBusqueda, setEnBusqueda] = useState(false);
@@ -48,6 +49,8 @@ export function TablaRondas() {
             buscarRondaPorNombrePuesto();
         } else if (tipoBusqueda === "fecha") {
             buscarRondaPorFecha();
+        } else if (tipoBusqueda === "usuario") {
+            buscarRondaPorUsuario();
         }
     };
 
@@ -106,7 +109,6 @@ export function TablaRondas() {
             return;
         }
 
-        // Validar formato de fecha (yyyy-mm-dd)
         const fechaRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!fechaRegex.test(fechaBuscar)) {
             Swal.fire({
@@ -120,7 +122,6 @@ export function TablaRondas() {
         setCargando(true);
         setEnBusqueda(true);
         
-        // CORREGIDO: quitar el "=" extra
         authFetch(`http://localhost:8080/rondas/fecha/${fechaBuscar}?page=0&sort=fecha,desc`)
             .then((res) => {
                 if (!res.ok) throw new Error("Fecha no encontrada o sin registros");
@@ -153,10 +154,56 @@ export function TablaRondas() {
             });
     };
 
+    const buscarRondaPorUsuario = () => {
+        if (!usuarioBuscar || usuarioBuscar.trim() === "") {
+            Swal.fire({
+                icon: "warning",
+                title: "Nombre requerido",
+                text: "Por favor ingrese un nombre de usuario válido.",
+            });
+            return;
+        }
+
+        setCargando(true);
+        setEnBusqueda(true);
+
+        authFetch(`http://localhost:8080/rondas/usuario/nombre?nombre=${encodeURIComponent(usuarioBuscar)}&page=0&sort=fecha,desc`)
+            .then((res) => {
+                if (!res.ok) throw new Error("Usuario no encontrado");
+                return res.json();
+            })
+            .then((data) => {
+                setResultadoBusqueda(data.content || []);
+                setTotalPaginas(data.totalPages || 1);
+                setPaginaActual(data.number || 0);
+                setTotalElementos(data.totalElements || 0);
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Rondas Encontradas",
+                    text: `${data.totalElements || data.content.length} rondas encontradas para el usuario`,
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+                setCargando(false);
+            })
+            .catch((error) => {
+                console.error("Error en la búsqueda", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "No encontrado",
+                    text: "No se encontraron rondas para ese usuario.",
+                });
+                setResultadoBusqueda([]);
+                setCargando(false);
+            });
+    };
+
     const limpiarBusqueda = () => {
         setResultadoBusqueda([]);
         setFechaBuscar("");
         setNombreBuscar("");
+        setUsuarioBuscar("");
         setEnBusqueda(false);
         setPaginaActual(0);
         cargarRondas(0);
@@ -167,21 +214,27 @@ export function TablaRondas() {
         
         if (enBusqueda) {
             // Si estamos en búsqueda, cargar la página correspondiente
+            let url = "";
+            
             if (tipoBusqueda === "nombreDelPuesto" && nombreBuscar) {
-                authFetch(`http://localhost:8080/rondas/puesto/nombre?nombre=${encodeURIComponent(nombreBuscar)}&page=${nuevaPagina}&sort=fecha,desc`)
-                    .then(res => res.json())
-                    .then(data => {
-                        setResultadoBusqueda(data.content || []);
-                        setTotalPaginas(data.totalPages);
-                        setTotalElementos(data.totalElements);
-                    });
+                url = `http://localhost:8080/rondas/puesto/nombre?nombre=${encodeURIComponent(nombreBuscar)}&page=${nuevaPagina}&sort=fecha,desc`;
             } else if (tipoBusqueda === "fecha" && fechaBuscar) {
-                authFetch(`http://localhost:8080/rondas/fecha/${fechaBuscar}?page=${nuevaPagina}&sort=fecha,desc`)
+                url = `http://localhost:8080/rondas/fecha/${fechaBuscar}?page=${nuevaPagina}&sort=fecha,desc`;
+            } else if (tipoBusqueda === "usuario" && usuarioBuscar) {
+                url = `http://localhost:8080/rondas/usuario/nombre?nombre=${encodeURIComponent(usuarioBuscar)}&page=${nuevaPagina}&sort=fecha,desc`;
+            }
+            
+            if (url) {
+                authFetch(url)
                     .then(res => res.json())
                     .then(data => {
                         setResultadoBusqueda(data.content || []);
-                        setTotalPaginas(data.totalPages);
-                        setTotalElementos(data.totalElements);
+                        setTotalPaginas(data.totalPages || 1);
+                        setTotalElementos(data.totalElements || 0);
+                    })
+                    .catch(error => {
+                        console.error("Error al cambiar página:", error);
+                        Swal.fire("Error", "No se pudo cargar la página", "error");
                     });
             }
         } else {
@@ -226,30 +279,41 @@ export function TablaRondas() {
                             >
                                 <option value="nombreDelPuesto">Por Nombre del Puesto</option>
                                 <option value="fecha">Por Fecha</option>
+                                <option value="usuario">Por Nombre del Usuario</option>
                             </select>
                         </div>
                         
                         <div className="col-md-6">
                             <label className="form-label">
-                                {tipoBusqueda === "nombreDelPuesto" 
-                                    ? "Nombre del Puesto" 
-                                    : "Fecha (AAAA-MM-DD)"}
+                                {tipoBusqueda === "nombreDelPuesto"
+                                    ? "Nombre del Puesto"
+                                    : tipoBusqueda === "fecha"
+                                    ? "Fecha (AAAA-MM-DD)"
+                                    : "Nombre del Usuario"}
                             </label>
                             <input
-                                type={tipoBusqueda === "nombreDelPuesto" ? "text" : "date"}
+                                type={tipoBusqueda === "fecha" ? "date" : "text"}
                                 className="form-control"
-                                value={tipoBusqueda === "nombreDelPuesto" ? nombreBuscar : fechaBuscar}
+                                value={
+                                    tipoBusqueda === "nombreDelPuesto" ? nombreBuscar :
+                                    tipoBusqueda === "fecha" ? fechaBuscar :
+                                    usuarioBuscar
+                                }
                                 onChange={(e) => {
                                     if (tipoBusqueda === "nombreDelPuesto") {
                                         setNombreBuscar(e.target.value);
-                                    } else {
+                                    } else if (tipoBusqueda === "fecha") {
                                         setFechaBuscar(e.target.value);
+                                    } else {
+                                        setUsuarioBuscar(e.target.value);
                                     }
                                 }}
                                 placeholder={
-                                    tipoBusqueda === "nombreDelPuesto" 
-                                        ? "Ej: INDUSTRIA LA LICORERA" 
-                                        : "YYYY-MM-DD"
+                                    tipoBusqueda === "nombreDelPuesto"
+                                        ? "Ej: INDUSTRIA LA LICORERA"
+                                        : tipoBusqueda === "fecha"
+                                        ? "YYYY-MM-DD"
+                                        : "Ej: RUBEN DARIO GOMEZ ARIAS"
                                 }
                             />
                         </div>
@@ -271,7 +335,7 @@ export function TablaRondas() {
                                     )}
                                 </button>
                                 
-                                {(enBusqueda || nombreBuscar || fechaBuscar) && (
+                                {(enBusqueda || nombreBuscar || fechaBuscar || usuarioBuscar) && (
                                     <button
                                         onClick={limpiarBusqueda}
                                         className="btn btn-secondary"
@@ -294,7 +358,9 @@ export function TablaRondas() {
                             <strong>Resultados de búsqueda:</strong> 
                             {tipoBusqueda === "nombreDelPuesto" 
                                 ? ` Puesto: "${nombreBuscar}"` 
-                                : ` Fecha: ${fechaBuscar}`}
+                                : tipoBusqueda === "fecha"
+                                ? ` Fecha: ${fechaBuscar}`
+                                : ` Usuario: "${usuarioBuscar}"`}
                             <span className="ms-2 badge bg-primary">
                                 {totalElementos} rondas encontradas
                             </span>

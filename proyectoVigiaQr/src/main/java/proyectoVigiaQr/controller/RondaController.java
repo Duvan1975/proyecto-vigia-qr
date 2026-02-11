@@ -75,6 +75,29 @@ public class RondaController {
         }
     }
 
+    @GetMapping("/usuario/nombre")
+    public ResponseEntity<Page<DatosListadoRonda>> listarPorNombreUsuario(
+            @RequestParam(value = "nombre", required = false) String nombres,
+            @PageableDefault (size = 20, sort = "fecha", direction = Sort.Direction.DESC) Pageable paginacion
+    ) {
+        try {
+            Page<DatosListadoRonda> resultado;
+
+            if (nombres == null || nombres.trim().isEmpty()) {
+                // Si no se proporciona nombre, devolver todas las rondas
+                resultado = rondaService.listarTodas(paginacion);
+            } else {
+                // Buscar por nombre de usuario
+                resultado = rondaService.listarPorNombreUsuario(nombres, paginacion);
+            }
+
+            return ResponseEntity.ok(resultado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Page.empty(paginacion));
+        }
+    }
+
     @GetMapping("/usuario/{idUsuario}")
     public ResponseEntity<List<DatosListadoRonda>> listarPorUsuario(
             @PathVariable Long idUsuario

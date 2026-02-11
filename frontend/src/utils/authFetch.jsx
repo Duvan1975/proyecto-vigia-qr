@@ -14,3 +14,13 @@ export const authFetch = (url, options = {}) => {
     return res;
   });
 };
+
+//Function para parsear JSON
+export const authGet = (url) => {
+  return authFetch(url).then(response => {
+    if (response.ok) {
+      return response.json();
+    }
+    throw new Error(`Error HTTP: ${response.status}`);
+  });
+};

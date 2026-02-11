@@ -38,10 +38,45 @@ public class SecurityConfigurations {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        //Endpoint públicos
                         .requestMatchers("/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
-
                         .requestMatchers("/test/public").permitAll()
+
+                        // ==================== RONDAS ====================
+                        // Escritura - Todos autenticados
+                        .requestMatchers(HttpMethod.POST, "/rondas").authenticated()
+
+                        // ==================== PUESTOS DE TRABAJO ====================
+                        //Escritura y lectura solo ADMINISTRATIVO
+                        .requestMatchers(HttpMethod.POST, "/puestosTrabajos").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.PUT, "/puestosTrabajos/**").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.GET, "/puestosTrabajos").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.DELETE, "/puestosTrabajos/**").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.PATCH, "/puestosTrabajos/**").hasAuthority("ROLE_ADMINISTRATIVO")
+
+                        // ==================== CÓDIGOS QR ====================
+                        //Escritura y lectura solo ADMINISTRATIVO
+                        .requestMatchers(HttpMethod.POST, "/codigos-qr").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.PUT, "/codigos-qr/**").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.GET, "/codigos-qr").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.DELETE, "/codigos-qr/**").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.PATCH, "/codigos-qr/**").hasAuthority("ROLE_ADMINISTRATIVO")
+
+                        // ==================== RONDAS ====================
+                        //Escritura y lectura solo ADMINISTRATIVO
+                        .requestMatchers(HttpMethod.POST, "/rondas").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.PUT, "/rondas/**").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.GET, "/rondas").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.DELETE, "/rondas/**").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.PATCH, "/rondas/**").hasAuthority("ROLE_ADMINISTRATIVO")
+
+                        // ==================== USUARIOS ====================
+                        //Escritura y lectura solo ADMINISTRATIVO
+                        .requestMatchers(HttpMethod.POST, "/usuarios").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.PUT, "/usuarios/**").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.GET, "/usuarios").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.DELETE, "/usuarios/**").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.PATCH, "/usuarios/**").hasAuthority("ROLE_ADMINISTRATIVO")
 
                         //Protección por ROLES Usuarios de prueba
                         .requestMatchers("/test/admin/**").hasAnyAuthority("ROLE_ADMINISTRATIVO")

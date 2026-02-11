@@ -5,6 +5,7 @@ import { TablaPuestos } from "./TablaPuestos";
 import { TablaUsuarios } from "./TablaUsuarios";
 import { TablaRondas } from "./TablaRondas";
 import { ScannerQr } from "./ScannerQr";
+import { ProtectedElement } from "./utils/ProtectedElement";
 import { Login } from "./Login";
 
 export function Menu() {
@@ -61,12 +62,17 @@ export function Menu() {
                         onClick={() => setVista("menu")}
                     >Inicio
                     </button>
-
+<ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
                     <button
                         className="btn btn-primary me-2"
                         onClick={() => setVista("formularioUsuarios")}
                     >Registrar Usuarios
                     </button>
+</ProtectedElement>
+
+
+
+
                     <button className="btn btn-secondary"
                         onClick={() => setVista("tablaUsuarios")}
                     >Listar Usuarios

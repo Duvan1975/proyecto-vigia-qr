@@ -90,6 +90,16 @@ public class RondaService {
         return rondas.map(DatosListadoRonda::new);
     }
 
+    public Page<DatosListadoRonda> listarPorNombreUsuario(String nombres, Pageable paginacion) {
+        Page<Ronda> rondas = rondaRepository.findByNombresContaining(nombres, paginacion);
+
+        if (rondas.isEmpty()) {
+            throw new RuntimeException("No se encontraron rondas para el usuario: " + nombres);
+        }
+
+        return rondas.map(DatosListadoRonda::new);
+    }
+
     public List<DatosListadoRonda> listarPorUsuario(Long idUsuario) {
 
         var ronda = rondaRepository.findByUsuarioId(idUsuario);
