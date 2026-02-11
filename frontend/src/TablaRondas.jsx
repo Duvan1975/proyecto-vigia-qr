@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import Paginacion from "./Paginacion";
 import Swal from "sweetalert2";
 import { authFetch } from "./utils/authFetch";
+import { exportarAExcel } from "./utils/exportarExcel";
 
 export function TablaRondas() {
     const [rondasPuesto, setRondasPuesto] = useState([]);
-    
+
     // Estados para controlar la paginación
     const [paginaActual, setPaginaActual] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
@@ -66,7 +67,7 @@ export function TablaRondas() {
 
         setCargando(true);
         setEnBusqueda(true);
-        
+
         authFetch(`http://localhost:8080/rondas/puesto/nombre?nombre=${encodeURIComponent(nombreBuscar)}&page=0&sort=fecha,desc`)
             .then((res) => {
                 if (!res.ok) throw new Error("Puesto no encontrado");
@@ -77,7 +78,7 @@ export function TablaRondas() {
                 setTotalPaginas(data.totalPages || 1);
                 setPaginaActual(data.number || 0);
                 setTotalElementos(data.totalElements || 0);
-                
+
                 Swal.fire({
                     icon: "success",
                     title: "Rondas Encontradas",
@@ -121,7 +122,7 @@ export function TablaRondas() {
 
         setCargando(true);
         setEnBusqueda(true);
-        
+
         authFetch(`http://localhost:8080/rondas/fecha/${fechaBuscar}?page=0&sort=fecha,desc`)
             .then((res) => {
                 if (!res.ok) throw new Error("Fecha no encontrada o sin registros");
@@ -132,7 +133,7 @@ export function TablaRondas() {
                 setTotalPaginas(data.totalPages || 1);
                 setPaginaActual(data.number || 0);
                 setTotalElementos(data.totalElements || 0);
-                
+
                 Swal.fire({
                     icon: "success",
                     title: "Rondas Encontradas",
@@ -211,11 +212,11 @@ export function TablaRondas() {
 
     const manejarCambioPagina = (nuevaPagina) => {
         setPaginaActual(nuevaPagina);
-        
+
         if (enBusqueda) {
             // Si estamos en búsqueda, cargar la página correspondiente
             let url = "";
-            
+
             if (tipoBusqueda === "nombreDelPuesto" && nombreBuscar) {
                 url = `http://localhost:8080/rondas/puesto/nombre?nombre=${encodeURIComponent(nombreBuscar)}&page=${nuevaPagina}&sort=fecha,desc`;
             } else if (tipoBusqueda === "fecha" && fechaBuscar) {
@@ -223,7 +224,7 @@ export function TablaRondas() {
             } else if (tipoBusqueda === "usuario" && usuarioBuscar) {
                 url = `http://localhost:8080/rondas/usuario/nombre?nombre=${encodeURIComponent(usuarioBuscar)}&page=${nuevaPagina}&sort=fecha,desc`;
             }
-            
+
             if (url) {
                 authFetch(url)
                     .then(res => res.json())
@@ -254,6 +255,27 @@ export function TablaRondas() {
         );
     }
 
+    const exportarExcel = () => {
+        const datosExportar = rondasPuesto.map(ronda => ({
+            "Usuario": ronda.usuario,
+            "Nombre del Puesto": ronda.puestoTrabajo || "—",
+            "Ubicación": ronda.ubicacionQr || "—",
+            "Fecha": ronda.fecha || "—",
+            "Hora": ronda.hora,
+            "Observaciones": ronda.observaciones || "—"
+        }));
+
+        // Nombre del archivo
+        const nombreArchivo = `Rondas_${nombreBuscar.replace(/\s+/g, '_')}`;
+
+        // Llama a la función de exportación
+        exportarAExcel(datosExportar, nombreArchivo);
+        // Función auxiliar para formatear fechas
+
+    };
+
+    if (cargando) return <p>Cargando historial...</p>;
+
     // Datos a mostrar (búsqueda o todos)
     const datosAMostrar = enBusqueda ? resultadoBusqueda : rondasPuesto;
 
@@ -268,7 +290,7 @@ export function TablaRondas() {
                     <div className="row g-3">
                         <div className="col-md-3">
                             <label className="form-label">Tipo de búsqueda</label>
-                            <select 
+                            <select
                                 className="form-select"
                                 value={tipoBusqueda}
                                 onChange={(e) => {
@@ -282,22 +304,22 @@ export function TablaRondas() {
                                 <option value="usuario">Por Nombre del Usuario</option>
                             </select>
                         </div>
-                        
+
                         <div className="col-md-6">
                             <label className="form-label">
                                 {tipoBusqueda === "nombreDelPuesto"
                                     ? "Nombre del Puesto"
                                     : tipoBusqueda === "fecha"
-                                    ? "Fecha (AAAA-MM-DD)"
-                                    : "Nombre del Usuario"}
+                                        ? "Fecha (AAAA-MM-DD)"
+                                        : "Nombre del Usuario"}
                             </label>
                             <input
                                 type={tipoBusqueda === "fecha" ? "date" : "text"}
                                 className="form-control"
                                 value={
                                     tipoBusqueda === "nombreDelPuesto" ? nombreBuscar :
-                                    tipoBusqueda === "fecha" ? fechaBuscar :
-                                    usuarioBuscar
+                                        tipoBusqueda === "fecha" ? fechaBuscar :
+                                            usuarioBuscar
                                 }
                                 onChange={(e) => {
                                     if (tipoBusqueda === "nombreDelPuesto") {
@@ -312,15 +334,15 @@ export function TablaRondas() {
                                     tipoBusqueda === "nombreDelPuesto"
                                         ? "Ej: INDUSTRIA LA LICORERA"
                                         : tipoBusqueda === "fecha"
-                                        ? "YYYY-MM-DD"
-                                        : "Ej: RUBEN DARIO GOMEZ ARIAS"
+                                            ? "YYYY-MM-DD"
+                                            : "Ej: RUBEN DARIO GOMEZ ARIAS"
                                 }
                             />
                         </div>
-                        
+
                         <div className="col-md-3 d-flex align-items-end">
                             <div className="d-flex gap-2 w-100">
-                                <button 
+                                <button
                                     onClick={manejarBusqueda}
                                     className="btn btn-primary flex-grow-1"
                                     disabled={cargando}
@@ -334,7 +356,7 @@ export function TablaRondas() {
                                         "Buscar"
                                     )}
                                 </button>
-                                
+
                                 {(enBusqueda || nombreBuscar || fechaBuscar || usuarioBuscar) && (
                                     <button
                                         onClick={limpiarBusqueda}
@@ -350,22 +372,32 @@ export function TablaRondas() {
                 </div>
             </div>
 
+            <div>
+                <button
+                    className="btn btn-success me-2"
+                    onClick={exportarExcel}
+                    title="Exportar a Excel"
+                >
+                    <i className="bi bi-file-excel"></i> Exportar
+                </button>
+            </div>
+
             {/* Información de resultados */}
             {enBusqueda && resultadoBusqueda.length > 0 && (
                 <div className="alert alert-info mb-3">
                     <div className="d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>Resultados de búsqueda:</strong> 
-                            {tipoBusqueda === "nombreDelPuesto" 
-                                ? ` Puesto: "${nombreBuscar}"` 
+                            <strong>Resultados de búsqueda:</strong>
+                            {tipoBusqueda === "nombreDelPuesto"
+                                ? ` Puesto: "${nombreBuscar}"`
                                 : tipoBusqueda === "fecha"
-                                ? ` Fecha: ${fechaBuscar}`
-                                : ` Usuario: "${usuarioBuscar}"`}
+                                    ? ` Fecha: ${fechaBuscar}`
+                                    : ` Usuario: "${usuarioBuscar}"`}
                             <span className="ms-2 badge bg-primary">
                                 {totalElementos} rondas encontradas
                             </span>
                         </div>
-                        <button 
+                        <button
                             className="btn btn-sm btn-outline-info"
                             onClick={() => window.print()}
                         >
@@ -386,7 +418,7 @@ export function TablaRondas() {
                     />
                     <div className="text-center mt-2">
                         <small className="text-muted">
-                            Página {paginaActual + 1} de {totalPaginas} • 
+                            Página {paginaActual + 1} de {totalPaginas} •
                             Mostrando {datosAMostrar.length} de {totalElementos} rondas
                         </small>
                     </div>
@@ -401,8 +433,8 @@ export function TablaRondas() {
                             <i className="bi bi-clock-history fs-1 text-muted mb-3"></i>
                             <h5>No hay rondas para mostrar</h5>
                             <p className="text-muted">
-                                {enBusqueda 
-                                    ? "No se encontraron resultados para tu búsqueda." 
+                                {enBusqueda
+                                    ? "No se encontraron resultados para tu búsqueda."
                                     : "No hay rondas registradas aún."}
                             </p>
                         </div>

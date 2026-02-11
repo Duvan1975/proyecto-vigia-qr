@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { authFetch } from "./utils/authFetch";
+import { exportarAExcel } from "./utils/exportarExcel";
 
 export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose }) {
     const [codigoQr, setCodigoQr] = useState([]);
@@ -112,6 +113,22 @@ export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose })
             });
     };
 
+    const exportarExcel = () => {
+        const datosExportar = codigoQr.map(codigo => ({
+            "Descripción": codigo.descripcion || "—",
+            "Ubicación": codigo.ubicacion || "—",
+            "Estado": codigo.estado
+        }));
+
+        // Nombre del archivo
+        const nombreArchivo = `Rondas_${puesto.replace(/\s+/g, '_')}`;
+
+        // Llama a la función de exportación
+        exportarAExcel(datosExportar, nombreArchivo);
+        // Función auxiliar para formatear fechas
+
+    };
+
     if (cargando) return <p>Cargando Códigos qr...</p>;
 
     if (codigoQr.length === 0) {
@@ -124,6 +141,13 @@ export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose })
                 Listado de códigos QR {puesto && `de ${puesto}`}
             </h4>
             <button className="btn btn-secondary" onClick={onClose}>Cerrar</button>
+
+                                    <button
+                            className="btn btn-success mb-3"
+                            onClick={exportarExcel}
+                        >
+                            <i className="bi bi-file-excel"></i> Exportar todos
+                        </button>
 
             <table className="table table-bordered table-hover table-striped">
                 <thead className="table-primary">
