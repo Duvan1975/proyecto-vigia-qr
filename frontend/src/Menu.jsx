@@ -62,18 +62,15 @@ export function Menu() {
                         onClick={() => setVista("menu")}
                     >Inicio
                     </button>
-<ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
-                    <button
-                        className="btn btn-primary me-2"
-                        onClick={() => setVista("formularioUsuarios")}
-                    >Registrar Usuarios
-                    </button>
-</ProtectedElement>
+                    <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                        <button
+                            className="btn btn-primary me-2"
+                            onClick={() => setVista("formularioUsuarios")}
+                        >Registrar Usuarios
+                        </button>
+                    </ProtectedElement>
 
-
-
-
-                    <button className="btn btn-secondary"
+                    <button className="btn btn-secondary me-2"
                         onClick={() => setVista("tablaUsuarios")}
                     >Listar Usuarios
                     </button>

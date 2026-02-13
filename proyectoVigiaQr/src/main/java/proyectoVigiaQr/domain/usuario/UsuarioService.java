@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -69,6 +70,13 @@ public class UsuarioService {
 
     public Page<DatosListadoUsuario> listarUsuarios(Pageable paginacion) {
         return usuarioRepository.findAll(paginacion).map(DatosListadoUsuario::new);
+    }
+
+    public List<DatosExportacionUsuario> listarTodosParaExportacion() {
+        return usuarioRepository.findAll()
+                .stream()
+                .map(DatosExportacionUsuario::new)
+                .collect(Collectors.toList());
     }
 
     public ResponseEntity<DatosRespuestaUsuario> obtenerDatosUsuario(Long id) {

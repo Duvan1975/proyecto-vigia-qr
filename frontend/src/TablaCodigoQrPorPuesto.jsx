@@ -146,71 +146,84 @@ export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose })
     }
 
     return (
-        <div className="mt-4">
-            <h4 className="mb-3">
-                Listado de códigos QR {puesto && `de ${puesto}`}
-            </h4>
-            <button className="btn btn-secondary" onClick={onClose}>Cerrar</button>
+        <>
+            <div className="card">
+                <div className="card-body">
+                    <div className="table-responsive">
+                        <div className="mt-4">
+                            <h4 className="mb-3">
+                                Listado de códigos QR {puesto && `de ${puesto}`}
+                            </h4>
+                            <button className="btn btn-secondary" onClick={onClose}>Cerrar</button>
 
-            <button
-                className="btn btn-success mb-3"
-                onClick={exportarExcel}
-            >
-                <i className="bi bi-file-excel"></i> Exportar todos
-            </button>
+                            <button
+                                className="btn btn-success mb-3"
+                                onClick={exportarExcel}
+                            >
+                                <i className="bi bi-file-excel"></i> Exportar todos
+                            </button>
 
-            <button
-                className="btn btn-danger me-2"
-                onClick={exportarAPDF}
-                disabled={exportandoPDF || codigoQr.length === 0}
-                title="Exportar a PDF con imágenes QR"
-            >
-                {exportandoPDF ? (
-                    <>
-                        <span className="spinner-border spinner-border-sm me-2"></span>
-                        Generando PDF...
-                    </>
-                ) : (
-                    <>
-                        <i className="bi bi-file-pdf me-1"></i>
-                        Exportar a PDF
-                    </>
-                )}
-            </button>
-
-            <table className="table table-bordered table-hover table-striped">
-                <thead className="table-primary">
-                    <tr>
-                        <th>Descripción</th>
-                        <th>Ubicación</th>
-                        <th>Estado</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {codigoQr.map((codigo) => (
-                        <tr key={codigo.id}>  {/* Usar codigo.id aquí también */}
-                            <td>{codigo.descripcion}</td>
-                            <td>{codigo.ubicacion}</td>
-                            <td>
-                                <span className={`badge ${codigo.estado ? 'bg-success' : 'bg-secondary'}`}>
-                                    {codigo.estado ? "Activo" : "Inactivo"}
-                                </span>
-                            </td>
-                            <td>
-                                <button
-                                    className="btn btn-outline-success btn-sm"
-                                    onClick={() => descargarCodigoQr(codigo)}
-                                    title={!codigo.estado ? "Código inactivo" : `Descargar QR de ${codigo.ubicacion}`}
-                                >
-                                    <i className="bi bi-download me-1"></i>
-                                    Descargar
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                            <button
+                                className="btn btn-danger me-2"
+                                onClick={exportarAPDF}
+                                disabled={exportandoPDF || codigoQr.length === 0}
+                                title="Exportar a PDF con imágenes QR"
+                            >
+                                {exportandoPDF ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2"></span>
+                                        Generando PDF...
+                                    </>
+                                ) : (
+                                    <>
+                                        <i className="bi bi-file-pdf me-1"></i>
+                                        Exportar a PDF
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="card">
+                <div className="card-body">
+                    <div className="table-responsive">
+                        <table className="table table-bordered table-hover table-striped">
+                            <thead className="table-primary">
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th>Ubicación</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {codigoQr.map((codigo) => (
+                                    <tr key={codigo.id}>  {/* Usar codigo.id aquí también */}
+                                        <td>{codigo.descripcion}</td>
+                                        <td>{codigo.ubicacion}</td>
+                                        <td>
+                                            <span className={`badge ${codigo.estado ? 'bg-success' : 'bg-secondary'}`}>
+                                                {codigo.estado ? "Activo" : "Inactivo"}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button
+                                                className="btn btn-outline-success btn-sm"
+                                                onClick={() => descargarCodigoQr(codigo)}
+                                                title={!codigo.estado ? "Código inactivo" : `Descargar QR de ${codigo.ubicacion}`}
+                                            >
+                                                <i className="bi bi-download me-1"></i>
+                                                Descargar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </>
     );
 }

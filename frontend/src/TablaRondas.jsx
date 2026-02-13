@@ -200,7 +200,7 @@ export function TablaRondas() {
             });
     };
 
-    const limpiarBusqueda = () => {
+    /*const limpiarBusqueda = () => {
         setResultadoBusqueda([]);
         setFechaBuscar("");
         setNombreBuscar("");
@@ -208,9 +208,9 @@ export function TablaRondas() {
         setEnBusqueda(false);
         setPaginaActual(0);
         cargarRondas(0);
-    };
+    };*/
 
-    const manejarCambioPagina = (nuevaPagina) => {
+    /*const manejarCambioPagina = (nuevaPagina) => {
         setPaginaActual(nuevaPagina);
 
         if (enBusqueda) {
@@ -242,7 +242,7 @@ export function TablaRondas() {
             // Si no estamos en búsqueda, cargar todas las rondas
             cargarRondas(nuevaPagina);
         }
-    };
+    };*/
 
     if (cargando && paginaActual === 0) {
         return (
@@ -280,97 +280,105 @@ export function TablaRondas() {
     const datosAMostrar = enBusqueda ? resultadoBusqueda : rondasPuesto;
 
     return (
-        <div className="container-fluid">
+        <>
             {/* Sección de búsqueda */}
-            <div className="card mb-4">
-                <div className="card-header">
-                    <h5 className="mb-0">Buscar Rondas</h5>
-                </div>
+            <div className="card">
                 <div className="card-body">
-                    <div className="row g-3">
-                        <div className="col-md-3">
-                            <label className="form-label">Tipo de búsqueda</label>
-                            <select
-                                className="form-select"
-                                value={tipoBusqueda}
-                                onChange={(e) => {
-                                    setTipoBusqueda(e.target.value);
-                                    setResultadoBusqueda([]);
-                                    setEnBusqueda(false);
-                                }}
-                            >
-                                <option value="nombreDelPuesto">Por Nombre del Puesto</option>
-                                <option value="fecha">Por Fecha</option>
-                                <option value="usuario">Por Nombre del Usuario</option>
-                            </select>
-                        </div>
-
-                        <div className="col-md-6">
-                            <label className="form-label">
-                                {tipoBusqueda === "nombreDelPuesto"
-                                    ? "Nombre del Puesto"
-                                    : tipoBusqueda === "fecha"
-                                        ? "Fecha (AAAA-MM-DD)"
-                                        : "Nombre del Usuario"}
-                            </label>
-                            <input
-                                type={tipoBusqueda === "fecha" ? "date" : "text"}
-                                className="form-control"
-                                value={
-                                    tipoBusqueda === "nombreDelPuesto" ? nombreBuscar :
-                                        tipoBusqueda === "fecha" ? fechaBuscar :
-                                            usuarioBuscar
-                                }
-                                onChange={(e) => {
-                                    if (tipoBusqueda === "nombreDelPuesto") {
-                                        setNombreBuscar(e.target.value);
-                                    } else if (tipoBusqueda === "fecha") {
-                                        setFechaBuscar(e.target.value);
-                                    } else {
-                                        setUsuarioBuscar(e.target.value);
-                                    }
-                                }}
-                                placeholder={
-                                    tipoBusqueda === "nombreDelPuesto"
-                                        ? "Ej: INDUSTRIA LA LICORERA"
-                                        : tipoBusqueda === "fecha"
-                                            ? "YYYY-MM-DD"
-                                            : "Ej: RUBEN DARIO GOMEZ ARIAS"
-                                }
-                            />
-                        </div>
-
-                        <div className="col-md-3 d-flex align-items-end">
-                            <div className="d-flex gap-2 w-100">
-                                <button
-                                    onClick={manejarBusqueda}
-                                    className="btn btn-primary flex-grow-1"
-                                    disabled={cargando}
-                                >
-                                    {cargando ? (
-                                        <>
-                                            <span className="spinner-border spinner-border-sm me-2"></span>
-                                            Buscando...
-                                        </>
-                                    ) : (
-                                        "Buscar"
-                                    )}
-                                </button>
-
-                                {(enBusqueda || nombreBuscar || fechaBuscar || usuarioBuscar) && (
-                                    <button
-                                        onClick={limpiarBusqueda}
-                                        className="btn btn-secondary"
-                                        disabled={cargando}
+                    <div className="table-responsive">
+                        <div className="mb-4">
+                            <h5>Buscar Rondas por:</h5>
+                            <div className="row">
+                                <div className="col-md-4">
+                                    <select
+                                        className="form-select"
+                                        aria-label="Tipo de búsqueda"
+                                        onChange={(e) => {
+                                            setTipoBusqueda(e.target.value);
+                                            setResultadoBusqueda([]);
+                                            setEnBusqueda(false);
+                                        }}
+                                        value={tipoBusqueda}
                                     >
-                                        Limpiar
-                                    </button>
-                                )}
+                                        <option value="nombreDelPuesto">Por Nombre del Puesto</option>
+                                        <option value="fecha">Por Fecha</option>
+                                        <option value="usuario">Por Nombre del Usuario</option>
+                                    </select>
+                                </div>
+                                <div className="col-md-6">
+                                    <input
+                                        type={tipoBusqueda === "fecha" ? "date" : "text"}
+                                        value={
+                                            tipoBusqueda === "nombreDelPuesto" ? nombreBuscar :
+                                                tipoBusqueda === "fecha" ? fechaBuscar :
+                                                    usuarioBuscar
+                                        }
+                                        onChange={(e) => {
+                                            if (tipoBusqueda === "nombreDelPuesto") {
+                                                setNombreBuscar(e.target.value);
+                                            } else if (tipoBusqueda === "fecha") {
+                                                setFechaBuscar(e.target.value);
+                                            } else {
+                                                setUsuarioBuscar(e.target.value);
+                                            }
+                                        }}
+                                        placeholder={`Ingrese ${tipoBusqueda === "nombreDelPuesto" ? "nombre del puesto" :
+                                            tipoBusqueda === "fecha" ? "fecha (AAAA-MM-DD)" :
+                                                "nombre del usuario"}`}
+                                        className="form-control mb-2"
+                                    />
+                                </div>
                             </div>
+                            <button
+                                onClick={manejarBusqueda}
+                                className="btn btn-info me-2"
+                                disabled={cargando}
+                            >
+                                {cargando ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2"></span>
+                                        Buscando...
+                                    </>
+                                ) : (
+                                    "Buscar"
+                                )}
+                            </button>
+
+                            {resultadoBusqueda && (
+                                <button
+                                    onClick={() => {
+                                        setResultadoBusqueda([]);
+                                        setFechaBuscar("");
+                                        setNombreBuscar("");
+                                        setUsuarioBuscar("");
+                                        setEnBusqueda("");
+                                        setPaginaActual(0);
+                                        cargarRondas(0);
+                                    }}
+                                    className="btn btn-secondary"
+                                >
+                                    Limpiar Búsqueda
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
+
+            {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
+                <Paginacion
+                    paginaActual={paginaActual}
+                    totalPaginas={totalPaginas}
+                    onChange={(nuevaPagina) => setPaginaActual(nuevaPagina)}
+                />
+            )}
+            {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
+                <div className="mt-2 text-center">
+                    <small>
+                        Mostrando página {paginaActual + 1} de {totalPaginas} —{" "}
+                        {tamanoPagina} por página, total de registros: {totalElementos}
+                    </small>
+                </div>
+            )}
 
             <div>
                 <button
@@ -382,7 +390,7 @@ export function TablaRondas() {
                 </button>
             </div>
 
-            {/* Información de resultados */}
+            {/* Información de resultados
             {enBusqueda && resultadoBusqueda.length > 0 && (
                 <div className="alert alert-info mb-3">
                     <div className="d-flex justify-content-between align-items-center">
@@ -406,9 +414,9 @@ export function TablaRondas() {
                         </button>
                     </div>
                 </div>
-            )}
+            )}  */}
 
-            {/* Paginación */}
+            {/* Paginación 
             {totalPaginas > 1 && (
                 <div className="mb-3">
                     <Paginacion
@@ -423,71 +431,60 @@ export function TablaRondas() {
                         </small>
                     </div>
                 </div>
-            )}
+            )} */}
 
             {/* Tabla de resultados */}
             <div className="card">
                 <div className="card-body">
-                    {datosAMostrar.length === 0 ? (
-                        <div className="text-center py-5">
-                            <i className="bi bi-clock-history fs-1 text-muted mb-3"></i>
-                            <h5>No hay rondas para mostrar</h5>
-                            <p className="text-muted">
-                                {enBusqueda
-                                    ? "No se encontraron resultados para tu búsqueda."
-                                    : "No hay rondas registradas aún."}
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="table-responsive">
-                            <table className="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Usuario</th>
-                                        <th>Puesto</th>
-                                        <th>Ubicación</th>
-                                        <th>Fecha</th>
-                                        <th>Hora</th>
-                                        <th>Observaciones</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {datosAMostrar.map((ronda) => (
-                                        <tr key={ronda.id}>
-                                            <td>
-                                                <span className="badge bg-info text-dark">
-                                                    {ronda.usuario}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <strong>{ronda.puestoTrabajo}</strong>
-                                            </td>
-                                            <td>{ronda.ubicacionQr}</td>
-                                            <td>
-                                                <span className="badge bg-light text-dark">
-                                                    {ronda.fecha}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <small className="text-muted">{ronda.hora}</small>
-                                            </td>
-                                            <td>
-                                                {ronda.observaciones ? (
-                                                    <div className="fst-italic">
-                                                        "{ronda.observaciones}"
-                                                    </div>
-                                                ) : (
-                                                    <span className="text-muted">-</span>
-                                                )}
-                                            </td>
-                                            <td>
-                                                <button
-                                                    className="btn btn-sm btn-outline-info"
-                                                    onClick={() => {
-                                                        Swal.fire({
-                                                            title: 'Detalles de Ronda',
-                                                            html: `
+                    <div className="table-responsive">
+                        <table className="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Puesto</th>
+                                    <th>Ubicación</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {datosAMostrar.map((ronda) => (
+                                    <tr key={ronda.id}>
+                                        <td>
+                                            <span className="badge bg-info text-dark">
+                                                {ronda.usuario}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <strong>{ronda.puestoTrabajo}</strong>
+                                        </td>
+                                        <td>{ronda.ubicacionQr}</td>
+                                        <td>
+                                            <span className="badge bg-light text-dark">
+                                                {ronda.fecha}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small className="text-muted">{ronda.hora}</small>
+                                        </td>
+                                        <td>
+                                            {ronda.observaciones ? (
+                                                <div className="fst-italic">
+                                                    "{ronda.observaciones}"
+                                                </div>
+                                            ) : (
+                                                <span className="text-muted">-</span>
+                                            )}
+                                        </td>
+                                        <td>
+                                            <button
+                                                className="btn btn-sm btn-outline-info"
+                                                onClick={() => {
+                                                    Swal.fire({
+                                                        title: 'Detalles de Ronda',
+                                                        html: `
                                                                 <div class="text-start">
                                                                     <p><strong>ID:</strong> ${ronda.id}</p>
                                                                     <p><strong>Fecha:</strong> ${ronda.fecha}</p>
@@ -498,22 +495,21 @@ export function TablaRondas() {
                                                                     <p><strong>Observaciones:</strong> ${ronda.observaciones || 'Ninguna'}</p>
                                                                 </div>
                                                             `,
-                                                            icon: 'info'
-                                                        });
-                                                    }}
-                                                    title="Ver detalles"
-                                                >
-                                                    <i className="bi bi-eye"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
+                                                        icon: 'info'
+                                                    });
+                                                }}
+                                                title="Ver detalles"
+                                            >
+                                                <i className="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

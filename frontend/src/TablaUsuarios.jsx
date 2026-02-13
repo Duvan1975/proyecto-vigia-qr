@@ -3,6 +3,8 @@ import { ModalEditarUsuario } from "./ModalEditarUsuario";
 import Paginacion from "./Paginacion";
 import Swal from "sweetalert2";
 import { authFetch } from "./utils/authFetch";
+import { exportarAExcel } from "./utils/exportarExcel";
+
 
 export function TablaUsuarios() {
 
@@ -41,7 +43,6 @@ export function TablaUsuarios() {
     };
 
     const cargarUsuarios = (pagina = 0) => {
-
         authFetch(`http://localhost:8080/usuarios?page=${pagina}`)
             .then((response) => response.json())
             .then((data) => {
@@ -53,13 +54,6 @@ export function TablaUsuarios() {
             })
             .catch((error) => console.error("Error al cargar usuario:", error));
     };
-
-    /*useEffect(() => {
-        fetch("http://localhost:8080/usuarios")
-            .then((response) => response.json())
-            .then((data) => setUsuarios(data.content))
-            .catch((error) => console.error("Error al cargar usuarios:", error));
-    }, []);*/
 
     const cambiarEstadoUsuario = async (id) => {
         try {
@@ -176,168 +170,257 @@ export function TablaUsuarios() {
                 setResultadoBusqueda([]);
             });
     };
+    /*const exportarExcel = () => {
+        const datosExportar = usuarios.map(usuario => ({
+            "Nombres": usuario.nombres,
+            "Apellidos": usuario.apellidos,
+            "Tipo de Documento": usuario.tipoDocumento,
+            "N° Documento": usuario.numeroDocumento,
+            "Estado": usuario.estado ? "Activo" : "Inactivo",
+        }));
+
+        // Nombre del archivo
+        const nombreArchivo = `Usuarios_${nombreBuscar.replace(/\s+/g, '_')}`;
+
+        // Llama a la función de exportación
+        exportarAExcel(datosExportar, nombreArchivo);
+        // Función auxiliar para formatear fechas
+
+    };*/
+
+    const exportarTodosLosUsuarios = () => {
+        Swal.fire({
+            title: "Exportando...",
+            text: "Preparando archivo Excel con todos los usuarios",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        authFetch("http://localhost:8080/usuarios/exportar")
+            .then(res => {
+                if (!res.ok) throw new Error("Error al obtener datos");
+                return res.json();
+            })
+            .then(data => {
+                Swal.close();
+
+                if (!data || data.length === 0) {
+                    Swal.fire({
+                        icon: "info",
+                        title: "Sin datos",
+                        text: "No hay usuarios para exportar",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+
+                // Exportar TODOS los usuarios
+                exportarAExcel(data, `todos_los_usuarios_${new Date().toISOString().slice(0, 10)}`);
+
+                Swal.fire({
+                    icon: "success",
+                    title: "¡Exportación completada!",
+                    html: `
+                    <p><strong>${data.length} usuarios</strong> exportados correctamente</p>
+                    <p class="text-muted small mt-2">
+                        <i class="bi bi-file-excel me-1"></i>
+                        Archivo: todos_los_usuarios_${new Date().toISOString().slice(0, 10)}.xlsx
+                    </p>
+                `,
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            })
+            .catch(error => {
+                console.error("Error en exportación:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error al exportar",
+                    text: "No se pudieron obtener los usuarios. Intenta nuevamente.",
+                    confirmButtonText: "Entendido"
+                });
+            });
+    };
 
     return (
         <>
-            <div className="mb-4">
-                <h5>Buscar Usuario por:</h5>
-                <div className="row">
-                    <div className="col-md-4">
-                        <select className="form-select"
-                            aria-label="Default select example"
-                            onChange={(e) => setTipoBusqueda(e.target.value)}
-                            value={tipoBusqueda}>
-
-                            <option value="nombre">Por Nombre</option>
-                            <option value="documento">Por Documento</option>
-                        </select>
+            <div className="card">
+                <div className="card-body">
+                    <div className="mb-4">
+                        <h5>Buscar Usuario por:</h5>
+                        <div className="row">
+                            <div className="col-md-4">
+                                <select className="form-select"
+                                    aria-label="Default select example"
+                                    onChange={(e) => setTipoBusqueda(e.target.value)}
+                                    value={tipoBusqueda}>
+                                    <option value="nombre">Por Nombre</option>
+                                    <option value="documento">Por Documento</option>
+                                </select>
+                            </div>
+                            <div className="col-md-6">
+                                <input
+                                    type={tipoBusqueda === "nombre" ? "text" : "number"}
+                                    value={tipoBusqueda === "nombre" ? nombreBuscar : documentoBuscar}
+                                    onChange={(e) =>
+                                        tipoBusqueda === "nombre"
+                                            ? setNombreBuscar(e.target.value)
+                                            : setDocumentoBuscar(e.target.value)
+                                    }
+                                    placeholder={`Ingrese ${tipoBusqueda}`}
+                                    className="form-control mb-2"
+                                />
+                            </div>
+                        </div>
+                        <button onClick={manejarBusqueda}
+                            className="btn btn-info me-2"
+                        >
+                            Buscar
+                        </button>
+                        {resultadoBusqueda && (
+                            <button
+                                onClick={() => {
+                                    setResultadoBusqueda([]);
+                                    setDocumentoBuscar("");
+                                    setNombreBuscar("");
+                                    cargarUsuarios();
+                                }}
+                                className="btn btn-secondary"
+                            >
+                                Limpiar Búsqueda
+                            </button>
+                        )}
                     </div>
-                    <div className="col-md-6">
-                        <input
-                            type={tipoBusqueda === "nombre" ? "text" : "number"}
-                            value={tipoBusqueda === "nombre" ? nombreBuscar : documentoBuscar}
-                            onChange={(e) =>
-                                tipoBusqueda === "nombre"
-                                    ? setNombreBuscar(e.target.value)
-                                    : setDocumentoBuscar(e.target.value)
-                            }
-                            placeholder={`Ingrese ${tipoBusqueda}`}
-                            className="form-control mb-2"
+                </div>
+
+                {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
+                    <>
+                        <Paginacion
+                            paginaActual={paginaActual}
+                            totalPaginas={totalPaginas}
+                            onChange={(nuevaPagina) => setPaginaActual(nuevaPagina)}
                         />
-                    </div>
-                </div>
-                <button onClick={manejarBusqueda}
-                    className="btn btn-info"
-                >
-                    Buscar
-                </button>
-                {resultadoBusqueda && (
-                    <button
-                        onClick={() => {
-                            setResultadoBusqueda([]);
-                            setDocumentoBuscar("");
-                            setNombreBuscar("");
-                            cargarUsuarios();
-                        }}
-                        className="btn btn-secondary"
-                    >
-                        Limpiar Búsqueda
-                    </button>
+                        <div className="mt-2 text-center">
+                            <small>
+                                Mostrando página {paginaActual + 1} de {totalPaginas} —{" "}
+                                {tamanoPagina} por página, total de registros: {totalElementos}
+                            </small>
+                        </div>
+                    </>
                 )}
-            </div>
 
-            {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
-                <Paginacion
-                    paginaActual={paginaActual}
-                    totalPaginas={totalPaginas}
-                    onChange={(nuevaPagina) => setPaginaActual(nuevaPagina)}
-                />
-            )}
-            {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
-                <div className="mt-2 text-center">
-                    <small>
-                        Mostrando página {paginaActual + 1} de {totalPaginas} —{" "}
-                        {tamanoPagina} por página, total de registros: {totalElementos}
-                    </small>
+                <div>
+                    <button
+                        onClick={exportarTodosLosUsuarios}
+                        className="btn btn-success"
+                        title="Exportar todos los usuarios del sistema"
+                    >
+                        <i className="bi bi-file-excel me-1"></i>
+                        Exportar Todos
+                    </button>
                 </div>
-            )}
 
-            <table className="table table-striped table-hover" id="tabla">
-                <thead>
-                    <tr>
-                        <th>Nombres</th>
-                        <th>Apellidos</th>
-                        <th>Número Documento</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {resultadoBusqueda.length > 0 ? (
-                        resultadoBusqueda.map((usu, index) => (
-                            <tr key={index}>
-                                <td>{usu.nombres}</td>
-                                <td>{usu.apellidos}</td>
-                                <td>{usu.numeroDocumento}</td>
-                                <td>
-                                    <button
-                                        className={`btn btn-sm ${usu.estado ? "btn-success" : "btn-secondary"}`}
-                                        onClick={() => {
-                                            Swal.fire({
-                                                title: '¿Estás seguro?',
-                                                text: `¿Deseas ${usu.estado ? "desactivar" : "activar"} este usuario?`,
-                                                icon: 'warning',
-                                                showCancelButton: true,
-                                                confirmButtonColor: '#3085d6',
-                                                cancelButtonColor: '#d33',
-                                                confirmButtonText: 'Sí, cambiar estado',
-                                                cancelButtonText: 'Cancelar'
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    // Si el usuario confirma, ejecutar la función original
-                                                    cambiarEstadoUsuario(usu.id);
-                                                }
-                                            });
-                                        }}
-                                    >
-                                        {usu.estado ? "Activo" : "Inactivo"}
-                                    </button>
-                                </td>
-                                <td>
-                                    <button onClick={() => {
-                                        setUsuarioSeleccionado(usu);
-                                        setMostrarModal(true);
-                                    }}
-                                        className="btn btn-sm btn-primary me-2"
-                                    >Editar
-                                    </button>
-                                </td>
+                <div className="table-responsive">
+                    <table className="table table-bordered table-hover table-striped" id="tabla">
+                        <thead>
+                            <tr>
+                                <th>Nombres</th>
+                                <th>Apellidos</th>
+                                <th>Número Documento</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
                             </tr>
-                        ))
-                    ) : (
-                        usuarios.map((usu) => (
-                            <tr key={usu.id}>
-                                <td>{usu.nombres}</td>
-                                <td>{usu.apellidos}</td>
-                                <td>{usu.numeroDocumento}</td>
-                                <td>
-                                    <button
-                                        className={`btn btn-sm ${usu.estado ? "btn-success" : "btn-secondary"}`}
-                                        onClick={() => {
-                                            Swal.fire({
-                                                title: 'Confirmar cambio de estado',
-                                                text: `¿Estás seguro de ${usu.estado ? "desactivar" : "activar"} este usuario?`,
-                                                icon: 'question',
-                                                showCancelButton: true,
-                                                confirmButtonColor: '#3085d6',
-                                                cancelButtonColor: '#d33',
-                                                confirmButtonText: 'Sí, cambiar',
-                                                cancelButtonText: 'Cancelar',
-                                                reverseButtons: true
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    cambiarEstadoUsuario(usu.id);
-                                                }
-                                            });
-                                        }}
-                                    >
-                                        {usu.estado ? "Activo" : "Inactivo"}
-                                    </button>
-                                </td>
-                                <td>
-                                    <button onClick={() => {
-                                        setUsuarioSeleccionado(usu);
-                                        setMostrarModal(true);
-                                    }}
-                                        className="btn btn-sm btn-primary me-2"
-                                    >Editar
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                            {resultadoBusqueda.length > 0 ? (
+                                resultadoBusqueda.map((usu, index) => (
+                                    <tr key={index}>
+                                        <td>{usu.nombres}</td>
+                                        <td>{usu.apellidos}</td>
+                                        <td>{usu.numeroDocumento}</td>
+                                        <td>
+                                            <button
+                                                className={`btn btn-sm ${usu.estado ? "btn-success" : "btn-secondary"}`}
+                                                onClick={() => {
+                                                    Swal.fire({
+                                                        title: '¿Estás seguro?',
+                                                        text: `¿Deseas ${usu.estado ? "desactivar" : "activar"} este usuario?`,
+                                                        icon: 'warning',
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: '#3085d6',
+                                                        cancelButtonColor: '#d33',
+                                                        confirmButtonText: 'Sí, cambiar estado',
+                                                        cancelButtonText: 'Cancelar'
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            // Si el usuario confirma, ejecutar la función original
+                                                            cambiarEstadoUsuario(usu.id);
+                                                        }
+                                                    });
+                                                }}
+                                            >
+                                                {usu.estado ? "Activo" : "Inactivo"}
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button onClick={() => {
+                                                setUsuarioSeleccionado(usu);
+                                                setMostrarModal(true);
+                                            }}
+                                                className="btn btn-sm btn-primary me-2"
+                                            >Editar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                usuarios.map((usu) => (
+                                    <tr key={usu.id}>
+                                        <td>{usu.nombres}</td>
+                                        <td>{usu.apellidos}</td>
+                                        <td>{usu.numeroDocumento}</td>
+                                        <td>
+                                            <button
+                                                className={`btn btn-sm ${usu.estado ? "btn-success" : "btn-secondary"}`}
+                                                onClick={() => {
+                                                    Swal.fire({
+                                                        title: 'Confirmar cambio de estado',
+                                                        text: `¿Estás seguro de ${usu.estado ? "desactivar" : "activar"} este usuario?`,
+                                                        icon: 'question',
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: '#3085d6',
+                                                        cancelButtonColor: '#d33',
+                                                        confirmButtonText: 'Sí, cambiar',
+                                                        cancelButtonText: 'Cancelar',
+                                                        reverseButtons: true
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            cambiarEstadoUsuario(usu.id);
+                                                        }
+                                                    });
+                                                }}
+                                            >
+                                                {usu.estado ? "Activo" : "Inactivo"}
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button onClick={() => {
+                                                setUsuarioSeleccionado(usu);
+                                                setMostrarModal(true);
+                                            }}
+                                                className="btn btn-sm btn-primary me-2"
+                                            >Editar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             <ModalEditarUsuario
                 usuario={usuarioSeleccionado}

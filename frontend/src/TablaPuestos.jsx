@@ -125,38 +125,45 @@ export function TablaPuestos() {
 
     return (
         <>
-            <div className="mb-4">
-                <h5>Buscar Puesto por Nombre</h5>
-                <div className="row">
-                    <div className="col-md-4">
-                        <input
-                            type="text"
-                            value={nombreBuscar}
-                            onChange={(e) => setNombreBuscar(e.target.value)}
-                            placeholder="Ingrese el nombre"
-                            className="form-control mb-2"
-                        />
+            <div className="card">
+                <div className="card-body">
+                    <div className="table-responsive">
+                        <div className="mb-4">
+                            <h5>Buscar Puesto por Nombre</h5>
+                            <div className="row">
+                                <div className="col-md-4">
+                                    <input
+                                        type="text"
+                                        value={nombreBuscar}
+                                        onChange={(e) => setNombreBuscar(e.target.value)}
+                                        placeholder="Ingrese el nombre"
+                                        className="form-control mb-2"
+                                    />
+                                </div>
+                            </div>
+                            <button onClick={buscarPuestoPorNombre}
+                                className="btn btn-info"
+                            >
+                                Buscar
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    setResultadoBusqueda(null);
+                                    setNombreBuscar("");
+                                    cargarPuestos();
+                                    setMostrarTablaCodigoQr(false);
+                                }}
+                                className="btn btn-secondary"
+                            >
+                                Limpiar Búsqueda
+                            </button>
+
+                        </div>
                     </div>
                 </div>
-                <button onClick={buscarPuestoPorNombre}
-                    className="btn btn-info"
-                >
-                    Buscar
-                </button>
-
-                <button
-                    onClick={() => {
-                        setResultadoBusqueda(null);
-                        setNombreBuscar("");
-                        cargarPuestos();
-                        setMostrarTablaCodigoQr(false);
-                    }}
-                    className="btn btn-secondary"
-                >
-                    Limpiar Búsqueda
-                </button>
-
             </div>
+
 
             {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
                 <Paginacion
@@ -173,6 +180,10 @@ export function TablaPuestos() {
                     </small>
                 </div>
             )}
+
+            <div className="card">
+                <div className="card-body">
+                    <div className="table-responsive">
             <table className="table table-striped table-hover" id="tabla">
                 <thead>
                     <tr>
@@ -286,6 +297,10 @@ export function TablaPuestos() {
                     )}
                 </tbody>
             </table>
+                    </div>
+                </div>
+            </div>
+
             {mostrarTablaCodigoQr && codigoQrPorPuestoListar && (
                 <TablaCodigoQrPorPuesto puestoTrabajoId={codigoQrPorPuestoListar}
                     actualizar={contadorActualizacion}
@@ -295,8 +310,8 @@ export function TablaPuestos() {
                 puestoTrabajo={puestoSeleccionado}
                 visible={mostrarModal}
                 onClose={() => setMostrarModal(false)}
-                onEliminado={(id) =>{
-                    setPuestosTrabajos(prev => 
+                onEliminado={(id) => {
+                    setPuestosTrabajos(prev =>
                         prev.filter(p => p.id !== id));
                 }}
                 onActualizado={(puestoActualizado) => {

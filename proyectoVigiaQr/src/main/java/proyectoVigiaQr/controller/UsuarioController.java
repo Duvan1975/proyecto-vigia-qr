@@ -36,8 +36,15 @@ public class UsuarioController {
     }
     @GetMapping
     public Page<DatosListadoUsuario> listadoUsuarios(
-            @PageableDefault(size = 20, sort = "apellidos")Pageable paginacion) {
+            @PageableDefault(size = 5, sort = "apellidos")Pageable paginacion) {
         return usuarioService.listarUsuarios(paginacion);
+    }
+    @GetMapping("/exportar")
+    public ResponseEntity<List<DatosExportacionUsuario>> exportarUsuarios() {
+
+        List<DatosExportacionUsuario> usuarios = usuarioService.listarTodosParaExportacion();
+
+        return ResponseEntity.ok(usuarios);
     }
     @GetMapping("/{id}")
     public ResponseEntity<DatosRespuestaUsuario> obtenerDatosUsuario(@PathVariable Long id) {
