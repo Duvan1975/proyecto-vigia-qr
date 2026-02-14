@@ -24,15 +24,25 @@ public interface RondaRepository
     Page<Ronda> findByNombrePuestoContaining(
             @Param("nombrePuesto") String nombrePuesto, Pageable paginacion);
 
+
     @Query("""
-            SELECT r FROM Ronda r WHERE LOWER(
-            r.usuario.nombres)
-            LIKE LOWER(CONCAT('%', :nombres, '%'))
-            """)
-    Page<Ronda> findByNombresContaining(
-            @Param("nombres") String nombres, Pageable paginacion);
+       SELECT r FROM Ronda r
+       WHERE LOWER(CONCAT(r.usuario.nombres, ' ', r.usuario.apellidos))
+       LIKE LOWER(CONCAT('%', :nombre, '%'))
+       """)
+    Page<Ronda> findByNombreCompletoContainingIgnoreCase(
+            @Param("nombre") String nombre,
+            Pageable paginacion);
+
 
     List<Ronda> findByUsuarioId(Long idUsuario);
 
     Page<Ronda> findByFecha(LocalDate fecha, Pageable paginacion);
+
+    List<Ronda> findByUsuarioNombresContainingIgnoreCaseOrUsuarioApellidosContainingIgnoreCase(
+            String nombres, String apellidos);
+
+    List<Ronda> findByPuestoTrabajoNombrePuestoContainingIgnoreCase(String nombrePuesto);
+
+    List<Ronda> findByFecha(LocalDate fecha);
 }

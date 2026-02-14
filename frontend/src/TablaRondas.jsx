@@ -255,7 +255,7 @@ export function TablaRondas() {
         );
     }
 
-    const exportarExcel = () => {
+    /*const exportarExcel = () => {
         const datosExportar = rondasPuesto.map(ronda => ({
             "Usuario": ronda.usuario,
             "Nombre del Puesto": ronda.puestoTrabajo || "—",
@@ -272,6 +272,143 @@ export function TablaRondas() {
         exportarAExcel(datosExportar, nombreArchivo);
         // Función auxiliar para formatear fechas
 
+    };
+
+    const exportarTodasLasRondas = () => {
+        Swal.fire({
+            title: "Exportando...",
+            text: "Preparando archivo Excel con todas las rondas",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        authFetch("http://localhost:8080/rondas/exportar")
+            .then(res => {
+                if (!res.ok) throw new Error("Error al obtener datos");
+                return res.json();
+            })
+            .then(data => {
+                Swal.close();
+
+                if (!data || data.length === 0) {
+                    Swal.fire({
+                        icon: "info",
+                        title: "Sin datos",
+                        text: "No hay rondas para exportar",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+
+                // Exportar TODOS los usuarios
+                exportarAExcel(data, `todas_las_rondas_${new Date().toISOString().slice(0, 10)}`);
+
+                Swal.fire({
+                    icon: "success",
+                    title: "¡Exportación completada!",
+                    html: `
+                            <p><strong>${data.length} rondas</strong> exportadas correctamente</p>
+                            <p class="text-muted small mt-2">
+                                <i class="bi bi-file-excel me-1"></i>
+                                Archivo: todas_las_puestas_${new Date().toISOString().slice(0, 10)}.xlsx
+                            </p>
+                        `,
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            })
+            .catch(error => {
+                console.error("Error en exportación:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error al exportar",
+                    text: "No se pudieron obtener las rondas realizadas. Intenta nuevamente.",
+                    confirmButtonText: "Entendido"
+                });
+            });
+    };*/
+
+    const exportarRondas = () => {
+        // Determinar qué filtro está activo
+        let url = "http://localhost:8080/rondas/exportar?";
+        const params = [];
+
+        if (tipoBusqueda === "nombreDelPuesto" && nombreBuscar.trim() !== "") {
+            params.push(`nombrePuesto=${encodeURIComponent(nombreBuscar)}`);
+        } else if (tipoBusqueda === "usuario" && usuarioBuscar.trim() !== "") {
+            params.push(`nombreUsuario=${encodeURIComponent(usuarioBuscar)}`);
+        } else if (tipoBusqueda === "fecha" && fechaBuscar.trim() !== "") {
+            params.push(`fecha=${encodeURIComponent(fechaBuscar)}`);
+        }
+
+        // Si hay filtros, los agregamos; si no, exportamos todo
+        url = params.length > 0 ? url + params.join('&') : "http://localhost:8080/rondas/exportar";
+
+        Swal.fire({
+            title: "Exportando...",
+            text: params.length > 0 ? "Exportando rondas filtradas" : "Exportando todas las rondas",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        authFetch(url)
+            .then(res => {
+                if (!res.ok) throw new Error("Error al obtener datos");
+                return res.json();
+            })
+            .then(data => {
+                Swal.close();
+
+                if (!data || data.length === 0) {
+                    Swal.fire({
+                        icon: "info",
+                        title: "Sin datos",
+                        text: "No hay rondas para exportar con los filtros seleccionados",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+
+                // Formatear datos para Excel
+                const datosExportar = data.map(ronda => ({
+                    "Fecha": ronda.fecha,
+                    "Hora": ronda.hora,
+                    "Usuario": ronda.usuario,
+                    "Puesto de Trabajo": ronda.puestoTrabajo,
+                    "Ubicación QR": ronda.ubicacionQr,
+                    "Observaciones": ronda.observaciones || "Sin observaciones"
+                }));
+
+                // Nombre del archivo según filtro
+                let nombreArchivo = "todas_las_rondas";
+                if (params.length > 0) {
+                    if (tipoBusqueda === "nombreDelPuesto") nombreArchivo = `rondas_puesto_${nombreBuscar.replace(/\s+/g, '_')}`;
+                    else if (tipoBusqueda === "usuario") nombreArchivo = `rondas_usuario_${usuarioBuscar.replace(/\s+/g, '_')}`;
+                    else if (tipoBusqueda === "fecha") nombreArchivo = `rondas_fecha_${fechaBuscar}`;
+                }
+
+                exportarAExcel(datosExportar, nombreArchivo + `_${new Date().toISOString().slice(0, 10)}`);
+
+                Swal.fire({
+                    icon: "success",
+                    title: "¡Exportación completada!",
+                    text: `${data.length} rondas exportadas correctamente`,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error al exportar",
+                    text: "No se pudieron obtener las rondas. Intenta nuevamente."
+                });
+            });
     };
 
     if (cargando) return <p>Cargando historial...</p>;
@@ -383,13 +520,24 @@ export function TablaRondas() {
             <div>
                 <button
                     className="btn btn-success me-2"
-                    onClick={exportarExcel}
+                    onClick={exportarRondas}
                     title="Exportar a Excel"
                 >
                     <i className="bi bi-file-excel"></i> Exportar
                 </button>
             </div>
-
+            {/*
+            <div>
+                <button
+                    onClick={exportarTodasLasRondas}
+                    className="btn btn-success"
+                    title="Exportar todas las rondas registradas"
+                >
+                    <i className="bi bi-file-excel me-1"></i>
+                    Exportar Todo
+                </button>
+            </div>
+            */}
             {/* Información de resultados
             {enBusqueda && resultadoBusqueda.length > 0 && (
                 <div className="alert alert-info mb-3">

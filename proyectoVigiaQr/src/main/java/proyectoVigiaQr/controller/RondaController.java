@@ -8,6 +8,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import proyectoVigiaQr.domain.rondas.DatosExportacionRondas;
 import proyectoVigiaQr.domain.rondas.DatosListadoRonda;
 import proyectoVigiaQr.domain.rondas.DatosRegistroRonda;
 import proyectoVigiaQr.domain.rondas.RondaService;
@@ -40,6 +41,28 @@ public class RondaController {
                     size = 10, sort = "fecha", direction = Sort.Direction.DESC)Pageable paginacion
             ) {
         return rondaService.listarTodas(paginacion);
+    }
+    @GetMapping("/exportar")
+    public ResponseEntity<List<DatosExportacionRondas>> exportarRondas(
+            @RequestParam(required = false) String nombrePuesto,
+            @RequestParam(required = false) String nombreUsuario,
+            @RequestParam(required = false) String fecha
+    ) {
+        List<DatosExportacionRondas> rondas;
+
+        // Aplicar filtros según lo que llegue
+        if (nombrePuesto != null && !nombrePuesto.trim().isEmpty()) {
+            rondas = rondaService.listarPorNombrePuestoSinPaginacion(nombrePuesto);
+        } else if (nombreUsuario != null && !nombreUsuario.trim().isEmpty()) {
+            rondas = rondaService.listarPorNombreUsuarioSinPaginacion(nombreUsuario);
+        } else if (fecha != null && !fecha.trim().isEmpty()) {
+            rondas = rondaService.listarPorFechaSinPaginacion(LocalDate.parse(fecha));
+        } else {
+            // Sin filtros: exportar TODO
+            rondas = rondaService.listarTodasParaExportacion();
+        }
+
+        return ResponseEntity.ok(rondas);
     }
 
     @GetMapping("/puesto/{idPuesto}")

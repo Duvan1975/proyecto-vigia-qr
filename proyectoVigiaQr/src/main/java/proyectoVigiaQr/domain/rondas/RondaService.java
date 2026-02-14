@@ -12,8 +12,11 @@ import proyectoVigiaQr.domain.puestosTrabajo.PuestosTrabajo;
 import proyectoVigiaQr.domain.usuario.Usuario;
 import proyectoVigiaQr.domain.usuario.UsuarioRepository;
 
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class RondaService {
@@ -67,6 +70,34 @@ public class RondaService {
         return rondaRepository.findAll(paginacion)
                 .map(DatosListadoRonda::new);
     }
+    //Médotos (3) para exportación según filtro de búsqueda
+    public List<DatosExportacionRondas> listarPorNombrePuestoSinPaginacion(String nombrePuesto) {
+        return rondaRepository.findByPuestoTrabajoNombrePuestoContainingIgnoreCase(nombrePuesto)
+                .stream()
+                .map(DatosExportacionRondas::new)
+                .collect(Collectors.toList());
+    }
+    public List<DatosExportacionRondas> listarPorNombreUsuarioSinPaginacion(
+            String nombreUsuario) {
+        return rondaRepository.findByUsuarioNombresContainingIgnoreCaseOrUsuarioApellidosContainingIgnoreCase(
+                nombreUsuario, nombreUsuario)
+                .stream()
+                .map(DatosExportacionRondas::new)
+                .collect(Collectors.toList());
+    }
+    public List<DatosExportacionRondas> listarPorFechaSinPaginacion(LocalDate fecha) {
+        return rondaRepository.findByFecha(fecha)
+                .stream()
+                .map(DatosExportacionRondas::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<DatosExportacionRondas> listarTodasParaExportacion() {
+        return rondaRepository.findAll()
+                .stream()
+                .map(DatosExportacionRondas::new)
+                .collect(Collectors.toList());
+    }
 
     public Page<DatosListadoRonda> listarPorPuesto(Long idPuestoTrabajo, Pageable paginacion) {
 
@@ -89,12 +120,20 @@ public class RondaService {
 
         return rondas.map(DatosListadoRonda::new);
     }
+    // Método para quitar acentos
+    private String quitarTildes(String texto) {
+        String textoNormalizado = Normalizer.normalize(texto, Normalizer.Form.NFD);
+        Pattern patron = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return patron.matcher(textoNormalizado).replaceAll("");
+    }
 
-    public Page<DatosListadoRonda> listarPorNombreUsuario(String nombres, Pageable paginacion) {
-        Page<Ronda> rondas = rondaRepository.findByNombresContaining(nombres, paginacion);
+    public Page<DatosListadoRonda> listarPorNombreUsuario(String nombre, Pageable paginacion) {
+
+        Page<Ronda> rondas = rondaRepository
+                .findByNombreCompletoContainingIgnoreCase(nombre, paginacion);
 
         if (rondas.isEmpty()) {
-            throw new RuntimeException("No se encontraron rondas para el usuario: " + nombres);
+            throw new RuntimeException("No se encontraron rondas para el usuario: " + nombre);
         }
 
         return rondas.map(DatosListadoRonda::new);

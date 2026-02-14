@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import proyectoVigiaQr.domain.codigosQR.CodigoQRRepository;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class PuestosTrabajoService {
 
@@ -52,6 +55,12 @@ public class PuestosTrabajoService {
 
     public Page<DatosListadoPuestos> listarPuestosTrabajo(Pageable paginacion) {
         return puestosTrabajoRepository.findAll(paginacion).map(DatosListadoPuestos::new);
+    }
+    public List<DatosExportacionPuestosTrabajo> listarTodosParaExportacion() {
+        return puestosTrabajoRepository.findAll()
+                .stream()
+                .map(DatosExportacionPuestosTrabajo::new)
+                .collect(Collectors.toList());
     }
     public ResponseEntity<DatosRespuestaPuestoTrabajo> obtenerDatosPuesto(Long id) {
         PuestosTrabajo puestosTrabajo = puestosTrabajoRepository.getReferenceById(id);

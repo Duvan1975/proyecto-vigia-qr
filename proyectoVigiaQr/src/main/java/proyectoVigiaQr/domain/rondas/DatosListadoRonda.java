@@ -16,7 +16,8 @@ public record DatosListadoRonda(
         this(
                 ronda.getId(),
                 ronda.getFecha(),
-                ronda.getHora(), ronda.getUsuario().getNombres() + " " + ronda.getUsuario().getApellidos(),
+                ronda.getHora(),
+                ronda.getUsuario().getNombres() + " " + ronda.getUsuario().getApellidos(),
                 ronda.getPuestoTrabajo().getNombrePuesto(),
                 ronda.getCodigoQR().getUbicacion(),
                 ronda.getObservaciones()

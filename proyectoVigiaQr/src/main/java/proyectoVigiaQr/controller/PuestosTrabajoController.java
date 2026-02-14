@@ -39,6 +39,12 @@ public class PuestosTrabajoController {
             @PageableDefault(size = 20, sort = "nombrePuesto")Pageable paginacion) {
         return puestosTrabajoService.listarPuestosTrabajo(paginacion);
     }
+    @GetMapping("/exportar")
+    public ResponseEntity<List<DatosExportacionPuestosTrabajo>> exportarPuestosTrabajo() {
+        List<DatosExportacionPuestosTrabajo> puestosTrabajos = puestosTrabajoService.listarTodosParaExportacion();
+
+        return ResponseEntity.ok(puestosTrabajos);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<DatosRespuestaPuestoTrabajo> obtenerDatosPuesto(@PathVariable Long id) {
         return puestosTrabajoService.obtenerDatosPuesto(id);

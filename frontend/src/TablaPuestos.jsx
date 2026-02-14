@@ -4,6 +4,7 @@ import Paginacion from "./Paginacion";
 import Swal from "sweetalert2";
 import { TablaCodigoQrPorPuesto } from "./TablaCodigoQrPorPuesto";
 import { authFetch } from "./utils/authFetch";
+import { exportarAExcel } from "./utils/exportarExcel";
 
 export function TablaPuestos() {
 
@@ -123,6 +124,62 @@ export function TablaPuestos() {
             })
     }
 
+    const exportarTodosLosPuestos = () => {
+        Swal.fire({
+            title: "Exportando...",
+            text: "Preparando archivo Excel con todos los puestos",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        authFetch("http://localhost:8080/puestosTrabajos/exportar")
+            .then(res => {
+                if (!res.ok) throw new Error("Error al obtener datos");
+                return res.json();
+            })
+            .then(data => {
+                Swal.close();
+
+                if (!data || data.length === 0) {
+                    Swal.fire({
+                        icon: "info",
+                        title: "Sin datos",
+                        text: "No hay puestos para exportar",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+
+                // Exportar TODOS los usuarios
+                exportarAExcel(data, `todos_los_puestos_${new Date().toISOString().slice(0, 10)}`);
+
+                Swal.fire({
+                    icon: "success",
+                    title: "¡Exportación completada!",
+                    html: `
+                        <p><strong>${data.length} puestos</strong> exportados correctamente</p>
+                        <p class="text-muted small mt-2">
+                            <i class="bi bi-file-excel me-1"></i>
+                            Archivo: todos_los_puestos_${new Date().toISOString().slice(0, 10)}.xlsx
+                        </p>
+                    `,
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            })
+            .catch(error => {
+                console.error("Error en exportación:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error al exportar",
+                    text: "No se pudieron obtener los puestos de trabajo. Intenta nuevamente.",
+                    confirmButtonText: "Entendido"
+                });
+            });
+    };
+
     return (
         <>
             <div className="card">
@@ -181,122 +238,133 @@ export function TablaPuestos() {
                 </div>
             )}
 
+            <div>
+                <button
+                    onClick={exportarTodosLosPuestos}
+                    className="btn btn-success"
+                    title="Exportar todos los puestos registrados en el sistema"
+                >
+                    <i className="bi bi-file-excel me-1"></i>
+                    Exportar Todos
+                </button>
+            </div>
+
             <div className="card">
                 <div className="card-body">
                     <div className="table-responsive">
-            <table className="table table-striped table-hover" id="tabla">
-                <thead>
-                    <tr>
-                        <th>Puesto de Trabajo</th>
-                        <th>Descripción</th>
-                        <th>Dirección</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {resultadoBusqueda ? (
-                        <tr style={{ backgroundColor: "red" }}>
-                            <td>{resultadoBusqueda.nombrePuesto}</td>
-                            <td>{resultadoBusqueda.descripcion}</td>
-                            <td>{resultadoBusqueda.direccion}</td>
-                            <td>
-                                <button
-                                    className={`btn btn-sm ${resultadoBusqueda.estado ? "btn-success" : "btn-secondary"}`}
-                                    onClick={() => {
-                                        Swal.fire({
-                                            title: '¿Estás seguro?',
-                                            text: `¿Deseas ${resultadoBusqueda.estado ? "desactivar" : "activar"} este puesto?`,
-                                            icon: 'warning',
-                                            showCancelButton: true,
-                                            confirmButtonColor: '#3085d6',
-                                            cancelButtonColor: '#d33',
-                                            confirmButtonText: 'Sí, cambiar estado',
-                                            cancelButtonText: 'Cancelar'
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                // Si el usuario confirma, ejecutar la función original
-                                                cambiarEstadoPuesto(resultadoBusqueda.id);
-                                            }
-                                        });
-                                    }}
-                                >
-                                    {resultadoBusqueda.estado ? "Activo" : "Inactivo"}
-                                </button>
-                            </td>
-                            <td>
-                                <button onClick={() => {
-                                    setPuestoSeleccionado(resultadoBusqueda);
-                                    setMostrarModal(true);
-                                }}
-                                    className="btn btn-sm btn-primary me-2"
-                                >Editar
-                                </button>
-                                <button
-                                    className="btn btn-sm btn-outline-secondary"
-                                    onClick={() => {
-                                        setCodigoQrPorPuestoListar(resultadoBusqueda.id);
-                                        setMostrarTablaCodigoQr(true);
-                                    }}
-                                >
-                                    Ver Códigos
-                                </button>
-                            </td>
-                        </tr>
-                    ) : (
-                        puestosTrabajos.map((pues) => (
-                            <tr key={pues.id}>
-                                <td>{pues.nombrePuesto}</td>
-                                <td>{pues.descripcion}</td>
-                                <td>{pues.direccion}</td>
-                                <td>
-                                    <button
-                                        className={`btn btn-sm ${pues.estado ? "btn-success" : "btn-secondary"}`}
-                                        onClick={() => {
-                                            Swal.fire({
-                                                title: 'Confirmar cambio de estado',
-                                                text: `¿Estás seguro de ${pues.estado ? "desactivar" : "activar"} este puesto?`,
-                                                icon: 'question',
-                                                showCancelButton: true,
-                                                confirmButtonColor: '#3085d6',
-                                                cancelButtonColor: '#d33',
-                                                confirmButtonText: 'Sí, cambiar',
-                                                cancelButtonText: 'Cancelar',
-                                                reverseButtons: true
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    cambiarEstadoPuesto(pues.id);
-                                                }
-                                            });
-                                        }}
-                                    >
-                                        {pues.estado ? "Activo" : "Inactivo"}
-                                    </button>
-                                </td>
-                                <td>
-                                    <button onClick={() => {
-                                        setPuestoSeleccionado(pues);
-                                        setMostrarModal(true);
-                                    }}
-                                        className="btn btn-sm btn-primary me-2"
-                                    >Editar
-                                    </button>
+                        <table className="table table-striped table-hover" id="tabla">
+                            <thead>
+                                <tr>
+                                    <th>Puesto de Trabajo</th>
+                                    <th>Descripción</th>
+                                    <th>Dirección</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {resultadoBusqueda ? (
+                                    <tr style={{ backgroundColor: "red" }}>
+                                        <td>{resultadoBusqueda.nombrePuesto}</td>
+                                        <td>{resultadoBusqueda.descripcion}</td>
+                                        <td>{resultadoBusqueda.direccion}</td>
+                                        <td>
+                                            <button
+                                                className={`btn btn-sm ${resultadoBusqueda.estado ? "btn-success" : "btn-secondary"}`}
+                                                onClick={() => {
+                                                    Swal.fire({
+                                                        title: '¿Estás seguro?',
+                                                        text: `¿Deseas ${resultadoBusqueda.estado ? "desactivar" : "activar"} este puesto?`,
+                                                        icon: 'warning',
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: '#3085d6',
+                                                        cancelButtonColor: '#d33',
+                                                        confirmButtonText: 'Sí, cambiar estado',
+                                                        cancelButtonText: 'Cancelar'
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            // Si el usuario confirma, ejecutar la función original
+                                                            cambiarEstadoPuesto(resultadoBusqueda.id);
+                                                        }
+                                                    });
+                                                }}
+                                            >
+                                                {resultadoBusqueda.estado ? "Activo" : "Inactivo"}
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button onClick={() => {
+                                                setPuestoSeleccionado(resultadoBusqueda);
+                                                setMostrarModal(true);
+                                            }}
+                                                className="btn btn-sm btn-primary me-2"
+                                            >Editar
+                                            </button>
+                                            <button
+                                                className="btn btn-sm btn-outline-secondary"
+                                                onClick={() => {
+                                                    setCodigoQrPorPuestoListar(resultadoBusqueda.id);
+                                                    setMostrarTablaCodigoQr(true);
+                                                }}
+                                            >
+                                                Ver Códigos
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    puestosTrabajos.map((pues) => (
+                                        <tr key={pues.id}>
+                                            <td>{pues.nombrePuesto}</td>
+                                            <td>{pues.descripcion}</td>
+                                            <td>{pues.direccion}</td>
+                                            <td>
+                                                <button
+                                                    className={`btn btn-sm ${pues.estado ? "btn-success" : "btn-secondary"}`}
+                                                    onClick={() => {
+                                                        Swal.fire({
+                                                            title: 'Confirmar cambio de estado',
+                                                            text: `¿Estás seguro de ${pues.estado ? "desactivar" : "activar"} este puesto?`,
+                                                            icon: 'question',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#3085d6',
+                                                            cancelButtonColor: '#d33',
+                                                            confirmButtonText: 'Sí, cambiar',
+                                                            cancelButtonText: 'Cancelar',
+                                                            reverseButtons: true
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                cambiarEstadoPuesto(pues.id);
+                                                            }
+                                                        });
+                                                    }}
+                                                >
+                                                    {pues.estado ? "Activo" : "Inactivo"}
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button onClick={() => {
+                                                    setPuestoSeleccionado(pues);
+                                                    setMostrarModal(true);
+                                                }}
+                                                    className="btn btn-sm btn-primary me-2"
+                                                >Editar
+                                                </button>
 
-                                    <button
-                                        className="btn btn-sm btn-outline-secondary"
-                                        onClick={() => {
-                                            setCodigoQrPorPuestoListar(pues.id);
-                                            setMostrarTablaCodigoQr(true);
-                                        }}
-                                    >
-                                        Ver Códigos
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+                                                <button
+                                                    className="btn btn-sm btn-outline-secondary"
+                                                    onClick={() => {
+                                                        setCodigoQrPorPuestoListar(pues.id);
+                                                        setMostrarTablaCodigoQr(true);
+                                                    }}
+                                                >
+                                                    Ver Códigos
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
