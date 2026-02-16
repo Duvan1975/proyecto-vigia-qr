@@ -165,7 +165,7 @@ export function TablaRondas() {
             return;
         }
 
-        setCargando(true);
+        setCargando(true); 
         setEnBusqueda(true);
 
         authFetch(`http://localhost:8080/rondas/usuario/nombre?nombre=${encodeURIComponent(usuarioBuscar)}&page=0&sort=fecha,desc`)
