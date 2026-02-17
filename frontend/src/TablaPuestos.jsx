@@ -6,6 +6,8 @@ import { TablaCodigoQrPorPuesto } from "./TablaCodigoQrPorPuesto";
 import { authFetch } from "./utils/authFetch";
 import { exportarAExcel } from "./utils/exportarExcel";
 
+const API = process.env.REACT_APP_API_URL;
+
 export function TablaPuestos() {
 
     const [puestosTrabajos, setPuestosTrabajos] = useState([]);
@@ -33,7 +35,7 @@ export function TablaPuestos() {
     }, [paginaActual]);
 
     const cargarPuestos = (pagina = 0) => {
-        authFetch(`http://localhost:8080/puestosTrabajos?page=${pagina}`)
+        authFetch(`${API}/puestosTrabajos?page=${pagina}`)
             .then((response) => response.json())
             .then((data) => {
                 setPuestosTrabajos(data.content);
@@ -46,7 +48,7 @@ export function TablaPuestos() {
     };
 
     useEffect(() => {
-        authFetch("http://localhost:8080/puestosTrabajos")
+        authFetch(`${API}/puestosTrabajos`)
             .then((response) => response.json())
             .then((data) => setPuestosTrabajos(data.content))
             .catch((error) => console.error("Error al cargar puestos de trabajo:", error));
@@ -54,7 +56,7 @@ export function TablaPuestos() {
 
     const cambiarEstadoPuesto = async (id) => {
         try {
-            const response = await authFetch(`http://localhost:8080/puestosTrabajos/${id}/estado`, {
+            const response = await authFetch(`${API}/puestosTrabajos/${id}/estado`, {
                 method: "PATCH",
             });
 
@@ -92,7 +94,7 @@ export function TablaPuestos() {
             return;
         }
 
-        authFetch(`http://localhost:8080/puestosTrabajos/buscarPorNombrePuesto?nombrePuesto=${nombreBuscar}`)
+        authFetch(`${API}/puestosTrabajos/buscarPorNombrePuesto?nombrePuesto=${nombreBuscar}`)
             .then((res) => {
                 if (!res.ok) throw new Error("Puesto no encontrado");
                 return res.json();
@@ -133,7 +135,7 @@ export function TablaPuestos() {
             didOpen: () => Swal.showLoading()
         });
 
-        authFetch("http://localhost:8080/puestosTrabajos/exportar")
+        authFetch(`<${API}/puestosTrabajos/exportar`)
             .then(res => {
                 if (!res.ok) throw new Error("Error al obtener datos");
                 return res.json();

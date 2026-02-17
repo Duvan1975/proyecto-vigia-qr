@@ -1,10 +1,12 @@
 import Swal from "sweetalert2";
 import { authFetch } from "./utils/authFetch";
 
+const API = process.env.REACT_APP_API_URL;
+
 export async function AgregarTabla(usuario, limpiarFormulario) {
 
     try {
-        const responseUsuario = await authFetch("http://localhost:8080/usuarios", {
+        const responseUsuario = await authFetch(`${API}/usuarios`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json",
@@ -31,9 +33,6 @@ export async function AgregarTabla(usuario, limpiarFormulario) {
             }
             throw new Error(mensaje);
         }
-
-        //const usuarioData = await responseUsuario.json();
-        //const usuarioId = usuarioData.id || usuarioData.Id;
 
         Swal.fire({
             icon: "success",

@@ -1,6 +1,8 @@
 import { idPuestoCreado } from "./AgregarPuesto";
 import { authFetch } from "./utils/authFetch";
 
+const API = process.env.REACT_APP_API_URL;
+
 export function generarCodigoQR() {
 
     const datos = {
@@ -9,7 +11,7 @@ export function generarCodigoQR() {
         idPuestosTrabajo: idPuestoCreado
     };
 
-    authFetch("http://localhost:8080/codigos-qr", {
+    authFetch(`${API}/codigos-qr`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -41,7 +43,7 @@ export function generarCodigoQR() {
         const idQr = prompt("Ingrese el ID del código QR a descargar");
 
         window.open(
-            `http://localhost:8080/codigos-qr/${idQr}/descargar`,
+            `${API}/codigos-qr/${idQr}/descargar`,
             "_blank"
         );
     }

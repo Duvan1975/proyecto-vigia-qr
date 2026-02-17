@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { authFetch } from "./utils/authFetch";
 import { exportarAExcel } from "./utils/exportarExcel";
 
+const API = process.env.REACT_APP_API_URL;
 
 export function TablaUsuarios() {
 
@@ -43,7 +44,7 @@ export function TablaUsuarios() {
     };
 
     const cargarUsuarios = (pagina = 0) => {
-        authFetch(`http://localhost:8080/usuarios?page=${pagina}`)
+        authFetch(`${API}/usuarios?page=${pagina}`)
             .then((response) => response.json())
             .then((data) => {
                 setUsuarios(data.content);
@@ -57,7 +58,7 @@ export function TablaUsuarios() {
 
     const cambiarEstadoUsuario = async (id) => {
         try {
-            const response = await authFetch(`http://localhost:8080/usuarios/${id}/estado`, {
+            const response = await authFetch(`${API}/usuarios/${id}/estado`, {
                 method: "PATCH",
             });
 
@@ -95,7 +96,7 @@ export function TablaUsuarios() {
             return;
         }
 
-        authFetch(`http://localhost:8080/usuarios/buscarPorNombreCompleto?filtro=${nombreBuscar}`)
+        authFetch(`${API}/usuarios/buscarPorNombreCompleto?filtro=${nombreBuscar}`)
             .then((res) => {
                 if (!res.ok) throw new Error("Usuario no encontrado");
                 return res.json();
@@ -137,7 +138,7 @@ export function TablaUsuarios() {
             return;
         }
         //Aquí mostramos el endpoint de búsqueda por número de documento
-        authFetch(`http://localhost:8080/usuarios/buscarPorDocumento?numeroDocumento=${documentoBuscar}`)
+        authFetch(`${API}/usuarios/buscarPorDocumento?numeroDocumento=${documentoBuscar}`)
             .then((res) => {
                 if (!res.ok) throw new Error("Usuario no encontrado");
                 return res.json();
@@ -170,23 +171,6 @@ export function TablaUsuarios() {
                 setResultadoBusqueda([]);
             });
     };
-    /*const exportarExcel = () => {
-        const datosExportar = usuarios.map(usuario => ({
-            "Nombres": usuario.nombres,
-            "Apellidos": usuario.apellidos,
-            "Tipo de Documento": usuario.tipoDocumento,
-            "N° Documento": usuario.numeroDocumento,
-            "Estado": usuario.estado ? "Activo" : "Inactivo",
-        }));
-
-        // Nombre del archivo
-        const nombreArchivo = `Usuarios_${nombreBuscar.replace(/\s+/g, '_')}`;
-
-        // Llama a la función de exportación
-        exportarAExcel(datosExportar, nombreArchivo);
-        // Función auxiliar para formatear fechas
-
-    };*/
 
     const exportarTodosLosUsuarios = () => {
         Swal.fire({
@@ -197,7 +181,7 @@ export function TablaUsuarios() {
             didOpen: () => Swal.showLoading()
         });
 
-        authFetch("http://localhost:8080/usuarios/exportar")
+        authFetch(`${API}/usuarios/exportar`)
             .then(res => {
                 if (!res.ok) throw new Error("Error al obtener datos");
                 return res.json();

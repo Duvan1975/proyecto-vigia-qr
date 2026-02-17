@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 import { authFetch } from "./utils/authFetch";
 import { exportarAExcel } from "./utils/exportarExcel";
 
+const API = process.env.REACT_APP_API_URL;
+
 export function TablaRondas() {
     const [rondasPuesto, setRondasPuesto] = useState([]);
 
@@ -29,7 +31,7 @@ export function TablaRondas() {
 
     const cargarRondas = (pagina = 0) => {
         setCargando(true);
-        authFetch(`http://localhost:8080/rondas?page=${pagina}&sort=fecha,desc`)
+        authFetch(`${API}/rondas?page=${pagina}&sort=fecha,desc`)
             .then((response) => response.json())
             .then((data) => {
                 setRondasPuesto(data.content || []);
@@ -68,7 +70,7 @@ export function TablaRondas() {
         setCargando(true);
         setEnBusqueda(true);
 
-        authFetch(`http://localhost:8080/rondas/puesto/nombre?nombre=${encodeURIComponent(nombreBuscar)}&page=0&sort=fecha,desc`)
+        authFetch(`${API}/rondas/puesto/nombre?nombre=${encodeURIComponent(nombreBuscar)}&page=0&sort=fecha,desc`)
             .then((res) => {
                 if (!res.ok) throw new Error("Puesto no encontrado");
                 return res.json();
@@ -123,7 +125,7 @@ export function TablaRondas() {
         setCargando(true);
         setEnBusqueda(true);
 
-        authFetch(`http://localhost:8080/rondas/fecha/${fechaBuscar}?page=0&sort=fecha,desc`)
+        authFetch(`${API}/rondas/fecha/${fechaBuscar}?page=0&sort=fecha,desc`)
             .then((res) => {
                 if (!res.ok) throw new Error("Fecha no encontrada o sin registros");
                 return res.json();
@@ -168,7 +170,7 @@ export function TablaRondas() {
         setCargando(true); 
         setEnBusqueda(true);
 
-        authFetch(`http://localhost:8080/rondas/usuario/nombre?nombre=${encodeURIComponent(usuarioBuscar)}&page=0&sort=fecha,desc`)
+        authFetch(`${API}/rondas/usuario/nombre?nombre=${encodeURIComponent(usuarioBuscar)}&page=0&sort=fecha,desc`)
             .then((res) => {
                 if (!res.ok) throw new Error("Usuario no encontrado");
                 return res.json();
@@ -200,50 +202,6 @@ export function TablaRondas() {
             });
     };
 
-    /*const limpiarBusqueda = () => {
-        setResultadoBusqueda([]);
-        setFechaBuscar("");
-        setNombreBuscar("");
-        setUsuarioBuscar("");
-        setEnBusqueda(false);
-        setPaginaActual(0);
-        cargarRondas(0);
-    };*/
-
-    /*const manejarCambioPagina = (nuevaPagina) => {
-        setPaginaActual(nuevaPagina);
-
-        if (enBusqueda) {
-            // Si estamos en búsqueda, cargar la página correspondiente
-            let url = "";
-
-            if (tipoBusqueda === "nombreDelPuesto" && nombreBuscar) {
-                url = `http://localhost:8080/rondas/puesto/nombre?nombre=${encodeURIComponent(nombreBuscar)}&page=${nuevaPagina}&sort=fecha,desc`;
-            } else if (tipoBusqueda === "fecha" && fechaBuscar) {
-                url = `http://localhost:8080/rondas/fecha/${fechaBuscar}?page=${nuevaPagina}&sort=fecha,desc`;
-            } else if (tipoBusqueda === "usuario" && usuarioBuscar) {
-                url = `http://localhost:8080/rondas/usuario/nombre?nombre=${encodeURIComponent(usuarioBuscar)}&page=${nuevaPagina}&sort=fecha,desc`;
-            }
-
-            if (url) {
-                authFetch(url)
-                    .then(res => res.json())
-                    .then(data => {
-                        setResultadoBusqueda(data.content || []);
-                        setTotalPaginas(data.totalPages || 1);
-                        setTotalElementos(data.totalElements || 0);
-                    })
-                    .catch(error => {
-                        console.error("Error al cambiar página:", error);
-                        Swal.fire("Error", "No se pudo cargar la página", "error");
-                    });
-            }
-        } else {
-            // Si no estamos en búsqueda, cargar todas las rondas
-            cargarRondas(nuevaPagina);
-        }
-    };*/
-
     if (cargando && paginaActual === 0) {
         return (
             <div className="text-center my-4">
@@ -255,84 +213,9 @@ export function TablaRondas() {
         );
     }
 
-    /*const exportarExcel = () => {
-        const datosExportar = rondasPuesto.map(ronda => ({
-            "Usuario": ronda.usuario,
-            "Nombre del Puesto": ronda.puestoTrabajo || "—",
-            "Ubicación": ronda.ubicacionQr || "—",
-            "Fecha": ronda.fecha || "—",
-            "Hora": ronda.hora,
-            "Observaciones": ronda.observaciones || "—"
-        }));
-
-        // Nombre del archivo
-        const nombreArchivo = `Rondas_${nombreBuscar.replace(/\s+/g, '_')}`;
-
-        // Llama a la función de exportación
-        exportarAExcel(datosExportar, nombreArchivo);
-        // Función auxiliar para formatear fechas
-
-    };
-
-    const exportarTodasLasRondas = () => {
-        Swal.fire({
-            title: "Exportando...",
-            text: "Preparando archivo Excel con todas las rondas",
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            didOpen: () => Swal.showLoading()
-        });
-
-        authFetch("http://localhost:8080/rondas/exportar")
-            .then(res => {
-                if (!res.ok) throw new Error("Error al obtener datos");
-                return res.json();
-            })
-            .then(data => {
-                Swal.close();
-
-                if (!data || data.length === 0) {
-                    Swal.fire({
-                        icon: "info",
-                        title: "Sin datos",
-                        text: "No hay rondas para exportar",
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    return;
-                }
-
-                // Exportar TODOS los usuarios
-                exportarAExcel(data, `todas_las_rondas_${new Date().toISOString().slice(0, 10)}`);
-
-                Swal.fire({
-                    icon: "success",
-                    title: "¡Exportación completada!",
-                    html: `
-                            <p><strong>${data.length} rondas</strong> exportadas correctamente</p>
-                            <p class="text-muted small mt-2">
-                                <i class="bi bi-file-excel me-1"></i>
-                                Archivo: todas_las_puestas_${new Date().toISOString().slice(0, 10)}.xlsx
-                            </p>
-                        `,
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            })
-            .catch(error => {
-                console.error("Error en exportación:", error);
-                Swal.fire({
-                    icon: "error",
-                    title: "Error al exportar",
-                    text: "No se pudieron obtener las rondas realizadas. Intenta nuevamente.",
-                    confirmButtonText: "Entendido"
-                });
-            });
-    };*/
-
     const exportarRondas = () => {
         // Determinar qué filtro está activo
-        let url = "http://localhost:8080/rondas/exportar?";
+        let url = `${API}/rondas/exportar?`;
         const params = [];
 
         if (tipoBusqueda === "nombreDelPuesto" && nombreBuscar.trim() !== "") {
@@ -344,7 +227,7 @@ export function TablaRondas() {
         }
 
         // Si hay filtros, los agregamos; si no, exportamos todo
-        url = params.length > 0 ? url + params.join('&') : "http://localhost:8080/rondas/exportar";
+        url = params.length > 0 ? url + params.join('&') : `${API}/rondas/exportar`;
 
         Swal.fire({
             title: "Exportando...",

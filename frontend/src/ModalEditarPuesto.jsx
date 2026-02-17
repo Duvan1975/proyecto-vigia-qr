@@ -3,6 +3,8 @@ import { CuadrosTexto } from "./CuadrosTexto";
 import Swal from "sweetalert2";
 import { authFetch } from "./utils/authFetch";
 
+const API = process.env.REACT_APP_API_URL;
+
 export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualizado, onEliminado }) {
     const [codigoQr, setCodigoQr] = useState([]);
     //Estado para agregar código qr modificado para que siempre sea visible
@@ -25,7 +27,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
             setFormulario(puestoTrabajo)
 
             //Obtener código QR del puesto de trabajo por el ID
-            authFetch(`http://localhost:8080/codigos-qr/puesto/${puestoTrabajo.id}`)
+            authFetch(`${API}/codigos-qr/puesto/${puestoTrabajo.id}`)
                 .then(res => res.json())
                 .then(data => {
                     const codigosPreparados = (Array.isArray(data) ? data : []).map(c => ({
@@ -37,13 +39,6 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                         estado: typeof c.estado === "boolean" ? c.estado : true
                     }));
                     setCodigoQr(codigosPreparados);
-
-                    //Cargar previews
-                    /*codigosPreparados.forEach(c => {
-                        if (c.id && c.estado) {
-                            cargarPreviewQr(c.id);
-                        }
-                    });*/
 
                 });
         }
@@ -66,7 +61,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
     };
 
     const actualizarPuestoTrabajo = () => {
-        authFetch("http://localhost:8080/puestosTrabajos", {
+        authFetch(`${API}/puestosTrabajos`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -115,7 +110,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
 
 
     const actualizarCodigoQr = (codigoQr) => {
-        authFetch("http://localhost:8080/codigos-qr", {
+        authFetch(`${API}/codigos-qr`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -162,7 +157,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
             return;
         }
 
-        authFetch(`http://localhost:8080/codigos-qr/puesto/${puestoTrabajo.id}`, {
+        authFetch(`${API}/codigos-qr/puesto/${puestoTrabajo.id}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(nuevosCodigosQr)
@@ -189,18 +184,10 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
 
                 console.log("Códigos formateados:", codigosFormateados);
 
-                // 1️⃣ Agregar todos a la tabla
+                // Agregar todos a la tabla
                 setCodigoQr(prev => [...prev, ...codigosFormateados]);
 
-                // 2️⃣ Generar preview para cada uno (ahora con el ID correcto)
-                /*codigosFormateados.forEach(codigo => {
-                    if (codigo.id) {
-                        console.log("Generando preview para ID:", codigo.id);
-                        cargarPreviewQr(codigo.id);
-                    }
-                });*/
-
-                // 3️⃣ Limpiar formulario
+                // Limpiar formulario
                 setNuevosCodigosQr([
                     { descripcion: "", ubicacion: "", estado: true }
                 ]);
@@ -246,7 +233,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
 
         const nombreArchivo = `${limpiarTexto(nombrePuesto)}_${limpiarTexto(ubicacion)}`;
 
-        authFetch(`http://localhost:8080/codigos-qr/${idCodigoQr}/descargar`)
+        authFetch(`${API}/codigos-qr/${idCodigoQr}/descargar`)
             .then(res => {
                 if (!res.ok) {
                     throw new Error("No se pudo descargar el código QR");
@@ -282,25 +269,6 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
             });
     };
 
-    /*const cargarPreviewQr = (idCodigoQr) => {
-        fetch(`http://localhost:8080/codigos-qr/${idCodigoQr}/descargar`)
-            .then(res => {
-                if (!res.ok) throw new Error("No se pudo cargar el preview del QR");
-                return res.blob();
-            })
-            .then(blob => {
-                const url = URL.createObjectURL(blob);
-
-                setPreviewQr(prev => ({
-                    ...prev,
-                    [idCodigoQr]: url
-                }));
-            })
-            .catch(err => {
-                console.error("Preview QR:", err);
-            });
-    };*/
-
     const eliminarCodigoQr = (id) => {
         Swal.fire({
             title: '¿Estás seguro?',
@@ -311,7 +279,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                authFetch(`http://localhost:8080/codigos-qr/${id}`, {
+                authFetch(`${API}/codigos-qr/${id}`, {
                     method: "DELETE",
                     headers: {
                     }
@@ -330,7 +298,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
     };
 
     const eliminarPuestoTrabajo = () => {
-        authFetch(`http://localhost:8080/puestosTrabajos/${formulario.id}`, {
+        authFetch(`${API}/puestosTrabajos/${formulario.id}`, {
             method: "DELETE"
         })
             .then(async (response) => {

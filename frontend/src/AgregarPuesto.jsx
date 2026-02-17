@@ -1,41 +1,12 @@
 import Swal from "sweetalert2";
 import { authFetch } from "./utils/authFetch";
 
+const API = process.env.REACT_APP_API_URL;
+
 export async function AgregarPuesto(datos, limpiarFormulario) {
 
-    /*fetch("http://localhost:8080/puestosTrabajos", {
-        method: "POST",
-        headers: {
-            "Content-type": "application/json",
-        },
-        body: JSON.stringify(datos),
-    })
-        .then(async response => {
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error);
-            }
-            return response.json();
-        })
-        .then(() => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Registro exitoso',
-                text: 'El puesto ha sido registrado correctamente.',
-            }).then(() => {
-                limpiarFormulario();
-            });
-        })
-        .catch(error => {
-            Swal.fire({
-                icon: 'error',
-                title: 'No se pudo registrar',
-                text: error.message,
-            });
-        });*/
-
     try {
-        const responsePuesto = await authFetch("http://localhost:8080/puestosTrabajos", {
+        const responsePuesto = await authFetch(`${API}/puestosTrabajos`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json",
@@ -62,9 +33,6 @@ export async function AgregarPuesto(datos, limpiarFormulario) {
             }
             throw new Error(mensaje);
         }
-
-        //const usuarioData = await responseUsuario.json();
-        //const usuarioId = usuarioData.id || usuarioData.Id;
 
         Swal.fire({
             icon: "success",

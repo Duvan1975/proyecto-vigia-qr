@@ -4,6 +4,8 @@ import { CuadrosSelect } from "./CuadrosSelect";
 import Swal from "sweetalert2";
 import { authFetch } from "./utils/authFetch";
 
+const API = process.env.REACT_APP_API_URL;
+
 export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado }) {
     const [formulario, setFormulario] = useState({
         id: "",
@@ -29,7 +31,7 @@ export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado })
     };
 
     const actualizarUsuario = () => {
-        authFetch("http://localhost:8080/usuarios", {
+        authFetch(`${API}/usuarios`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"

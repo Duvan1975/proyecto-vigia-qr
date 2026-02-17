@@ -3,6 +3,8 @@ import Swal from "sweetalert2";
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { authFetch } from "./utils/authFetch";
 
+const API = process.env.REACT_APP_API_URL;
+
 export function ScannerQr() {
 
     const [scanner, setScanner] = useState(null);
@@ -75,7 +77,7 @@ export function ScannerQr() {
                 observaciones: observaciones
             };
 
-            const response = await authFetch('http://localhost:8080/rondas', {
+            const response = await authFetch(`${API}/rondas`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

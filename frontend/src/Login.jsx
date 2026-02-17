@@ -2,6 +2,8 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import logoVigia from '../src/img/logoVigia.png'
 
+const API = process.env.REACT_APP_API_URL;
+
 export function Login({ onLoginSuccess }) {
 
   //Creando estados de usuario y contraseña
@@ -10,7 +12,7 @@ export function Login({ onLoginSuccess }) {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://localhost:8080/login", {
+      const response = await fetch(`${API}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { authGet } from '../utils/authFetch';
 
+const API = process.env.REACT_APP_API_URL;
+
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
 
@@ -10,7 +12,7 @@ const UserManagement = () => {
 
     const loadUsers = async () => {
         try {
-            const data = await authGet('http://localhost:8080/usuarios');
+            const data = await authGet(`http://localhost:8080/usuarios`);
             console.log('Data received:', data); // ← Agrega esto para debuggear
             setUsers(data);
         } catch (error) {
