@@ -11,7 +11,7 @@ export function ScannerQr() {
     const [isScanning, setIsScanning] = useState(false);
     const [observaciones, setObservaciones] = useState("");
 
-    const [usuarioId, setUsuarioId] = useState(63);
+    const [usuarioId] = useState(63);
 
     const iniciarEscaneo = () => {
         const scanner = new Html5QrcodeScanner(

@@ -12,7 +12,7 @@ const UserManagement = () => {
 
     const loadUsers = async () => {
         try {
-            const data = await authGet(`http://localhost:8080/usuarios`);
+            const data = await authGet(`${API}/usuarios`);
             console.log('Data received:', data); // ← Agrega esto para debuggear
             setUsers(data);
         } catch (error) {
