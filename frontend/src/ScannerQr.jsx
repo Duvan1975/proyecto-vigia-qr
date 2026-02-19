@@ -11,7 +11,7 @@ export function ScannerQr() {
     const [isScanning, setIsScanning] = useState(false);
     const [observaciones, setObservaciones] = useState("");
 
-    const [usuarioId] = useState(63);
+    const [usuarioId] = useState(2);
 
     const iniciarEscaneo = () => {
         const scanner = new Html5QrcodeScanner(
@@ -78,6 +78,7 @@ export function ScannerQr() {
             };
 
             const response = await authFetch(`${API}/rondas`, {
+                
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -92,6 +93,7 @@ export function ScannerQr() {
                     icon: 'success',
                     timer: 2000
                 });
+                console.log("API URL:", API);
                 setObservaciones('');
                 return true;
             } else {
@@ -102,6 +104,7 @@ export function ScannerQr() {
             Swal.fire('Error', error.message, 'error');
             return false;
         }
+        
     };
 
     return (
