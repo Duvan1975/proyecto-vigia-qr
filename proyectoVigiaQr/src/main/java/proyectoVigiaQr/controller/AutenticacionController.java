@@ -17,7 +17,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/login")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000",
+"https://proyecto-vigia-qr.vercel.app/")
 public class AutenticacionController {
 
     @Autowired
