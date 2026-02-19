@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { Html5QrcodeScanner } from 'html5-qrcode';
+import { getUsuarioFromToken } from "./utils/auth";
 import { authFetch } from "./utils/authFetch";
 
 const API = process.env.REACT_APP_API_URL;
@@ -11,7 +12,10 @@ export function ScannerQr() {
     const [isScanning, setIsScanning] = useState(false);
     const [observaciones, setObservaciones] = useState("");
 
-    const [usuarioId] = useState(2);
+    //const [usuarioId] = useState(2);
+
+    const usuario = getUsuarioFromToken();
+    const usuarioId = usuario?.id;
 
     const iniciarEscaneo = () => {
         const scanner = new Html5QrcodeScanner(
@@ -71,6 +75,12 @@ export function ScannerQr() {
 
     const registrarRonda = async (valorQr) => {
         try {
+
+            if (!usuarioId) {
+                Swal.fire('Error', 'Usuario no autenticado', 'Error');
+                return false;
+            }
+
             const datos = {
                 valorQr: valorQr,
                 idUsuario: usuarioId,
@@ -93,9 +103,11 @@ export function ScannerQr() {
                     icon: 'success',
                     timer: 2000
                 });
+                console.log(usuario);
                 console.log("API URL:", API);
                 setObservaciones('');
                 return true;
+                
             } else {
                 const error = await response.json();
                 throw new Error(error.message || 'Error al registrar ronda');
