@@ -76,10 +76,10 @@ export function ScannerQr() {
     const registrarRonda = async (valorQr) => {
         try {
 
-            if (!usuarioId) {
+            /*if (!usuarioId) {
                 Swal.fire('Error', 'Usuario no autenticado', 'Error');
                 return false;
-            }
+            }*/
 
             const datos = {
                 valorQr: valorQr,
