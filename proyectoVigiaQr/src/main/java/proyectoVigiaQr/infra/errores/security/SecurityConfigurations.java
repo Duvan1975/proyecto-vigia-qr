@@ -68,7 +68,7 @@ public class SecurityConfigurations {
 
                         // ==================== RONDAS ====================
                         //Escritura y lectura solo ADMINISTRATIVO
-                        .requestMatchers(HttpMethod.POST, "/rondas").hasAuthority("ROLE_ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.POST, "/rondas").hasAnyAuthority("ROLE_ADMINISTRATIVO", "ROLE_OPERATIVO")
                         .requestMatchers(HttpMethod.PUT, "/rondas/**").hasAuthority("ROLE_ADMINISTRATIVO")
                         .requestMatchers(HttpMethod.GET, "/rondas").hasAuthority("ROLE_ADMINISTRATIVO")
                         .requestMatchers(HttpMethod.DELETE, "/rondas/**").hasAuthority("ROLE_ADMINISTRATIVO")

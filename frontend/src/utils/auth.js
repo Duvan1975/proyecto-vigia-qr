@@ -5,7 +5,7 @@ export const getUsuarioFromToken = () => {
     if (!token) return null;
 
     try {
-        jwtDecode(token);
+        return jwtDecode(token);
     } catch (error) {
         console.error("Token inválido");
         return null;
