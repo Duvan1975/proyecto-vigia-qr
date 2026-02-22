@@ -47,7 +47,7 @@ export function Login({ onLoginSuccess }) {
       Swal.fire({
         icon: "error",
         title: "Error al iniciar sesión",
-        text: error.message 
+        text: error.message
       });
     }
   };
@@ -63,11 +63,15 @@ export function Login({ onLoginSuccess }) {
               <img
                 src={logoVigia}
                 alt="Logo Vigia"
-                style={{ 
+                style={{
                   maxWidth: "100%",    // La imagen no supera el ancho del contenedor
                   height: "auto",       // Mantiene proporción
                   width: "auto",        // Se ajusta automáticamente
-                  maxHeight: "150px"    // Altura máxima opcional (ajusta según necesites)
+                  maxHeight: "150px",    // Altura máxima opcional (ajusta según necesites)
+                  border: "1px solid rgba(0,0,0,0.1)",    // Borde muy sutil
+                  borderRadius: "20px",                    // Esquinas redondeadas
+                  padding: "5px",                          // Espacio interior
+                  backgroundColor: "rgba(255,255,255,0.5)" // Fondo semitransparente
                 }}
               />
             </div>

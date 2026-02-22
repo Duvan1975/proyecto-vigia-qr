@@ -59,47 +59,55 @@ export function Menu() {
             {isLoggedIn && vista !== "login" && (
                 <div className="d-flex flex-wrap gap-2 mb-4 justify-content-center justify-content-md-start">
                     <button
-                        className="btn btn-info"
+                        className="btn btn-success"  // Verde de Bootstrap
                         onClick={() => setVista("menu")}
-                    >Inicio
+                    >🏠 Inicio
                     </button>
 
                     <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
                         <button
-                            className="btn btn-primary"
+                            className="btn btn-warning"  // Amarillo/naranja
                             onClick={() => setVista("formularioUsuarios")}
-                        >Registrar Usuarios
+                        >📝 Registrar Usuarios
+                        </button>
+                    </ProtectedElement>
+
+                    <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                        <button
+                            className="btn btn-warning"
+                            onClick={() => setVista("formularioPuestos")}
+                        >🏢 Registrar Puesto
+                        </button>
+                    </ProtectedElement>
+
+                    <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                        <button
+                            className="btn btn-info"  // Azul claro
+                            onClick={() => setVista("tablaUsuarios")}
+                        >📋 Listar Usuarios
+                        </button>
+                    </ProtectedElement>
+
+                    <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                        <button
+                            className="btn btn-info"
+                            onClick={() => setVista("tablaPuestos")}
+                        >📋 Listar Puestos
+                        </button>
+                    </ProtectedElement>
+
+                    <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                        <button
+                            className="btn btn-info"
+                            onClick={() => setVista("tablaRondas")}
+                        >🔄 Listado de Rondas
                         </button>
                     </ProtectedElement>
 
                     <button
-                        className="btn btn-secondary"
-                        onClick={() => setVista("tablaUsuarios")}
-                    >Listar Usuarios
-                    </button>
-
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => setVista("formularioPuestos")}
-                    >Registrar Puesto
-                    </button>
-
-                    <button
-                        className="btn btn-secondary"
-                        onClick={() => setVista("tablaPuestos")}
-                    >Listar Puestos
-                    </button>
-
-                    <button
-                        className="btn btn-secondary"
-                        onClick={() => setVista("tablaRondas")}
-                    >Listado de Rondas
-                    </button>
-
-                    <button
-                        className="btn btn-secondary"
+                        className="btn btn-primary"  // Azul oscuro
                         onClick={() => setVista("scannerQr")}
-                    >Escanear Código
+                    >📷 Escanear Código
                     </button>
                 </div>
             )}
