@@ -27,14 +27,14 @@ export function Login({ onLoginSuccess }) {
       const data = await response.json();
       localStorage.setItem("token", data.token); //Guarda el token
       localStorage.setItem("rol", data.rol);
-      localStorage.setItem("username", data.username);
+      localStorage.setItem("nombres", data.usuario);
       localStorage.setItem("estado", data.estado);
 
       Swal.fire({
         icon: "success",
         title: "Inicio de sesión exitoso",
         html: `
-                    <p>Bienvenido: <strong>${data.username}</strong></p>
+                    <p>Bienvenido: <strong>${data.usuario}</strong></p>
                     <p>Rol: <strong>${data.rol}</strong></p>
                 `
       }).then(() => {
@@ -47,29 +47,35 @@ export function Login({ onLoginSuccess }) {
       Swal.fire({
         icon: "error",
         title: "Error al iniciar sesión",
-        text: error.message
+        text: error.message 
       });
     }
   };
 
   return (
     <div className="container-fluid d-flex justify-content-center align-items-center min-vh-100 bg-light">
-      <div className="card shadow-lg" style={{ width: "400px" }}>
+      <div className="card shadow-lg" style={{ width: "400px", maxWidth: "90%" }}> {/* Agregué maxWidth */}
         <div className="card-body p-4 text-center">
 
-          {/* Imagen de la empresa */}
+          {/* Imagen de la empresa - AHORA RESPONSIVE */}
           <div className="mb-4">
             <div className="d-flex justify-content-center">
               <img
                 src={logoVigia}
                 alt="Logo Vigia"
-
+                style={{ 
+                  maxWidth: "100%",    // La imagen no supera el ancho del contenedor
+                  height: "auto",       // Mantiene proporción
+                  width: "auto",        // Se ajusta automáticamente
+                  maxHeight: "150px"    // Altura máxima opcional (ajusta según necesites)
+                }}
               />
             </div>
             <h3 className="card-title text-primary mt-2">INICIO DE SESIÓN</h3>
             <p className="text-muted">Sistema de Gestión de Códigos QR</p>
           </div>
 
+          {/* Resto del código igual... */}
           <div className="mb-3">
             <label className="form-label text-start w-100">Usuario:</label>
             <input

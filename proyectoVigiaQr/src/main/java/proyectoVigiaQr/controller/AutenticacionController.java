@@ -51,7 +51,7 @@ public class AutenticacionController {
         response.put("token", JWTtoken);
         response.put("rol", usuario.getRol().name());
         response.put("estado", usuario.isEnabled());
-        response.put("administrador", usuario.getUsername());
+        response.put("usuario", usuario.getNombres());
 
         return ResponseEntity.ok(response);
     }
