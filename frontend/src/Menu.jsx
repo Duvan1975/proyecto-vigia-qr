@@ -7,6 +7,9 @@ import { TablaRondas } from "./TablaRondas";
 import { ScannerQr } from "./ScannerQr";
 import { ProtectedElement } from "./utils/ProtectedElement";
 import { Login } from "./Login";
+import logoVigia from '../src/img/logoVigia.png'
+import vigiaLogoRedondo from '../src/img/vigiaLogoRedondo.png'
+import "./Menu.css";
 
 export function Menu() {
     const [vista, setVista] = useState("menu");
@@ -36,118 +39,211 @@ export function Menu() {
     };
 
     return (
-        <div className="container">
-            {/* Mostrar título SOLO cuando esté logueado */}
-            {isLoggedIn && (
-                <h1 className="text-center mb-4">VIGÍA Servicios Integrales</h1>
-            )}
+        <div className="d-flex flex-column min-vh-100">
+            {/* HEADER - Siemvisible visible */}
+            <header className="menu-header">
+                <div className="header-content">
+                    {/* Lado izquierdo */}
+                    <div className="header-left">
+                        <img src={vigiaLogoRedondo} alt="Vigía Logo Redondo" className="header-logo" />
+                        <div className="header-divider"></div>
+                        <img src={logoVigia} alt="Vigía Servicios Integrales" className="header-logo" />
+                        <div className="header-text">
+                            <span className="company-name">Servicios Integrales S.A.S.</span>
+                        </div>
+                    </div>
 
-            {/* Mostrar información del usuario si está logueado */}
-            {isLoggedIn && (
-                <div className="alert alert-info d-flex flex-column flex-sm-row justify-content-between align-items-center mb-3">
-                    <span className="mb-2 mb-sm-0">
-                        Usuario: <strong>{localStorage.getItem("nombres")}</strong> |
-                        Rol: <strong>{localStorage.getItem("rol")}</strong>
-                    </span>
-                    <button className="btn btn-sm btn-outline-danger w-100 w-sm-auto" onClick={handleLogout}>
-                        Cerrar Sesión
-                    </button>
+                    {/* Lado derecho - Solo visible cuando está logueado */}
+                    {isLoggedIn && (
+                        <div className="header-right">
+                            <div className="header-contact">
+                                <span>Tu Bienestar, nuestra prioridad</span>
+                                <div>Usuario: <strong>{localStorage.getItem("nombres")}</strong> | Rol: <strong>{localStorage.getItem("rol")}</strong></div>
+                            </div>
+                            <button className="btn btn-sm btn-outline-danger" onClick={handleLogout}>
+                                Cerrar Sesión
+                            </button>
+                        </div>
+                    )}
                 </div>
-            )}
+            </header>
 
-            {/* Mostrar botones del menú SOLO cuando esté logueado Y NO esté en vista login */}
-            {isLoggedIn && vista !== "login" && (
-                <div className="d-flex flex-wrap gap-2 mb-4 justify-content-center justify-content-md-start">
-                    <button
-                        className="btn btn-success"  // Verde de Bootstrap
-                        onClick={() => setVista("menu")}
-                    >🏠 Inicio
-                    </button>
+            {/* CONTENIDO PRINCIPAL */}
+            <main className="container flex-grow-1 py-4">
+                {/* Mostrar título SOLO cuando esté logueado */}
+                {isLoggedIn && (
+                    <h1 className="text-center mb-4" style={{ color: "#161f2f" }}>VIGÍA Servicios Integrales</h1>
+                )}
 
-                    <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                {/* Mostrar botones del menú SOLO cuando esté logueado Y NO esté en vista login */}
+                {isLoggedIn && vista !== "login" && (
+                    <div className="d-flex flex-wrap gap-2 mb-4 justify-content-center justify-content-md-start">
                         <button
-                            className="btn btn-warning"  // Amarillo/naranja
-                            onClick={() => setVista("formularioUsuarios")}
-                        >📝 Registrar Usuarios
+                            className="btn"
+                            style={{
+                                backgroundColor: "#ffff01",
+                                color: "#161f2f",
+                                border: "none",
+                                fontWeight: "500"
+                            }}
+                            onClick={() => setVista("menu")}
+                        >🏠 Inicio
                         </button>
-                    </ProtectedElement>
 
-                    <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                        <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                            <button
+                                className="btn"
+                                style={{
+                                    backgroundColor: "#161f2f",
+                                    color: "white",
+                                    border: "none",
+                                    fontWeight: "500"
+                                }}
+                                onClick={() => setVista("formularioUsuarios")}
+                            >📝 Registrar Usuarios
+                            </button>
+                        </ProtectedElement>
+
+                        <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                            <button
+                                className="btn"
+                                style={{
+                                    backgroundColor: "#161f2f",
+                                    color: "white",
+                                    border: "none",
+                                    fontWeight: "500"
+                                }}
+                                onClick={() => setVista("formularioPuestos")}
+                            >🏢 Registrar Puesto
+                            </button>
+                        </ProtectedElement>
+
+                        <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                            <button
+                                className="btn"
+                                style={{
+                                    backgroundColor: "#969595",
+                                    color: "white",
+                                    border: "none",
+                                    fontWeight: "500"
+                                }}
+                                onClick={() => setVista("tablaUsuarios")}
+                            >📋 Listar Usuarios
+                            </button>
+                        </ProtectedElement>
+
+                        <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                            <button
+                                className="btn"
+                                style={{
+                                    backgroundColor: "#969595",
+                                    color: "white",
+                                    border: "none",
+                                    fontWeight: "500"
+                                }}
+                                onClick={() => setVista("tablaPuestos")}
+                            >📋 Listar Puestos
+                            </button>
+                        </ProtectedElement>
+
+                        <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                            <button
+                                className="btn"
+                                style={{
+                                    backgroundColor: "#969595",
+                                    color: "white",
+                                    border: "none",
+                                    fontWeight: "500"
+                                }}
+                                onClick={() => setVista("tablaRondas")}
+                            >🔄 Listado de Rondas
+                            </button>
+                        </ProtectedElement>
+
                         <button
-                            className="btn btn-warning"
-                            onClick={() => setVista("formularioPuestos")}
-                        >🏢 Registrar Puesto
+                            className="btn"
+                            style={{
+                                backgroundColor: "#161f2f",
+                                color: "white",
+                                border: "none",
+                                fontWeight: "500"
+                            }}
+                            onClick={() => setVista("scannerQr")}
+                        >📷 Escanear Código
                         </button>
-                    </ProtectedElement>
+                    </div>
+                )}
 
-                    <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
+                {/* Mostrar botón de login SOLO cuando NO esté logueado */}
+                {!isLoggedIn && vista !== "login" && (
+                    <div className="text-center mb-4">
                         <button
-                            className="btn btn-info"  // Azul claro
-                            onClick={() => setVista("tablaUsuarios")}
-                        >📋 Listar Usuarios
+                            className="btn btn-lg w-100 w-sm-auto"
+                            style={{
+                                backgroundColor: "#ffff01",
+                                color: "#161f2f",
+                                border: "none",
+                                fontWeight: "bold"
+                            }}
+                            onClick={() => setVista("login")}
+                        >
+                            🔑 Iniciar Sesión
                         </button>
-                    </ProtectedElement>
+                    </div>
+                )}
 
-                    <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
-                        <button
-                            className="btn btn-info"
-                            onClick={() => setVista("tablaPuestos")}
-                        >📋 Listar Puestos
-                        </button>
-                    </ProtectedElement>
+                {/* Vistas dinámicas */}
+                {vista === "formularioUsuarios" && <FormularioUsuarios />}
+                {vista === "tablaUsuarios" && <TablaUsuarios />}
+                {vista === "formularioPuestos" && <FormularioPuestos />}
+                {vista === "tablaPuestos" && <TablaPuestos />}
+                {vista === "tablaRondas" && <TablaRondas />}
+                {vista === "scannerQr" && <ScannerQr />}
 
-                    <ProtectedElement allowedRoles={["ADMINISTRATIVO"]}>
-                        <button
-                            className="btn btn-info"
-                            onClick={() => setVista("tablaRondas")}
-                        >🔄 Listado de Rondas
-                        </button>
-                    </ProtectedElement>
+                {vista === "login" && (
+                    <Login onLoginSuccess={handleLoginSuccess} />
+                )}
 
-                    <button
-                        className="btn btn-primary"  // Azul oscuro
-                        onClick={() => setVista("scannerQr")}
-                    >📷 Escanear Código
-                    </button>
-                </div>
-            )}
+                {isLoggedIn && vista === "menu" && (
+                    <div className="text-center mt-5">
+                        <div className="card">
+                            <div className="card-body">
+                                <h3 className="card-title" style={{ color: "#161f2f" }}>¡Bienvenido!</h3>
+                                <p className="card-text">
+                                    Sistema de gestión Códigos QR VIGÍA Servicios Integrales
+                                </p>
+                                <p className="text-muted">
+                                    Selecciona una opción del menú para comenzar
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </main>
 
-            {/* Mostrar botón de login SOLO cuando NO esté logueado Y NO esté en vista login */}
-            {!isLoggedIn && vista !== "login" && (
-                <div className="text-center mb-4">
-                    <button className="btn btn-primary btn-lg w-100 w-sm-auto" onClick={() => setVista("login")}>
-                        Iniciar Sesión
-                    </button>
-                </div>
-            )}
-
-            {/* Resto del código igual... */}
-            {vista === "formularioUsuarios" && <FormularioUsuarios />}
-            {vista === "tablaUsuarios" && <TablaUsuarios />}
-            {vista === "formularioPuestos" && <FormularioPuestos />}
-            {vista === "tablaPuestos" && <TablaPuestos />}
-            {vista === "tablaRondas" && <TablaRondas />}
-            {vista === "scannerQr" && <ScannerQr />}
-
-            {vista === "login" && (
-                <Login onLoginSuccess={handleLoginSuccess} />
-            )}
-
-            {isLoggedIn && vista === "menu" && (
-                <div className="text-center mt-5">
-                    <div className="card">
-                        <div className="card-body">
-                            <h3 className="card-title text-primary">¡Bienvenido!</h3>
-                            <p className="card-text">
-                                Sistema de gestión Códigos QR VIGÍA Servicios Integrales
-                            </p>
-                            <p className="text-muted">
-                                Selecciona una opción del menú para comenzar
-                            </p>
+            {/* FOOTER */}
+            <footer className="menu-footer">
+                <div className="footer-content text-center">
+                    <div className="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3 gap-md-4">
+                        <div className="footer-address">
+                            <span className="footer-icon">📍</span>
+                            Carrera 42 a Número 10 C 12
+                        </div>
+                        <div className="footer-contact">
+                            <span className="footer-icon">📞</span>
+                            3138678521
+                        </div>
+                        <div className="footer-email">
+                            <span className="footer-icon">✉️</span>
+                            josedanilocubidez@gmail.com
+                        </div>
+                        <div className="footer-email">
+                            <span className="footer-icon">✉️</span>
+                            vigiaserviciosintegrales@gmail.com
                         </div>
                     </div>
                 </div>
-            )}
+            </footer>
         </div>
     );
 }
