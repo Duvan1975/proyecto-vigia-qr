@@ -90,6 +90,35 @@
     padding: 5px 15px;
   }
 }
+/* Botón cerrar sesión con amarillo corporativo */
+.btn-logout {
+  background-color: transparent;
+  color: #ffff01;
+  border: 2px solid #ffff01;
+  border-radius: 5px;
+  padding: 5px 15px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-logout:hover {
+  background-color: #ffff01;
+  color: #161f2f;
+  border-color: #ffff01;
+}
+
+/* Para móvil */
+@media (max-width: 768px) {
+  .btn-logout {
+    width: auto;
+    min-width: 150px;
+    margin: 0 auto;
+    padding: 8px 20px;
+    font-size: 1rem;
+  }
+}
 .menu-footer {
   background-color: #161f2f;
   padding: 15px 20px;

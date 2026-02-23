@@ -14,6 +14,8 @@ import proyectoVigiaQr.domain.usuario.UsuarioRepository;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -63,6 +65,11 @@ public class RondaService {
                 puesto,
                 datos.observaciones()
         );
+
+        // SOBRESCRIBIR fecha y hora con la del servidor
+        ZonedDateTime ahora = ZonedDateTime.now(ZoneOffset.UTC);
+        ronda.setFecha(ahora.toLocalDate());
+        ronda.setHora(ahora.toLocalTime());
 
         rondaRepository.save(ronda);
     }

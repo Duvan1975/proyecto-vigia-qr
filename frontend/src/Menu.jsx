@@ -55,7 +55,7 @@ export function Menu() {
                                     <span> | Rol: <strong>{localStorage.getItem("rol")}</strong></span>
                                 </div>
                             </div>
-                            <button className="btn btn-sm btn-outline-danger" onClick={handleLogout}>
+                            <button className="btn-logout" onClick={handleLogout}>
                                 Cerrar Sesión
                             </button>
                         </div>
