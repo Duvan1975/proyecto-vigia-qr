@@ -7,7 +7,6 @@ import { TablaRondas } from "./TablaRondas";
 import { ScannerQr } from "./ScannerQr";
 import { ProtectedElement } from "./utils/ProtectedElement";
 import { Login } from "./Login";
-import logoVigia from '../src/img/logoVigia.png'
 import vigiaLogoRedondo from '../src/img/vigiaLogoRedondo.png'
 import "./Menu.css";
 
