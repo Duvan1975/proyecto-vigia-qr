@@ -12,39 +12,20 @@
   align-items: center;
   max-width: 1400px;
   margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .header-left, .header-right {
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .header-logo {
-  height: 60px;
+  height: 50px; /* Reducido un poco para móvil */
   width: auto;
-}
-
-.header-divider {
-  width: 2px;
-  height: 40px;
-  background-color: #ffff01;
-}
-
-.header-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.header-text .company-name {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #ffff01;
-}
-
-.header-text .slogan {
-  font-size: 0.9rem;
-  color: #969595;
 }
 
 .header-contact {
@@ -58,6 +39,44 @@
 .header-contact span {
   color: #ffff01;
   font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .header-left {
+    justify-content: center;
+  }
+  
+  .header-right {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .header-contact {
+    align-items: center;
+    text-align: center;
+  }
+  
+  .header-contact div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-logo {
+    height: 40px;
+  }
+  
+  .header-contact {
+    font-size: 0.8rem;
+  }
 }
 
 .menu-footer {

@@ -43,14 +43,9 @@ export function Menu() {
             {/* HEADER - Siemvisible visible */}
             <header className="menu-header">
                 <div className="header-content">
-                    {/* Lado izquierdo */}
+                    {/* Lado izquierdo - Solo logo redondo */}
                     <div className="header-left">
                         <img src={vigiaLogoRedondo} alt="Vigía Logo Redondo" className="header-logo" />
-                        <div className="header-divider"></div>
-                        <img src={logoVigia} alt="Vigía Servicios Integrales" className="header-logo" />
-                        <div className="header-text">
-                            <span className="company-name">Servicios Integrales S.A.S.</span>
-                        </div>
                     </div>
 
                     {/* Lado derecho - Solo visible cuando está logueado */}
@@ -70,9 +65,15 @@ export function Menu() {
 
             {/* CONTENIDO PRINCIPAL */}
             <main className="container flex-grow-1 py-4">
-                {/* Mostrar título SOLO cuando esté logueado */}
                 {isLoggedIn && (
-                    <h1 className="text-center mb-4" style={{ color: "#161f2f" }}>VIGÍA Servicios Integrales</h1>
+                    <div className="text-center mb-4">
+                        <h1 style={{ color: "#161f2f", fontWeight: "bold", marginBottom: "5px" }}>
+                            VIGÍA Servicios Integrales S.A.S.
+                        </h1>
+                        <p style={{ color: "#969595", fontSize: "1.1rem" }}>
+                            Tu Bienestar, nuestra prioridad
+                        </p>
+                    </div>
                 )}
 
                 {/* Mostrar botones del menú SOLO cuando esté logueado Y NO esté en vista login */}
