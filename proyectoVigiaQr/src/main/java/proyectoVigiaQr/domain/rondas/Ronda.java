@@ -6,8 +6,7 @@ import proyectoVigiaQr.domain.codigosQR.CodigoQR;
 import proyectoVigiaQr.domain.puestosTrabajo.PuestosTrabajo;
 import proyectoVigiaQr.domain.usuario.Usuario;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 
 @Entity(name = "Ronda")
 @Table(name = "rondas")
@@ -41,14 +40,24 @@ public class Ronda {
 
     public Ronda(Usuario usuario,
                  CodigoQR codigoQR,
-                 PuestosTrabajo puestoTrabajo,
+                 PuestosTrabajo puestosTrabajo,
                  String observaciones) {
-        this.fecha = LocalDate.now();
-        this.hora = LocalTime.now();
         this.usuario = usuario;
         this.codigoQR = codigoQR;
-        this.puestoTrabajo = puestoTrabajo;
+        this.puestoTrabajo = puestosTrabajo;
         this.observaciones = observaciones;
+        // La fecha y hora se asignarán automáticamente con @PrePersist
+    }
+
+    /**
+     * Este método se ejecuta automáticamente ANTES de guardar la entidad en la base de datos.
+     * Asigna la fecha y hora actual del servidor en UTC.
+     */
+    @PrePersist
+    protected void onCreate() {
+        ZonedDateTime ahora = ZonedDateTime.now(ZoneId.of("America/Bogota"));
+        this.fecha = ahora.toLocalDate();
+        this.hora = ahora.toLocalTime();
     }
     public Ronda() {
 

@@ -65,12 +65,6 @@ public class RondaService {
                 puesto,
                 datos.observaciones()
         );
-
-        // SOBRESCRIBIR fecha y hora con la del servidor
-        ZonedDateTime ahora = ZonedDateTime.now(ZoneOffset.UTC);
-        ronda.setFecha(ahora.toLocalDate());
-        ronda.setHora(ahora.toLocalTime());
-
         rondaRepository.save(ronda);
     }
     public Page<DatosListadoRonda> listarTodas(Pageable paginacion) {
