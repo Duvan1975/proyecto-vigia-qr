@@ -24,13 +24,15 @@ export function ScannerQr() {
                 fps: 10,
                 qrbox: { width: 250, height: 250 },
                 aspectRatio: 1.0,
+                videoConstraints: {
+                    facingMode: "environment"
+                }
             },
             false
         );
 
         scanner.render(
             (qrCodeMessage) => {
-                // Detener el escáner una vez se detecte un código
                 scanner.clear();
                 setIsScanning(false);
                 procesarCodigoQR(qrCodeMessage);
@@ -88,7 +90,7 @@ export function ScannerQr() {
             };
 
             const response = await authFetch(`${API}/rondas`, {
-                
+
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -107,7 +109,7 @@ export function ScannerQr() {
                 console.log("API URL:", API);
                 setObservaciones('');
                 return true;
-                
+
             } else {
                 const error = await response.json();
                 throw new Error(error.message || 'Error al registrar ronda');
@@ -116,7 +118,7 @@ export function ScannerQr() {
             Swal.fire('Error', error.message, 'error');
             return false;
         }
-        
+
     };
 
     return (
