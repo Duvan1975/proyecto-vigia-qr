@@ -7,7 +7,7 @@ import { TablaRondas } from "./TablaRondas";
 import { ScannerQr } from "./ScannerQr";
 import { ProtectedElement } from "./utils/ProtectedElement";
 import { Login } from "./Login";
-import vigiaLogoRedondo from '../src/img/vigiaLogoRedondo.png'
+import logoVigia from '../src/img/logoVigia.png'
 import "./Menu.css";
 
 export function Menu() {
@@ -39,39 +39,37 @@ export function Menu() {
 
     return (
         <div className="d-flex flex-column min-vh-100">
-            {/* HEADER - Siemvisible visible */}
-            <header className="menu-header">
-                <div className="header-content">
-                    {/* Lado izquierdo - Solo logo redondo */}
-                    <div className="header-left">
-                        <img src={vigiaLogoRedondo} alt="Vigía Logo Redondo" className="header-logo" />
-                    </div>
+            {isLoggedIn && (
+                <header className="menu-header">
+                    <div className="header-content">
+                        {/* Lado izquierdo - Logo centrado en móvil */}
+                        <div className="header-left">
+                            <img src={logoVigia} alt="Logo Vigía" className="header-logo" />
+                        </div>
 
-                    {/* Lado derecho - Solo visible cuando está logueado */}
-                    {isLoggedIn && (
+                        {/* Lado derecho - En móvil se apila verticalmente */}
                         <div className="header-right">
                             <div className="header-contact">
-                                <span>Tu Bienestar, nuestra prioridad</span>
-                                <div>Usuario: <strong>{localStorage.getItem("nombres")}</strong> | Rol: <strong>{localStorage.getItem("rol")}</strong></div>
+                                <div>
+                                    <span>Usuario: <strong>{localStorage.getItem("nombres")}</strong></span>
+                                    <span> | Rol: <strong>{localStorage.getItem("rol")}</strong></span>
+                                </div>
                             </div>
                             <button className="btn btn-sm btn-outline-danger" onClick={handleLogout}>
                                 Cerrar Sesión
                             </button>
                         </div>
-                    )}
-                </div>
-            </header>
+                    </div>
+                </header>
+            )}
 
             {/* CONTENIDO PRINCIPAL */}
             <main className="container flex-grow-1 py-4">
                 {isLoggedIn && (
                     <div className="text-center mb-4">
                         <h1 style={{ color: "#161f2f", fontWeight: "bold", marginBottom: "5px" }}>
-                            VIGÍA Servicios Integrales S.A.S.
+                            VIGÍA Servicios Integrales
                         </h1>
-                        <p style={{ color: "#969595", fontSize: "1.1rem" }}>
-                            Tu Bienestar, nuestra prioridad
-                        </p>
                     </div>
                 )}
 
@@ -222,28 +220,30 @@ export function Menu() {
             </main>
 
             {/* FOOTER */}
-            <footer className="menu-footer">
-                <div className="footer-content text-center">
-                    <div className="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3 gap-md-4">
-                        <div className="footer-address">
-                            <span className="footer-icon">📍</span>
-                            Carrera 42 a Número 10 C 12
-                        </div>
-                        <div className="footer-contact">
-                            <span className="footer-icon">📞</span>
-                            3138678521
-                        </div>
-                        <div className="footer-email">
-                            <span className="footer-icon">✉️</span>
-                            josedanilocubidez@gmail.com
-                        </div>
-                        <div className="footer-email">
-                            <span className="footer-icon">✉️</span>
-                            vigiaserviciosintegrales@gmail.com
+            {isLoggedIn && (
+                <footer className="menu-footer">
+                    <div className="footer-content text-center">
+                        <div className="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3 gap-md-4">
+                            <div className="footer-address">
+                                <span className="footer-icon">📍</span>
+                                Carrera 42 a Número 10 C 12
+                            </div>
+                            <div className="footer-contact">
+                                <span className="footer-icon">📞</span>
+                                3138678521
+                            </div>
+                            <div className="footer-email">
+                                <span className="footer-icon">✉️</span>
+                                josedanilocubidez@gmail.com
+                            </div>
+                            <div className="footer-email">
+                                <span className="footer-icon">✉️</span>
+                                vigiaserviciosintegrales@gmail.com
+                            </div>
                         </div>
                     </div>
-                </div>
-            </footer>
+                </footer>
+            )}
         </div>
     );
 }
