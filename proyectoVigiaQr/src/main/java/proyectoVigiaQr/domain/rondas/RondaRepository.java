@@ -45,4 +45,6 @@ public interface RondaRepository
     List<Ronda> findByPuestoTrabajoNombrePuestoContainingIgnoreCase(String nombrePuesto);
 
     List<Ronda> findByFecha(LocalDate fecha);
+
+    Page<Ronda> findAllByOrderByFechaDescHoraDesc(Pageable paginacion);
 }

@@ -37,8 +37,7 @@ public class RondaController {
 
     @GetMapping
     public Page<DatosListadoRonda> listarTodas(
-            @PageableDefault(
-                    size = 10, sort = "fecha", direction = Sort.Direction.DESC)Pageable paginacion
+            @PageableDefault(size = 10) Pageable paginacion
             ) {
         return rondaService.listarTodas(paginacion);
     }

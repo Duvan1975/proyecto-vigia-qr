@@ -14,8 +14,6 @@ import proyectoVigiaQr.domain.usuario.UsuarioRepository;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -68,7 +66,7 @@ public class RondaService {
         rondaRepository.save(ronda);
     }
     public Page<DatosListadoRonda> listarTodas(Pageable paginacion) {
-        return rondaRepository.findAll(paginacion)
+        return rondaRepository.findAllByOrderByFechaDescHoraDesc(paginacion)
                 .map(DatosListadoRonda::new);
     }
     //Médotos (3) para exportación según filtro de búsqueda
