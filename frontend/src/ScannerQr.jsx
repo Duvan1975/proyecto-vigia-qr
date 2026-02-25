@@ -135,6 +135,21 @@ export function ScannerQr() {
                         <small className="text-muted">Este ID debería venir de la sesión autenticada</small>
                     </div>
 
+                                        {/* Campo para observaciones */}
+                    <div className="mb-3">
+                        <label htmlFor="observaciones" className="form-label">
+                            Observaciones (Opcional)
+                        </label>
+                        <textarea
+                            id="observaciones"
+                            className="form-control"
+                            rows="3"
+                            value={observaciones}
+                            onChange={(e) => setObservaciones(e.target.value)}
+                            placeholder="Ingresa observaciones sobre la ronda..."
+                        />
+                    </div>
+
                     {/* Controles de escaneo */}
                     <div className="mb-4">
                         <div className="d-flex justify-content-between align-items-center mb-3">
@@ -168,20 +183,7 @@ export function ScannerQr() {
                         )}
                     </div>
 
-                    {/* Campo para observaciones */}
-                    <div className="mb-3">
-                        <label htmlFor="observaciones" className="form-label">
-                            Observaciones (Opcional)
-                        </label>
-                        <textarea
-                            id="observaciones"
-                            className="form-control"
-                            rows="3"
-                            value={observaciones}
-                            onChange={(e) => setObservaciones(e.target.value)}
-                            placeholder="Ingresa observaciones sobre la ronda..."
-                        />
-                    </div>
+
 
                     {/* Información adicional */}
                     <div className="alert alert-secondary">
