@@ -129,16 +129,11 @@ export function ScannerQr() {
                 </div>
                 <div className="card-body">
                     {/* Información del usuario */}
-                    <div className="alert alert-info">
-                        <strong>Usuario ID:</strong> {usuarioId}
-                        <br />
-                        <small className="text-muted">Este ID debería venir de la sesión autenticada</small>
-                    </div>
 
-                                        {/* Campo para observaciones */}
+                    {/* Campo para observaciones */}
                     <div className="mb-3">
                         <label htmlFor="observaciones" className="form-label">
-                            Observaciones (Opcional)
+                            <strong>Observaciones (Opcional)</strong>
                         </label>
                         <textarea
                             id="observaciones"

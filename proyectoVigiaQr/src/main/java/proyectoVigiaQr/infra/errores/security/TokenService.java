@@ -12,6 +12,7 @@ import proyectoVigiaQr.domain.usuario.Usuario;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class TokenService {
@@ -75,8 +76,12 @@ public class TokenService {
             throw new RuntimeException("Error al extraer estado del token", exception);
         }
     }
-    private Instant generarFechaExpiracion(){
-        return LocalDateTime.now().plusHours(2)
+    /*private Instant generarFechaExpiracion(){
+        return LocalDateTime.now().plusHours(12)
                 .toInstant(ZoneOffset.of("-05:00"));
+    }*/
+
+    private Instant generarFechaExpiracion(){
+        return Instant.now().plus(1, ChronoUnit.HOURS);
     }
 }

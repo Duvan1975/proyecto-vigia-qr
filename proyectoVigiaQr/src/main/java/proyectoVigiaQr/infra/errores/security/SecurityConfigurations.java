@@ -32,7 +32,8 @@ public class SecurityConfigurations {
                     corsConfiguration.setAllowedOrigins(List.of(
                             "http://localhost:3000",
                             "http://localhost:8080",
-                            "https://proyecto-vigia-qr.vercel.app"
+                            "https://proyecto-vigia-qr.vercel.app",
+                            "https://proyecto-vigia-qr-production.up.railway.app"
                     ));
                     corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                     corsConfiguration.setAllowedHeaders(List.of("*"));
