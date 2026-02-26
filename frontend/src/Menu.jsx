@@ -68,7 +68,7 @@ export function Menu() {
                 {isLoggedIn && (
                     <div className="text-center mb-4">
                         <h1 style={{ color: "#161f2f", fontWeight: "bold", marginBottom: "5px" }}>
-                            VIGÍA Servicios Integrales
+                            VIGÍA
                         </h1>
                     </div>
                 )}
@@ -154,7 +154,7 @@ export function Menu() {
                                     fontWeight: "500"
                                 }}
                                 onClick={() => setVista("tablaRondas")}
-                            >🔄 Listado de Rondas
+                            >🔄 Listar Rondas
                             </button>
                         </ProtectedElement>
 
