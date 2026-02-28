@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 import { getUsuarioFromToken } from "./utils/auth";
 import { authFetch } from "./utils/authFetch";
 
@@ -17,38 +17,40 @@ export function ScannerQr() {
     const usuario = getUsuarioFromToken();
     const usuarioId = usuario?.id;
 
-    const iniciarEscaneo = () => {
-        const scanner = new Html5QrcodeScanner(
-            'qr-reader',
-            {
-                fps: 10,
-                qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0,
-                videoConstraints: {
-                    facingMode: "environment"
+    const iniciarEscaneo = async () => {
+        const html5QrCode = new Html5Qrcode("qr-reader");
+
+        try {
+            await html5QrCode.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                (decodedText) => {
+                    html5QrCode.stop().then(() => {
+                        setIsScanning(false);
+                        procesarCodigoQR(decodedText);
+                    });
+                },
+                (errorMessage) => {
+                    console.warn("Error escaneando:", errorMessage);
                 }
-            },
-            false
-        );
+            );
 
-        scanner.render(
-            (qrCodeMessage) => {
-                scanner.clear();
-                setIsScanning(false);
-                procesarCodigoQR(qrCodeMessage);
-            },
-            (error) => {
-                console.warn(`Error escaneando QR: ${error}`);
-            }
-        );
+            setScanner(html5QrCode);
+            setIsScanning(true);
 
-        setScanner(scanner);
-        setIsScanning(true);
+        } catch (err) {
+            console.error("Error iniciando cámara:", err);
+            Swal.fire("Error", "No se pudo iniciar la cámara", "error");
+        }
     };
 
-    const detenerEscaneo = () => {
+    const detenerEscaneo = async () => {
         if (scanner) {
-            scanner.clear();
+            await scanner.stop();
+            await scanner.clear();
             setScanner(null);
         }
         setIsScanning(false);
@@ -63,7 +65,7 @@ export function ScannerQr() {
         // Mostrar información del código QR escaneado
         Swal.fire({
             title: 'Código QR detectado',
-            html: `<p><strong>Valor:</strong> ${valorQr.substring(0, 20)}...</p>`,
+            //html: `<p><strong>Valor:</strong> ${valorQr.substring(0, 20)}...</p>`,
             icon: 'info',
             showCancelButton: true,
             confirmButtonText: 'Registrar Ronda',

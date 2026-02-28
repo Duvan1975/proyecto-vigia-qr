@@ -43,7 +43,7 @@
 @media (max-width: 768px) {
   .header-content {
     flex-direction: column;
-    gap: 15px;
+    gap: 1px;
   }
 
   .header-left {
@@ -78,7 +78,7 @@
 
 @media (max-width: 480px) {
   .header-logo {
-    height: 40px;
+    height: 60px;
   }
 
   .header-contact {

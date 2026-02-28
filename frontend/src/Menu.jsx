@@ -7,11 +7,14 @@ import { TablaRondas } from "./TablaRondas";
 import { ScannerQr } from "./ScannerQr";
 import { ProtectedElement } from "./utils/ProtectedElement";
 import { Login } from "./Login";
-import logoVigia from '../src/img/logoVigia.png'
+import logoVigia from '../src/img/logoVigia.png';
+import Swal from "sweetalert2";
 import "./Menu.css";
 
 export function Menu() {
-    const [vista, setVista] = useState("menu");
+    const [vista, setVista] = useState(() => {
+        return localStorage.getItem("token") ? "menu" : "login";
+    });
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
@@ -28,13 +31,34 @@ export function Menu() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("rol");
-        localStorage.removeItem("nombres");
-        localStorage.removeItem("admin");
-        localStorage.removeItem("estado");
-        setIsLoggedIn(false);
-        setVista("login");
+        Swal.fire({
+            title: '¿Cerrar sesión?',
+            text: "¿Estás seguro que deseas salir?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#0db208',
+            cancelButtonColor: '#161f2f',
+            confirmButtonText: 'Sí, cerrar sesión',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("rol");
+                localStorage.removeItem("nombres");
+                localStorage.removeItem("admin");
+                localStorage.removeItem("estado");
+                setIsLoggedIn(false);
+                setVista("login");
+
+                Swal.fire({
+                    title: '¡Hasta pronto!',
+                    text: 'Sesión cerrada correctamente',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+        });
     };
 
     return (
@@ -223,7 +247,7 @@ export function Menu() {
             {isLoggedIn && (
                 <footer className="menu-footer">
                     <div className="footer-content text-center">
-                        <div className="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3 gap-md-4">
+                        <div className="d-flex flex-column flex-md-row justify-content-center align-items-center gap-1 gap-md-4">
                             <div className="footer-address">
                                 <span className="footer-icon">📍</span>
                                 Carrera 42 a Número 10 C 12
