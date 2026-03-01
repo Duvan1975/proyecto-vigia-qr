@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import proyectoVigiaQr.domain.usuario.Usuario;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 
 @Service
@@ -27,8 +25,8 @@ public class TokenService {
                     .withIssuer("database")
                     .withSubject(usuario.getUsername())
                     .withClaim("id", usuario.getId())
-                    .withClaim("rol", usuario.getRol().name()) // ← AGREGAR ESTO
-                    .withClaim("estado", usuario.isEnabled())  // ← AGREGAR ESTO
+                    .withClaim("rol", usuario.getRol().name())
+                    .withClaim("estado", usuario.isEnabled())
                     .withExpiresAt(generarFechaExpiracion())
                     .sign(algorithm);
         } catch (
@@ -76,11 +74,6 @@ public class TokenService {
             throw new RuntimeException("Error al extraer estado del token", exception);
         }
     }
-    /*private Instant generarFechaExpiracion(){
-        return LocalDateTime.now().plusHours(12)
-                .toInstant(ZoneOffset.of("-05:00"));
-    }*/
-
     private Instant generarFechaExpiracion(){
         return Instant.now().plus(1, ChronoUnit.HOURS);
     }

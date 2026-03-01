@@ -52,7 +52,13 @@ public class AutenticacionService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
-        return usuarioRepository.findByUsername(username);
 
+        var usuario = usuarioRepository.findByUsername(username);
+
+        if (usuario == null) {
+            throw new UsernameNotFoundException("Usuario o contraseña incorrectos");
+        }
+
+        return usuario;
     }
 }

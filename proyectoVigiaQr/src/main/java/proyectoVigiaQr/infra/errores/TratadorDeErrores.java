@@ -17,11 +17,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class TratadorDeErrores {
 
-    /*@ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity tratarError404(){
-        return ResponseEntity.notFound().build();
-    }*/
-
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<?> tratarError404(EntityNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
