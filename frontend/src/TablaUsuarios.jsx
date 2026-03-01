@@ -27,7 +27,7 @@ export function TablaUsuarios() {
     const [paginaActual, setPaginaActual] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(3);
     const [totalElementos, setTotalElementos] = useState(0);
-    const [tamanoPagina, setTamanoPagina] = useState(0);
+    const [setTamanoPagina] = useState(0);
 
     useEffect(() => {
         cargarUsuarios(paginaActual);
@@ -288,8 +288,7 @@ export function TablaUsuarios() {
                         />
                         <div className="mt-2 text-center">
                             <small>
-                                Mostrando página {paginaActual + 1} de {totalPaginas} —{" "}
-                                {tamanoPagina} por página, total de registros: {totalElementos}
+                                Total de registros: {totalElementos}
                             </small>
                         </div>
                     </>

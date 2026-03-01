@@ -22,7 +22,7 @@ export function TablaPuestos() {
     const [paginaActual, setPaginaActual] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(3);
     const [totalElementos, setTotalElementos] = useState(0);
-    const [tamanoPagina, setTamanoPagina] = useState(0);
+    const [setTamanoPagina] = useState(0);
 
     //Estados para cargar y controlar el historial de códigos QR
     const [codigoQrPorPuestoListar, setCodigoQrPorPuestoListar] = useState(null);
@@ -186,25 +186,30 @@ export function TablaPuestos() {
         <>
             <div className="card">
                 <div className="card-body">
-                    <div className="table-responsive">
-                        <div className="mb-4">
-                            <h5>Buscar Puesto por Nombre</h5>
-                            <div className="row">
-                                <div className="col-md-4">
-                                    <input
-                                        type="text"
-                                        value={nombreBuscar}
-                                        onChange={(e) => setNombreBuscar(e.target.value)}
-                                        placeholder="Ingrese el nombre"
-                                        className="form-control mb-2"
-                                    />
-                                </div>
-                            </div>
-                            <button onClick={buscarPuestoPorNombre}
+                    <h5 className="mb-3">Buscar Puesto</h5>
+                    <div className="row g-2 align-items-end">
+                        <div className="col-12 col-md-4">
+                            <input
+                                type="text"
+                                value={nombreBuscar}
+                                onChange={(e) => {
+                                    setNombreBuscar(e.target.value);
+                                    if (e.target.value.length >= 4) {
+                                        buscarPuestoPorNombre();
+                                    }
+                                }}
+                                placeholder="Ingrese el nombre"
+                                className="form-control"
+                            />
+                        </div>
+
+                        <div className="col-12 col-md-auto d-flex gap-2 flex-wrap">
+                            {/*<button
+                                onClick={buscarPuestoPorNombre}
                                 className="btn btn-info"
                             >
                                 Buscar
-                            </button>
+                            </button>*/}
 
                             <button
                                 onClick={() => {
@@ -215,49 +220,44 @@ export function TablaPuestos() {
                                 }}
                                 className="btn btn-secondary"
                             >
-                                Limpiar Búsqueda
+                                Limpiar
                             </button>
 
+                            <button
+                                onClick={exportarTodosLosPuestos}
+                                className="btn btn-success"
+                                title="Exportar todos los puestos registrados"
+                            >
+                                Exportar
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-
-            {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
-                <Paginacion
-                    paginaActual={paginaActual}
-                    totalPaginas={totalPaginas}
-                    onChange={(nuevaPagina) => setPaginaActual(nuevaPagina)}
-                />
-            )}
-            {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
-                <div className="mt-2 text-center">
-                    <small>
-                        Mostrando página {paginaActual + 1} de {totalPaginas} —{" "}
-                        {tamanoPagina} por página, total de registros: {totalElementos}
-                    </small>
+                <div className="mb-1">
+                    {(resultadoBusqueda === null || resultadoBusqueda.length === 0) && (
+                        <>
+                            <Paginacion
+                                paginaActual={paginaActual}
+                                totalPaginas={totalPaginas}
+                                onChange={(nuevaPagina) => setPaginaActual(nuevaPagina)}
+                            />
+                            <div className="mt-1 text-center">
+                                <small>
+                                    Total de registros: {totalElementos}
+                                </small>
+                            </div>
+                        </>
+                    )}
                 </div>
-            )}
-
-            <div>
-                <button
-                    onClick={exportarTodosLosPuestos}
-                    className="btn btn-success"
-                    title="Exportar todos los puestos registrados en el sistema"
-                >
-                    <i className="bi bi-file-excel me-1"></i>
-                    Exportar Todos
-                </button>
             </div>
-
             <div className="card">
                 <div className="card-body">
                     <div className="table-responsive">
                         <table className="table table-striped table-hover" id="tabla">
                             <thead>
                                 <tr>
-                                    <th>Puesto de Trabajo</th>
+                                    <th>Puesto</th>
                                     <th>Descripción</th>
                                     <th>Dirección</th>
                                     <th>Estado</th>
@@ -295,22 +295,29 @@ export function TablaPuestos() {
                                             </button>
                                         </td>
                                         <td>
-                                            <button onClick={() => {
-                                                setPuestoSeleccionado(resultadoBusqueda);
-                                                setMostrarModal(true);
-                                            }}
-                                                className="btn btn-sm btn-primary me-2"
-                                            >Editar
-                                            </button>
-                                            <button
-                                                className="btn btn-sm btn-outline-secondary"
-                                                onClick={() => {
-                                                    setCodigoQrPorPuestoListar(resultadoBusqueda.id);
-                                                    setMostrarTablaCodigoQr(true);
-                                                }}
-                                            >
-                                                Ver Códigos
-                                            </button>
+                                            <div className="d-flex flex-wrap gap-1">
+
+                                                <button
+                                                    onClick={() => {
+                                                        setPuestoSeleccionado(resultadoBusqueda);
+                                                        setMostrarModal(true);
+                                                    }}
+                                                    className="btn btn-sm btn-primary flex-fill flex-md-grow-0"
+                                                >
+                                                    <i className="bi bi-pencil"></i>
+                                                </button>
+
+                                                <button
+                                                    className="btn btn-sm btn-outline-secondary flex-fill flex-md-grow-0"
+                                                    onClick={() => {
+                                                        setCodigoQrPorPuestoListar(resultadoBusqueda.id);
+                                                        setMostrarTablaCodigoQr(true);
+                                                    }}
+                                                >
+                                                    <i className="bi bi-qr-code"></i>
+                                                </button>
+
+                                            </div>
                                         </td>
                                     </tr>
                                 ) : (
@@ -344,23 +351,27 @@ export function TablaPuestos() {
                                                 </button>
                                             </td>
                                             <td>
-                                                <button onClick={() => {
-                                                    setPuestoSeleccionado(pues);
-                                                    setMostrarModal(true);
-                                                }}
-                                                    className="btn btn-sm btn-primary me-2"
-                                                >Editar
-                                                </button>
-
-                                                <button
-                                                    className="btn btn-sm btn-outline-secondary"
-                                                    onClick={() => {
-                                                        setCodigoQrPorPuestoListar(pues.id);
-                                                        setMostrarTablaCodigoQr(true);
+                                                <div className="d-flex flex-wrap gap-1">
+                                                    <button onClick={() => {
+                                                        setPuestoSeleccionado(pues);
+                                                        setMostrarModal(true);
                                                     }}
+                                                    className="btn btn-sm btn-primary flex-fill flex-md-grow-0"
                                                 >
-                                                    Ver Códigos
-                                                </button>
+                                                    <i className="bi bi-pencil"></i>
+                                                    </button>
+
+                                                    <button
+                                                        className="btn btn-sm btn-outline-secondary flex-fill flex-md-grow-0"
+                                                        onClick={() => {
+                                                            setCodigoQrPorPuestoListar(pues.id);
+                                                            setMostrarTablaCodigoQr(true);
+                                                        }}
+                                                    >
+                                                        <i className="bi bi-qr-code"></i>
+                                                    </button>
+                                                </div>
+
                                             </td>
                                         </tr>
                                     ))
