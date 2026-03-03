@@ -2,6 +2,8 @@
 import { jsPDF } from 'jspdf';
 import Swal from 'sweetalert2';
 
+const API = process.env.REACT_APP_API_URL;
+
 export async function exportarCodigosQRaPDF(codigosQr, puesto, authFetch) {
     if (!codigosQr || codigosQr.length === 0) {
         Swal.fire("Información", "No hay códigos QR para exportar", "info");
@@ -45,7 +47,7 @@ export async function exportarCodigosQRaPDF(codigosQr, puesto, authFetch) {
             const codigo = codigosQr[i];
             
             try {
-                const response = await authFetch(`http://localhost:8080/codigos-qr/${codigo.id}/descargar`);
+                const response = await authFetch(`${API}/codigos-qr/${codigo.id}/descargar`);
                 const blob = await response.blob();
                 const base64 = await blobToBase64(blob);
                 
