@@ -12,6 +12,14 @@ import Swal from "sweetalert2";
 import "./Menu.css";
 
 export function Menu() {
+
+    function getTokenExpirationTime(token) {
+        if (!token) return 0;
+
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload.exp * 1000; // milisegundos
+    }
+
     const [vista, setVista] = useState(() => {
         return localStorage.getItem("token") ? "menu" : "login";
     });
@@ -19,10 +27,29 @@ export function Menu() {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (token) {
-            setIsLoggedIn(true);
-            setVista("menu");
+
+        if (!token) {
+            setVista("login");
+            return;
         }
+
+        const expirationTime = getTokenExpirationTime(token);
+        const timeLeft = expirationTime - Date.now();
+
+        if (timeLeft <= 0) {
+            cerrarSesionPorExpiracion();
+            return;
+        }
+
+        setIsLoggedIn(true);
+        setVista("menu");
+
+        const timer = setTimeout(() => {
+            cerrarSesionPorExpiracion();
+        }, timeLeft);
+
+        return () => clearTimeout(timer);
+
     }, []);
 
     const handleLoginSuccess = () => {
@@ -58,6 +85,19 @@ export function Menu() {
                     showConfirmButton: false
                 });
             }
+        });
+    };
+
+    const cerrarSesionPorExpiracion = () => {
+        Swal.fire({
+            title: "Sesión finalizada",
+            text: "Tu sesión ha expirado por seguridad.",
+            icon: "warning",
+            confirmButtonColor: "#0db208"
+        }).then(() => {
+            localStorage.clear();
+            setIsLoggedIn(false);
+            setVista("login");
         });
     };
 

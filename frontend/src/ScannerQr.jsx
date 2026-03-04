@@ -100,6 +100,8 @@ export function ScannerQr() {
                 body: JSON.stringify(datos)
             });
 
+            if (!response) return false;
+
             if (response.status === 201) {
                 Swal.fire({
                     title: '¡Éxito!',

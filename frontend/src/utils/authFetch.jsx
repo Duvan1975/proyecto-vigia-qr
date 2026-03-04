@@ -1,26 +1,30 @@
+import Swal from "sweetalert2";
+
 export const authFetch = (url, options = {}) => {
   const token = localStorage.getItem("token");
+
   const headers = {
     ...(options.headers || {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {})
   };
 
   return fetch(url, { ...options, headers }).then(async (res) => {
-    if (res.status === 401 || res.status === 403) {
-      // aquí puedes redirigir a login o mostrar Swal
-      // Swal.fire("Sesión expirada", "Vuelve a iniciar sesión.", "warning");
-      throw new Error("No autorizado");
-    }
-    return res;
-  });
-};
 
-//Function para parsear JSON
-export const authGet = (url) => {
-  return authFetch(url).then(response => {
-    if (response.ok) {
-      return response.json();
+    if (res.status === 401 || res.status === 403) {
+
+      await Swal.fire({
+        icon: "warning",
+        title: "Sesión expirada",
+        text: "Tu sesión ha caducado. Inicia sesión nuevamente.",
+        confirmButtonText: "Ir a Login"
+      });
+
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+
+      return; //cortar ejecución
     }
-    throw new Error(`Error HTTP: ${response.status}`);
+
+    return res;
   });
 };

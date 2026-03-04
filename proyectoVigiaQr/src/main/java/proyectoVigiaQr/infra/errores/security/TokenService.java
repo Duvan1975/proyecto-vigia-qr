@@ -75,6 +75,6 @@ public class TokenService {
         }
     }
     private Instant generarFechaExpiracion(){
-        return Instant.now().plus(1, ChronoUnit.HOURS);
+        return Instant.now().plus(30, ChronoUnit.SECONDS);
     }
 }
