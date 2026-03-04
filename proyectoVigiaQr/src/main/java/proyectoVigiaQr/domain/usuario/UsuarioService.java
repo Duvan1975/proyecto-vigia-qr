@@ -41,8 +41,11 @@ public class UsuarioService {
             );
         }
 
+        String usernameNormalizado = datos.username().trim().toLowerCase();
+
         //Creamos un objeto desde el DTO
         Usuario usuario = new Usuario(datos);
+        usuario.setUsername(usernameNormalizado);
 
         //Encriptamos el password antes de guardar
         String passwordEncriptada = passwordEncoder.encode(datos.password());
@@ -121,7 +124,7 @@ public class UsuarioService {
         if (datos.username() != null) {
             boolean existeDuplicado = usuarioRepository
                     .existsByUsernameAndIdNot(
-                            datos.username(),
+                            datos.username().trim().toLowerCase(),
                             usuario.getId()
                     );
             if (existeDuplicado) {
@@ -137,8 +140,14 @@ public class UsuarioService {
         if (datos.apellidos() != null) usuario.setApellidos(datos.apellidos());
         if (datos.tipoDocumento() != null) usuario.setTipoDocumento(datos.tipoDocumento());
         if (datos.numeroDocumento() != null) usuario.setNumeroDocumento(datos.numeroDocumento());
-        if (datos.username() != null) usuario.setUsername(datos.username());
-        if (datos.password() != null) usuario.setPassword(datos.password());
+        if (datos.username() != null && !datos.username().isBlank()) {
+            String usernameNormalizado = datos.username().trim().toLowerCase();
+            usuario.setUsername(usernameNormalizado);
+        }
+        if (datos.password() != null && !datos.password().isBlank()) {
+            String passwordEncriptada = passwordEncoder.encode(datos.password());
+            usuario.setPassword(passwordEncriptada);
+        }
         if (datos.rol() != null) usuario.setRol(datos.rol());
         if (datos.estado() != null) usuario.setEstado(datos.estado());
 
@@ -153,6 +162,7 @@ public class UsuarioService {
                 usuario.isEstado()
         ));
     }
+
     @Transactional
     public ResponseEntity cambiarEstadoUsuario(Long id) {
         Usuario usuario = usuarioRepository.getReferenceById(id);

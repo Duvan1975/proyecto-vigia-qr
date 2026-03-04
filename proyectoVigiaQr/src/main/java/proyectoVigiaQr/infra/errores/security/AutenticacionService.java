@@ -40,13 +40,27 @@ public class AutenticacionService implements UserDetailsService {
             oper.setUsername("oper@test.com");
             oper.setPassword(passwordEncoder.encode("12345"));
             oper.setRol(Rol.OPERATIVO);
-            oper.setNombres("NOMBRE DE PRUEBA 1");
-            oper.setApellidos("APELLIDO DE PRUEBA 1");
+            oper.setNombres("BENDITO");
+            oper.setApellidos("BENITEZ");
             oper.setTipoDocumento(TipoDocumento.PASAPORTE);
             oper.setNumeroDocumento("89784565");
             //oper.setEstado(oper.isEstado());
             usuarioRepository.save(oper);
         }
+
+        if (usuarioRepository.findByUsername("bendito") == null) {
+            var oper = new Usuario();
+            oper.setUsername("bendito");
+            oper.setPassword(passwordEncoder.encode("12345"));
+            oper.setRol(Rol.OPERATIVO);
+            oper.setNombres("NOMBRE DE PRUEBA 1");
+            oper.setApellidos("APELLIDO DE PRUEBA 1");
+            oper.setTipoDocumento(TipoDocumento.PASAPORTE);
+            oper.setNumeroDocumento("010100101");
+            //oper.setEstado(oper.isEstado());
+            usuarioRepository.save(oper);
+        }
+
     }
 
     @Override

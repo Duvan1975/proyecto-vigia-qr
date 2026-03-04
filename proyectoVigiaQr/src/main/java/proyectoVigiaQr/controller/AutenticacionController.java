@@ -37,10 +37,11 @@ public class AutenticacionController {
             @RequestBody @Valid DatosAutenticacionUsuario datos) {
 
         try {
+            String usernameNormalizado = datos.username().trim().toLowerCase();
 
             Authentication authToken =
                     new UsernamePasswordAuthenticationToken(
-                            datos.username(),
+                            usernameNormalizado,
                             datos.password()
                     );
 
