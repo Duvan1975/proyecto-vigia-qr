@@ -139,7 +139,7 @@ export function Menu() {
 
                 {/* Mostrar botones del menú SOLO cuando esté logueado Y NO esté en vista login */}
                 {isLoggedIn && vista !== "login" && (
-                    <div className="d-flex flex-wrap gap-2 mb-4 justify-content-center justify-content-md-start">
+                    <div className="d-flex flex-wrap gap-2 mb-4 justify-content-center justify-content-md-center">
                         <button
                             className="btn"
                             style={{
