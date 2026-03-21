@@ -132,7 +132,15 @@ export function Menu() {
                 {isLoggedIn && (
                     <div className="text-center mb-4">
                         <h1 style={{ color: "#161f2f", fontWeight: "bold", marginBottom: "5px" }}>
-                            VIGÍA
+                            {
+                                vista === "formularioUsuarios" ? "Resgistrar Usuarios" :
+                                vista === "tablaUsuarios" ? "Listado Usuarios" :
+                                vista === "formularioPuestos" ? "Registrar Puesto" :
+                                vista === "tablaPuestos" ? "Listado Puestos" :
+                                vista === "tablaRondas" ? "Listado Rondas" :
+                                vista === "scannerQr" ? "Escanear Código" :
+                                "Inicio"
+                            }
                         </h1>
                     </div>
                 )}
