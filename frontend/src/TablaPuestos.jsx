@@ -69,7 +69,7 @@ export function TablaPuestos() {
                     )
                 );
 
-                // 🔥 Actualizar resultado de búsqueda si es el mismo puesto
+                // Actualizar resultado de búsqueda si es el mismo puesto
                 setResultadoBusqueda(prev =>
                     prev && prev.id === id
                         ? { ...prev, estado: !prev.estado }

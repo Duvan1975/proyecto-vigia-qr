@@ -29,7 +29,7 @@ export function FormularioUsuarios() {
 
     return (
         <div>
-            <h2 className='alineartexto'>Formulario Registro de Usuarios</h2>
+            {/*<h2 className='alineartexto' style={{color: "#161f2f"}}>Formulario Registro de Usuarios</h2>*/}
             <div className='row'>
                 <CuadrosTexto
                     tamanoinput="col-md-3"
@@ -109,12 +109,12 @@ export function FormularioUsuarios() {
                     ]}
                 />
             </div>
-            <br></br>
+            <br />
 
             <div className="d-flex gap-2">
                 <button
                     onClick={() => AgregarTabla(usuario, limpiarFormulario)}
-                    className='botonregistrar btn btn-success'
+                    className='btn btn-success'
                 >
                     Registrar Usuario
                 </button>
@@ -126,7 +126,6 @@ export function FormularioUsuarios() {
                 </button>
             </div>
 
-            <br></br>
         </div>
     )
 };

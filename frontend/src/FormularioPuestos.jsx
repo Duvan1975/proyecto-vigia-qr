@@ -32,7 +32,7 @@ export function FormularioPuestos() {
 
     return (
         <div>
-            <h2 className="alineartexto">Formulario Registro de Puestos</h2>
+            {/*<h2 className="alineartexto" style={{color: "#161f2f"}}>Formulario Registro de Puestos</h2>*/}
 
             <div className="row">
                 <CuadrosTexto
