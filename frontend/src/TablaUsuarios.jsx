@@ -27,7 +27,7 @@ export function TablaUsuarios() {
     const [paginaActual, setPaginaActual] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(3);
     const [totalElementos, setTotalElementos] = useState(0);
-    const [setTamanoPagina] = useState(0);
+    //const [setTamanoPagina] = useState(0);
 
     useEffect(() => {
         cargarUsuarios(paginaActual);
@@ -51,7 +51,7 @@ export function TablaUsuarios() {
                 setTotalPaginas(data.totalPages); //Muestra el total de las páginas
                 setPaginaActual(data.number); //Muestra el número actual de la página
                 setTotalElementos(data.totalElements); //Trae el número de elementos de la todas las páginas
-                setTamanoPagina(data.size); //Muestra la cantidad de elementos por página
+                //setTamanoPagina(data.size); //Muestra la cantidad de elementos por página
             })
             .catch((error) => console.error("Error al cargar usuario:", error));
     };
@@ -71,10 +71,12 @@ export function TablaUsuarios() {
                     )
                 );
 
-                // 🔥 Actualizar resultado de búsqueda si es el mismo usuario
+                //Actualizar resultado de búsqueda si es el mismo usuario
                 setResultadoBusqueda(prev =>
-                    prev && prev.id === id
-                        ? { ...prev, estado: !prev.estado }
+                    prev
+                        ? prev.map(u =>
+                            u.id === id ? { ...u, estado: !u.estado } : u
+                        )
                         : prev
                 );
 
@@ -244,8 +246,6 @@ export function TablaUsuarios() {
                                     <option value="documento">Por Documento</option>
                                 </select>
                             </div>
-
-
                             <div className="row g-2 align-items-end">
                                 <div className="col-12 col-md-4">
                                     <input
@@ -259,7 +259,6 @@ export function TablaUsuarios() {
                                         placeholder={`Ingrese ${tipoBusqueda}`}
                                         className="form-control mb-2"
                                     />
-
                                 </div>
                             </div>
 

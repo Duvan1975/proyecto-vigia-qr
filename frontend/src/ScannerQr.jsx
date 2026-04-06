@@ -182,8 +182,6 @@ export function ScannerQr() {
                         )}
                     </div>
 
-
-
                     {/* Información adicional */}
                     <div className="alert alert-secondary">
                         <h6>Instrucciones:</h6>
@@ -191,7 +189,7 @@ export function ScannerQr() {
                             <li>Presiona "Iniciar Escaneo" para activar la cámara</li>
                             <li>Enfoca el código QR del puesto de trabajo</li>
                             <li>La ronda se registrará automáticamente</li>
-                            <li>Puedes agregar observaciones si es necesario</li>
+                            <li>Agregue observaciones antes de escanear</li>
                         </ul>
                     </div>
                 </div>

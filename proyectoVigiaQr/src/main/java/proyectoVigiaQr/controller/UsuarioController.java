@@ -36,7 +36,7 @@ public class UsuarioController {
     }
     @GetMapping
     public Page<DatosListadoUsuario> listadoUsuarios(
-            @PageableDefault(size = 5, sort = "apellidos")Pageable paginacion) {
+            @PageableDefault(size = 10, sort = "apellidos")Pageable paginacion) {
         return usuarioService.listarUsuarios(paginacion);
     }
     @GetMapping("/exportar")

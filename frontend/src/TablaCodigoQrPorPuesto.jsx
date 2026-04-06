@@ -23,26 +23,37 @@ export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose })
     const cargarCodigoQrPorPuesto = () => {
         setCargando(true);
         authFetch(`${API}/codigos-qr/puesto/${puestoTrabajoId}`)
-            .then((res) => res.json())
+            .then((res) => {
+                if (!res.ok) throw new Error("Error al obtener códigos QR");
+                return res.json();
+            })
             .then((data) => {
-                console.log("Datos recibidos de códigos QR:", data);
-                setCodigoQr(data);
-                if (data.length > 0) {
-                    const nombreCompleto = `${data[0].puesto}`;
-                    setPuesto(nombreCompleto);
-                } else {
-                    // Si no hay códigos, podrías hacer otra petición para obtener el nombre del puesto
-                    authFetch(`${API}/puestos-trabajo/${puestoTrabajoId}`)
-                        .then((res) => res.json())
-                        .then((puesto) => {
-                            setPuesto(puesto.nombre || "");
-                        })
-                        .catch(() => setPuesto(""));
+                if (!data || data.length === 0) {
+                    setCodigoQr([]);
+                    Swal.fire({
+                        icon: "info",
+                        title: "Sin códigos QR",
+                        text: "Este puesto no tiene códigos QR registrados",
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                    setCargando(false);
+                    return;
                 }
+                setCodigoQr(data);
+
+                const nombreCompleto = `${data[0].puesto}`;
+                setPuesto(nombreCompleto);
+
                 setCargando(false);
             })
             .catch((error) => {
                 console.error("Error al cargar códigos QR de este puesto:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "No se pudieron cargar los códigos QR",
+                });
                 setCargando(false);
             });
     };
@@ -156,33 +167,34 @@ export function TablaCodigoQrPorPuesto({ puestoTrabajoId, actualizar, onClose })
                             <h4 className="mb-3">
                                 Listado de códigos QR {puesto && `de ${puesto}`}
                             </h4>
-                            <button className="btn btn-secondary" onClick={onClose}>Cerrar</button>
+                            <div className="col-12 col-md-auto d-flex gap-2 flex-wrap">
+                                <button className="btn btn-secondary" onClick={onClose}>Cerrar</button>
 
-                            <button
-                                className="btn btn-success mb-3"
-                                onClick={exportarExcel}
-                            >
-                                <i className="bi bi-file-excel"></i> Exportar todos
-                            </button>
+                                <button
+                                    className="btn btn-success"
+                                    onClick={exportarExcel}
+                                >
+                                    Exportar
+                                </button>
 
-                            <button
-                                className="btn btn-danger me-2"
-                                onClick={exportarAPDF}
-                                disabled={exportandoPDF || codigoQr.length === 0}
-                                title="Exportar a PDF con imágenes QR"
-                            >
-                                {exportandoPDF ? (
-                                    <>
-                                        <span className="spinner-border spinner-border-sm me-2"></span>
-                                        Generando PDF...
-                                    </>
-                                ) : (
-                                    <>
-                                        <i className="bi bi-file-pdf me-1"></i>
-                                        Exportar a PDF
-                                    </>
-                                )}
-                            </button>
+                                <button
+                                    className="btn btn-danger"
+                                    onClick={exportarAPDF}
+                                    disabled={exportandoPDF || codigoQr.length === 0}
+                                    title="Exportar a PDF con imágenes QR"
+                                >
+                                    {exportandoPDF ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2"></span>
+                                            Generando PDF...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Exportar a PDF
+                                        </>
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

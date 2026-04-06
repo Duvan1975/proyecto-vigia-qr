@@ -36,7 +36,7 @@ public class PuestosTrabajoController {
     }
     @GetMapping
     public Page<DatosListadoPuestos> listadoPuestos(
-            @PageableDefault(size = 20, sort = "nombrePuesto")Pageable paginacion) {
+            @PageableDefault(size = 10, sort = "nombrePuesto")Pageable paginacion) {
         return puestosTrabajoService.listarPuestosTrabajo(paginacion);
     }
     @GetMapping("/exportar")

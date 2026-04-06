@@ -22,7 +22,7 @@ export function TablaPuestos() {
     const [paginaActual, setPaginaActual] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(3);
     const [totalElementos, setTotalElementos] = useState(0);
-    const [setTamanoPagina] = useState(0);
+    //const [setTamanoPagina] = useState(0);
 
     //Estados para cargar y controlar el historial de códigos QR
     const [codigoQrPorPuestoListar, setCodigoQrPorPuestoListar] = useState(null);
@@ -42,7 +42,7 @@ export function TablaPuestos() {
                 setTotalPaginas(data.totalPages); //Muestra el total de las páginas
                 setPaginaActual(data.number); //Muestra el número actual de la página
                 setTotalElementos(data.totalElements); //Trae el número de elementos de la todas las páginas
-                setTamanoPagina(data.size); //Muestra la cantidad de elementos por página
+                //setTamanoPagina(data.size); //Muestra la cantidad de elementos por página
             })
             .catch((error) => console.error("Error al cargar puestos de trabajo:", error));
     };
@@ -135,7 +135,7 @@ export function TablaPuestos() {
             didOpen: () => Swal.showLoading()
         });
 
-        authFetch(`<${API}/puestosTrabajos/exportar`)
+        authFetch(`${API}/puestosTrabajos/exportar`)
             .then(res => {
                 if (!res.ok) throw new Error("Error al obtener datos");
                 return res.json();
