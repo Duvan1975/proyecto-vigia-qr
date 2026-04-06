@@ -27,7 +27,7 @@ export function Login({ onLoginSuccess }) {
       const data = await response.json();
       localStorage.setItem("token", data.token); //Guarda el token
       localStorage.setItem("rol", data.rol);
-      localStorage.setItem("nombres", data.usuario);
+      localStorage.setItem("usuario", data.usuario);
       localStorage.setItem("estado", data.estado);
 
       Swal.fire({

@@ -71,7 +71,7 @@ export function Menu() {
             if (result.isConfirmed) {
                 localStorage.removeItem("token");
                 localStorage.removeItem("rol");
-                localStorage.removeItem("nombres");
+                localStorage.removeItem("usuario");
                 localStorage.removeItem("admin");
                 localStorage.removeItem("estado");
                 setIsLoggedIn(false);
@@ -115,7 +115,7 @@ export function Menu() {
                         <div className="header-right">
                             <div className="header-contact">
                                 <div>
-                                    <span>Usuario: <strong>{localStorage.getItem("nombres")}</strong></span>
+                                    <span>Usuario: <strong>{localStorage.getItem("usuario")}</strong></span>
                                     <span> | Rol: <strong>{localStorage.getItem("rol")}</strong></span>
                                 </div>
                             </div>
