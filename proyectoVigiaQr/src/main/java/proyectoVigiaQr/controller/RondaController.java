@@ -157,4 +157,9 @@ public class RondaController {
                 )
         );
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarRonda(@PathVariable Long id) {
+        rondaService.eliminarRonda(id);
+        return ResponseEntity.noContent().build();
+    }
 }

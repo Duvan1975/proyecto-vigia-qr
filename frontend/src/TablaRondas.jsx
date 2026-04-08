@@ -167,7 +167,7 @@ export function TablaRondas() {
             return;
         }
 
-        setCargando(true); 
+        setCargando(true);
         setEnBusqueda(true);
 
         authFetch(`${API}/rondas/usuario/nombre?nombre=${encodeURIComponent(usuarioBuscar)}&page=0&sort=fecha,desc`)
@@ -293,6 +293,33 @@ export function TablaRondas() {
                 });
             });
     };
+
+    const eliminarRonda = (id) => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Este registro será eliminado definitivamente',
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                authFetch(`${API}/rondas/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                    }
+                })
+                    .then((res) => {
+                        if (!res.ok) throw new Error("Error al eliminar el registro de la ronda");
+                        setRondasPuesto(rondasPuesto.filter(r => r.id !== id));
+                        Swal.fire("Eliminado", "El registro de ronda, fue eliminado correctamente", "success");
+                    })
+                    .catch((err) => {
+                        Swal.fire("Error", err.message, "error");
+                    });
+            }
+        })
+    }
 
     if (cargando) return <p>Cargando historial...</p>;
 
@@ -509,13 +536,14 @@ export function TablaRondas() {
                                                 <span className="text-muted">-</span>
                                             )}
                                         </td>
-                                        <td>
-                                            <button
-                                                className="btn btn-sm btn-outline-info"
-                                                onClick={() => {
-                                                    Swal.fire({
-                                                        title: 'Detalles de Ronda',
-                                                        html: `
+                                        <td className="text-center">
+                                            <div className="d-flex justify-content-center gap-2">
+                                                <button
+                                                    className="btn btn-sm btn-outline-info"
+                                                    onClick={() => {
+                                                        Swal.fire({
+                                                            title: 'Detalles de Ronda',
+                                                            html: `
                                                                 <div class="text-start">
                                                                     <p><strong>ID:</strong> ${ronda.id}</p>
                                                                     <p><strong>Fecha:</strong> ${ronda.fecha}</p>
@@ -526,13 +554,22 @@ export function TablaRondas() {
                                                                     <p><strong>Observaciones:</strong> ${ronda.observaciones || 'Ninguna'}</p>
                                                                 </div>
                                                             `,
-                                                        icon: 'info'
-                                                    });
-                                                }}
-                                                title="Ver detalles"
-                                            >
-                                                <i className="bi bi-eye"></i>
-                                            </button>
+                                                            icon: 'info'
+                                                        });
+                                                    }}
+                                                    title="Ver detalles"
+                                                >
+                                                    <i className="bi bi-eye"></i>
+                                                </button>
+                                                <button
+                                                    className="btn btn-sm btn-danger"
+                                                    onClick={() => eliminarRonda(ronda.id)}
+                                                    title="Eliminar"
+                                                >
+                                                    <i className="bi bi-trash"></i>
+
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

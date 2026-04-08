@@ -485,16 +485,16 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                                                 </td>
 
                                                 <td className="text-center">
-                                                    <div className="btn-group btn-group-sm" role="group">
+                                                    <div className="d-flex flex-wrap justify-content-center gap-1">
                                                         <button
-                                                            className="btn btn-success"
+                                                            className="btn btn-success flex-fill flex-md-grow-0"
                                                             onClick={() => actualizarCodigoQr(c)}
                                                             title="Guardar cambios"
                                                         >
                                                             <i className="bi bi-save-fill"></i>
                                                         </button>
                                                         <button
-                                                            className="btn btn-outline-success"
+                                                            className="btn btn-outline-success flex-fill flex-md-grow-0"
                                                             disabled={!c.id || !c.estado}
                                                             onClick={() => descargarCodigoQr(c.id)}
                                                             title="Descargar QR"
@@ -502,7 +502,7 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                                                             <i className="bi bi-download"></i>
                                                         </button>
                                                         <button
-                                                            className="btn btn-outline-danger btn-sm"
+                                                            className="btn btn-outline-danger"
                                                             onClick={() => eliminarCodigoQr(c.id)}
                                                             title="Eliminar"
                                                         >

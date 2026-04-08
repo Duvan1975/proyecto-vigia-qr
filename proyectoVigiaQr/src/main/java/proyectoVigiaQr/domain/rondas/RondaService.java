@@ -1,5 +1,6 @@
 package proyectoVigiaQr.domain.rondas;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -177,5 +178,12 @@ public class RondaService {
 
         return rondaRepository.findAll(spec, pageable)
                 .map(DatosListadoRonda::new);
+    }
+
+    public void eliminarRonda(Long id) {
+        if(!rondaRepository.existsById(id)) {
+            throw new EntityNotFoundException("Ronda no encontrada con el id: " + id);
+        }
+        rondaRepository.deleteById(id);
     }
 }
