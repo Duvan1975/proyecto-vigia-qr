@@ -1,5 +1,6 @@
 package proyectoVigiaQr.domain.usuario;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
+import proyectoVigiaQr.domain.rondas.RondaRepository;
 
 import java.text.Normalizer;
 import java.util.Arrays;
@@ -23,6 +25,9 @@ public class UsuarioService {
 
     @Autowired
     UsuarioRepository usuarioRepository;
+
+    @Autowired
+    RondaRepository rondaRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -226,6 +231,15 @@ public class UsuarioService {
         return ResponseEntity.ok(resultado);
     }
 
-
-
+    public void eliminarUsuario(Long id) {
+        if (!usuarioRepository.existsById(id)) {
+            throw new EntityNotFoundException(
+                    "Usuario no encontrado con el id: " + id);
+        }
+        if (rondaRepository.existsByUsuarioId(id)) {
+            throw new IllegalStateException(
+                    "No se puede eliminar el usuario porque tiene rondas asociadas");
+        }
+        usuarioRepository.deleteById(id);
+    }
 }

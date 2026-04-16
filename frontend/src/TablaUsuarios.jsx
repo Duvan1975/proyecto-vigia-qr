@@ -432,6 +432,9 @@ export function TablaUsuarios() {
                         )
                     );
                 }}
+                onEliminado={(id) => {
+                    setUsuarios(prev => prev.filter(u => u.id !== id));
+                }}
             />
         </>
     )

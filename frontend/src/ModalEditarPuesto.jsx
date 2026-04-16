@@ -284,14 +284,26 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                     headers: {
                     }
                 })
-                    .then((res) => {
-                        if (!res.ok) throw new Error("Error al eliminar código QR");
-                        // ✅ Eliminar de la lista local
+                    .then(async (res) => {
+                        if (!res.ok) {
+                            const data = await res.json();
+                            throw new Error(data.error || "Error al eliminar Código QR");
+                        }
+
                         setCodigoQr(codigoQr.filter(c => c.id !== id));
-                        Swal.fire("Eliminado", "El código QR fue eliminado correctamente", "success");
+
+                        Swal.fire(
+                            "Eliminado",
+                            "El código QR fue eliminado correctamente",
+                            "success"
+                        );
                     })
-                    .catch((err) => {
-                        Swal.fire("Error", err.message, "error");
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: error.message
+                        });
                     });
             }
         });

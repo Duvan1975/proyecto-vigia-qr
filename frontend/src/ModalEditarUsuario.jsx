@@ -6,7 +6,7 @@ import { authFetch } from "./utils/authFetch";
 
 const API = process.env.REACT_APP_API_URL;
 
-export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado }) {
+export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado, onEliminado }) {
     const [formulario, setFormulario] = useState({
         id: "",
         nombres: "",
@@ -73,6 +73,49 @@ export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado })
                     html: error.message
                 });
             });
+    };
+
+    const eliminarUsuario = (id) => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Este Usuario será eliminado.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                authFetch(`${API}/usuarios/${id}`, {
+                    method: "DELETE",
+                    headers: {
+
+                    }
+                })
+                    .then(async (res) => {
+                        if (!res.ok) {
+                            const data = await res.json();
+                            throw new Error(data.error || "Error al eliminar Usuario");
+                        }
+                        onEliminado(id);
+
+                        onClose();
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "Eliminado",
+                            text: "El usuario fue eliminado correctamente"
+                        });
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: error.message
+                        });
+                    });
+
+            }
+        });
     };
 
     if (!visible) return null;
@@ -171,51 +214,66 @@ export function ModalEditarUsuario({ usuario, visible, onClose, onActualizado })
                         />
                     </div>
 
-                    <div className="mt-3">
-                        <button
-                            onClick={() => {
-                                Swal.fire({
-                                    title: '¿Actualizar usuario?',
-                                    text: '¿Estás seguro de que deseas guardar los cambios?',
-                                    icon: 'question',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#3085d6',
-                                    cancelButtonColor: '#d33',
-                                    confirmButtonText: 'Sí, actualizar',
-                                    cancelButtonText: 'Cancelar'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        actualizarUsuario();
-                                    }
-                                });
-                            }}
-                            className="btn btn-warning me-2"
-                        >
-                            Actualizar
-                        </button>
-                        <button
-                            onClick={() => {
-                                Swal.fire({
-                                    title: '¿Cancelar cambios?',
-                                    text: 'Los cambios no guardados se perderán',
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#3085d6',
-                                    cancelButtonColor: '#d33',
-                                    confirmButtonText: 'Sí, cancelar',
-                                    cancelButtonText: 'No, continuar'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        setFormulario(usuario);
-                                        onClose();
-                                    }
+                    <div className="mt-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                                });
-                            }}
-                            className="btn btn-secondary"
+                        {/* 🔴 Botón eliminar */}
+                        <button
+                            onClick={() => eliminarUsuario(formulario.id)}
+                            className="btn btn-danger"
                         >
-                            Cancelar
+                            <i className="bi bi-trash me-1"></i>
+                            Eliminar
                         </button>
+
+                        {/* 🟡 Acciones principales */}
+                        <div className="d-flex gap-2 flex-wrap">
+                            <button
+                                onClick={() => {
+                                    Swal.fire({
+                                        title: '¿Actualizar usuario?',
+                                        text: '¿Estás seguro de que deseas guardar los cambios?',
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#3085d6',
+                                        cancelButtonColor: '#d33',
+                                        confirmButtonText: 'Sí, actualizar',
+                                        cancelButtonText: 'Cancelar'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            actualizarUsuario();
+                                        }
+                                    });
+                                }}
+                                className="btn btn-warning"
+                            >
+                                <i className="bi bi-save me-1"></i>
+                                Actualizar
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    Swal.fire({
+                                        title: '¿Cancelar cambios?',
+                                        text: 'Los cambios no guardados se perderán',
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#3085d6',
+                                        cancelButtonColor: '#d33',
+                                        confirmButtonText: 'Sí, cancelar',
+                                        cancelButtonText: 'No, continuar'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            setFormulario(usuario);
+                                            onClose();
+                                        }
+                                    });
+                                }}
+                                className="btn btn-secondary"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             </div>

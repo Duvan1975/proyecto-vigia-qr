@@ -1,6 +1,7 @@
 package proyectoVigiaQr.infra.errores;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -75,5 +76,14 @@ public class TratadorDeErrores {
         return ResponseEntity.badRequest().body(
                 Map.of("error", e.getMessage())
         );
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<?> tratarErrorIntegridad(DataIntegrityViolationException e) {
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "error", "No se puede eliminar el código QR porque está asociado a una o más rondas"
+                ));
     }
 }

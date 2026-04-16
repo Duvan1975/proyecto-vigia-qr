@@ -47,4 +47,6 @@ public interface RondaRepository
     List<Ronda> findByFecha(LocalDate fecha);
 
     Page<Ronda> findAllByOrderByFechaDescHoraDesc(Pageable paginacion);
+
+    boolean existsByUsuarioId(Long usuarioId);
 }
