@@ -415,10 +415,10 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                                     <tbody>
                                         {nuevosCodigosQr.map((nuevo, idx) => (
                                             <tr key={`nuevo-${idx}`}>
-                                                <td>
+                                                <td style={{ minWidth: "200px" }}>
                                                     <input
                                                         type="text"
-                                                        className="form-control form-control-sm"
+                                                        className="form-control"
                                                         placeholder="Descripción"
                                                         value={nuevo.descripcion}
                                                         onChange={(e) => {
@@ -428,10 +428,10 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
                                                         }}
                                                     />
                                                 </td>
-                                                <td>
+                                                <td style={{ minWidth: "200px" }}>
                                                     <input
                                                         type="text"
-                                                        className="form-control form-control-sm"
+                                                        className="form-control"
                                                         placeholder="Ubicación"
                                                         value={nuevo.ubicacion}
                                                         onChange={(e) => {
@@ -469,18 +469,18 @@ export function ModalEditarPuesto({ puestoTrabajo, visible, onClose, onActualiza
 
                                         {codigoQr.map((c, idx) => (
                                             <tr key={c.id || `codigo-${idx}`}>
-                                                <td>
+                                                <td style={{ minWidth: "200px" }}>
                                                     <input
                                                         type="text"
-                                                        className="form-control form-control-sm"
+                                                        className="form-control"
                                                         value={c.descripcion !== undefined && c.descripcion !== null ? c.descripcion : ""}
                                                         onChange={(e) => handleCodigoQrChange(idx, "descripcion", e.target.value)}
                                                     />
                                                 </td>
-                                                <td>
+                                                <td style={{ minWidth: "200px" }}>
                                                     <input
                                                         type="text"
-                                                        className="form-control form-control-sm"
+                                                        className="form-control"
                                                         value={c.ubicacion !== undefined && c.ubicacion !== null ? c.ubicacion : ""}
                                                         onChange={(e) => handleCodigoQrChange(idx, "ubicacion", e.target.value)}
                                                     />

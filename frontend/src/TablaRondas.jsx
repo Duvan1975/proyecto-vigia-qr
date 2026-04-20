@@ -403,7 +403,7 @@ export function TablaRondas() {
                                     }}
                                     className="btn btn-secondary"
                                 >
-                                    Limpiar Búsqueda
+                                    Limpiar
                                 </button>
                             )}
                         </div>
